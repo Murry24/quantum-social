@@ -8,16 +8,18 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Brush
 
-val LightColors: ColorScheme = lightColorScheme(
-    primary = GalaxyBlue,
-    secondary = GalaxyTurquoise,
-    tertiary = GalaxyPurple
-)
-val DarkColors: ColorScheme = darkColorScheme(
-    primary = GalaxyBlue,
-    secondary = GalaxyTurquoise,
-    tertiary = GalaxyPurple
-)
+val LightColors: ColorScheme =
+    lightColorScheme(
+        primary = GalaxyBlue,
+        secondary = GalaxyTurquoise,
+        tertiary = GalaxyPurple,
+    )
+val DarkColors: ColorScheme =
+    darkColorScheme(
+        primary = GalaxyBlue,
+        secondary = GalaxyTurquoise,
+        tertiary = GalaxyPurple,
+    )
 
 val GalaxyGradient
     get() = Brush.verticalGradient(listOf(GalaxyBgTop, GalaxyBgBottom))
