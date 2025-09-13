@@ -25,88 +25,91 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.unit.dp
 import app.quantumsocial.ui.theme.GalaxyGradient
 
 @Composable
 fun GalaxyScreen() {
+    // Animácie – použijeme menované parametre
     val transition = rememberInfiniteTransition(label = "pulse")
+
     val scale by transition.animateFloat(
         initialValue = 0.9f,
         targetValue = 1.1f,
-        animationSpec =
-            infiniteRepeatable(
-                animation = tween(durationMillis = 1400, easing = FastOutSlowInEasing),
-                repeatMode = RepeatMode.Reverse,
-            ),
-        label = "scale",
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1400, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "scale"
     )
+
     val glowAlpha by transition.animateFloat(
         initialValue = 0.25f,
         targetValue = 0.65f,
-        animationSpec =
-            infiniteRepeatable(
-                animation = tween(1400, FastOutSlowInEasing),
-                repeatMode = RepeatMode.Reverse,
-            ),
-        label = "alpha",
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1400, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "alpha"
     )
 
+    // Farby si vezmeme mimo Canvas (Canvas lambda nie je @Composable)
+    val colors = MaterialTheme.colorScheme
+    val tertiary = colors.tertiary
+    val secondary = colors.secondary
+    val primary = colors.primary
+    val onPrimary = colors.onPrimary
+
     Box(
-        modifier =
-            Modifier
-                .fillMaxSize()
-                .background(GalaxyGradient),
-        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .fillMaxSize()
+            .background(GalaxyGradient),
+        contentAlignment = Alignment.Center
     ) {
-        // jemné hviezdne “zrno” (pár bodiek, aby scéna žila)
+        // jemné hviezdne bodky
         Canvas(Modifier.fillMaxSize()) {
-            drawIntoCanvas {
-                val w = size.width
-                val h = size.height
-                for (i in 0..60) {
-                    val x = (i * 37 % w.toInt()).toFloat()
-                    val y = (i * 79 % h.toInt()).toFloat()
-                    drawCircle(
-                        color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.12f),
-                        radius = 1.8f,
-                        center = Offset(x, y),
-                        blendMode = BlendMode.SrcOver,
-                    )
-                }
+            val w = size.width
+            val h = size.height
+            for (i in 0..60) {
+                val x = (i * 37 % w.toInt()).toFloat()
+                val y = (i * 79 % h.toInt()).toFloat()
+                drawCircle(
+                    color = tertiary.copy(alpha = 0.12f),
+                    radius = 1.8f,
+                    center = Offset(x, y),
+                    blendMode = BlendMode.SrcOver
+                )
             }
         }
 
-        // jemná žiara pod hviezdou
+        // žiara pod hviezdou
         Canvas(
-            modifier =
-                Modifier
-                    .size(220.dp)
-                    .alpha(glowAlpha),
+            modifier = Modifier
+                .size(220.dp)
+                .alpha(glowAlpha)
         ) {
             drawCircle(
-                color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f),
-                radius = size.minDimension / 2.2f,
+                color = secondary.copy(alpha = 0.7f),
+                radius = size.minDimension / 2.2f
             )
         }
 
         // pulzujúca hviezda
-        IconButton(onClick = { /* neskôr akcia */ }) {
+        IconButton(onClick = { /* neskôr: akcia */ }) {
             Icon(
                 imageVector = Icons.Filled.Star,
                 contentDescription = "Pulsujúca hviezda",
-                tint = MaterialTheme.colorScheme.primary,
-                modifier =
-                    Modifier
-                        .size(96.dp)
-                        .scale(scale),
+                tint = primary,
+                modifier = Modifier
+                    .size(96.dp)
+                    .scale(scale)
             )
         }
 
+        // titulok
         Text(
             text = "Quantum Social",
-            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f),
+            color = onPrimary.copy(alpha = 0.9f)
         )
     }
 }
