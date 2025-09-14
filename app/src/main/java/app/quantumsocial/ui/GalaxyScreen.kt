@@ -36,21 +36,23 @@ fun GalaxyScreen() {
     val scale by transition.animateFloat(
         initialValue = 0.9f,
         targetValue = 1.1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1400, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "scale"
+        animationSpec =
+            infiniteRepeatable(
+                animation = tween(durationMillis = 1400, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse,
+            ),
+        label = "scale",
     )
 
     val glowAlpha by transition.animateFloat(
         initialValue = 0.25f,
         targetValue = 0.65f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1400, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "alpha"
+        animationSpec =
+            infiniteRepeatable(
+                animation = tween(durationMillis = 1400, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse,
+            ),
+        label = "alpha",
     )
 
     // Farby si vezmeme mimo Canvas (Canvas lambda nie je @Composable)
@@ -61,10 +63,11 @@ fun GalaxyScreen() {
     val onPrimary = colors.onPrimary
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(GalaxyGradient),
-        contentAlignment = Alignment.Center
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(GalaxyGradient),
+        contentAlignment = Alignment.Center,
     ) {
         // jemné hviezdne bodky
         Canvas(Modifier.fillMaxSize()) {
@@ -77,20 +80,21 @@ fun GalaxyScreen() {
                     color = tertiary.copy(alpha = 0.12f),
                     radius = 1.8f,
                     center = Offset(x, y),
-                    blendMode = BlendMode.SrcOver
+                    blendMode = BlendMode.SrcOver,
                 )
             }
         }
 
         // žiara pod hviezdou
         Canvas(
-            modifier = Modifier
-                .size(220.dp)
-                .alpha(glowAlpha)
+            modifier =
+                Modifier
+                    .size(220.dp)
+                    .alpha(glowAlpha),
         ) {
             drawCircle(
                 color = secondary.copy(alpha = 0.7f),
-                radius = size.minDimension / 2.2f
+                radius = size.minDimension / 2.2f,
             )
         }
 
@@ -100,16 +104,17 @@ fun GalaxyScreen() {
                 imageVector = Icons.Filled.Star,
                 contentDescription = "Pulsujúca hviezda",
                 tint = primary,
-                modifier = Modifier
-                    .size(96.dp)
-                    .scale(scale)
+                modifier =
+                    Modifier
+                        .size(96.dp)
+                        .scale(scale),
             )
         }
 
         // titulok
         Text(
             text = "Quantum Social",
-            color = onPrimary.copy(alpha = 0.9f)
+            color = onPrimary.copy(alpha = 0.9f),
         )
     }
 }
