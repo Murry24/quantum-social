@@ -26,7 +26,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.unit.dp
-import app.quantumsocial.ui.theme.GalaxyGradient
+import app.quantumsocial.core.ui.theme.GalaxyGradient
 
 @Composable
 fun GalaxyScreen() {

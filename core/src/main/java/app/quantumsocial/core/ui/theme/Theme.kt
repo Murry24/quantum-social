@@ -1,4 +1,4 @@
-package app.quantumsocial.ui.theme
+package app.quantumsocial.core.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
@@ -14,6 +14,7 @@ val LightColors: ColorScheme =
         secondary = GalaxyTurquoise,
         tertiary = GalaxyPurple,
     )
+
 val DarkColors: ColorScheme =
     darkColorScheme(
         primary = GalaxyBlue,
@@ -21,11 +22,15 @@ val DarkColors: ColorScheme =
         tertiary = GalaxyPurple,
     )
 
-val GalaxyGradient
+val GalaxyGradient: Brush
     get() = Brush.verticalGradient(listOf(GalaxyBgTop, GalaxyBgBottom))
 
 @Composable
 fun AppTheme(content: @Composable () -> Unit) {
     val colors = if (isSystemInDarkTheme()) DarkColors else LightColors
-    MaterialTheme(colorScheme = colors, typography = AppTypography, content = content)
+    MaterialTheme(
+        colorScheme = colors,
+        typography = AppTypography,
+        content = content,
+    )
 }

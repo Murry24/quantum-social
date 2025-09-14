@@ -7,3 +7,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "QuantumSocial"
 include(":app")
+include(":core")
