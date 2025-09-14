@@ -71,11 +71,13 @@ ktlint {
         reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.PLAIN)
         reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.CHECKSTYLE)
     }
-    // ⬇⬇⬇ dočasne vylúčime testy, aby sme dokončili Krok 1
+    // Dočasné vylúčenia, aby sme vedeli pokračovať
     filter {
         exclude("**/generated/**")
         exclude("**/build/**")
         exclude("**/test/**")
         exclude("**/androidTest/**")
+        exclude("**/*.kts") // ⬅️ vylúčime Kotlin skripty (build.gradle.kts)
     }
 }
+

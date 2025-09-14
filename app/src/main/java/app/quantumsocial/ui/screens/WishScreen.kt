@@ -7,4 +7,3 @@ import androidx.compose.runtime.Composable
 fun WishScreen() {
     Text("WishNet – priania (coming soon)")
 }
-
