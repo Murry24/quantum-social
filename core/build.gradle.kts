@@ -31,6 +31,8 @@ dependencies {
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
     implementation(libs.material3)
+    implementation(libs.kotlinx.coroutines.core)
+
 }
 
 ktlint {

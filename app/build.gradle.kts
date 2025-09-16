@@ -61,6 +61,9 @@ dependencies {
     implementation(libs.material) // kvôli XML téme v manifeste
 
     implementation(project(":core"))
+    implementation(libs.coil.compose)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.lifecycle.runtime.compose)
 }
 
 ktlint {
