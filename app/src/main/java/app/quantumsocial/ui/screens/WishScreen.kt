@@ -45,7 +45,11 @@ fun WishScreen() {
         }
 
         LazyColumn {
-            items(signals, key = Signal::id) { s -> WishNetCard(signal = s) }
+            items(signals, key = Signal::id) { s ->
+                WishNetCard(signal = s) { read ->
+                    app.quantumsocial.core.data.InMemorySignalRepository.markRead(read.id)
+                }
+            }
         }
     }
 }
