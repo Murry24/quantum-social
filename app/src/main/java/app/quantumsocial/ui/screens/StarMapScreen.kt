@@ -1,8 +1,14 @@
 package app.quantumsocial.ui.screens
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.TransformableState
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Box
@@ -27,6 +33,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.text.font.FontWeight
@@ -63,6 +72,18 @@ fun StarMapScreen() {
     var minIntensity by remember { mutableFloatStateOf(0f) }
     var maxDistance by remember { mutableFloatStateOf(1f) }
     var wishNetOnly by remember { mutableStateOf(false) }
+    var reduceMotion by remember { mutableStateOf(false) }
+
+    // shared pan/zoom
+    var scale by remember { mutableFloatStateOf(1f) }
+    var offsetX by remember { mutableFloatStateOf(0f) }
+    var offsetY by remember { mutableFloatStateOf(0f) }
+    val transformState =
+        rememberTransformableState { zoomChange, panChange, _ ->
+            scale = (scale * zoomChange).coerceIn(0.5f, 5f)
+            offsetX += panChange.x
+            offsetY += panChange.y
+        }
 
     val filtered =
         remember(stars, selLangs, selEmotions, selTopics, minIntensity, maxDistance, wishNetOnly) {
@@ -137,7 +158,37 @@ fun StarMapScreen() {
             },
         )
 
-        StarCanvas(stars = filtered)
+        // nový prepínač pre animácie
+        ChipsRow(
+            label = "Animácie",
+            items = listOf("Menej animácií"),
+            selected = if (reduceMotion) listOf("Menej animácií") else emptyList(),
+            onToggle = { _, selected ->
+                reduceMotion = selected
+            },
+        )
+
+        Box(
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .fillMaxSize(),
+        ) {
+            NebulaBackground(
+                modifier = Modifier.fillMaxSize(),
+                offsetX = offsetX,
+                offsetY = offsetY,
+                scale = scale,
+            )
+            StarCanvas(
+                stars = filtered,
+                transformState = transformState,
+                offsetX = offsetX,
+                offsetY = offsetY,
+                scale = scale,
+                reduceMotion = reduceMotion,
+            )
+        }
     }
 }
 
@@ -192,18 +243,158 @@ private fun LabeledSlider(
     )
 }
 
+/** Nebula pozadie s parallaxom. */
+@Composable
+private fun NebulaBackground(
+    modifier: Modifier = Modifier,
+    offsetX: Float,
+    offsetY: Float,
+    scale: Float,
+    seed: Int = 1337,
+) {
+    Canvas(modifier = modifier) {
+        val w = size.width
+        val h = size.height
+        val r = maxOf(w, h)
+
+        val sky =
+            Brush.radialGradient(
+                colors =
+                    listOf(
+                        Color(0xFF1A1457),
+                        Color(0xFF0B0B2B),
+                    ),
+                center =
+                    Offset(
+                        x = w * 0.60f,
+                        y = h * 0.40f,
+                    ),
+                radius = r,
+            )
+        drawRect(brush = sky, size = size)
+
+        fun haze(
+            cx: Float,
+            cy: Float,
+            radius: Float,
+            color: Color,
+            alpha: Float,
+            parallax: Float,
+        ) {
+            val px = cx - offsetX * parallax
+            val py = cy - offsetY * parallax
+            drawCircle(
+                color = color.copy(alpha = alpha),
+                radius = radius,
+                center =
+                    Offset(
+                        x = px,
+                        y = py,
+                    ),
+            )
+        }
+
+        // hlbšie vrstvy sa hýbu menej (menší parallax faktor)
+        haze(
+            cx = w * 0.22f,
+            cy = h * 0.30f,
+            radius = r * 0.40f,
+            color = Color(0xFF7B1FA2),
+            alpha = 0.25f,
+            parallax = 0.02f,
+        )
+        haze(
+            cx = w * 0.78f,
+            cy = h * 0.22f,
+            radius = r * 0.30f,
+            color = Color(0xFF3949AB),
+            alpha = 0.20f,
+            parallax = 0.03f,
+        )
+        haze(
+            cx = w * 0.58f,
+            cy = h * 0.66f,
+            radius = r * 0.42f,
+            color = Color(0xFF512DA8),
+            alpha = 0.22f,
+            parallax = 0.035f,
+        )
+        haze(
+            cx = w * 0.40f,
+            cy = h * 0.78f,
+            radius = r * 0.28f,
+            color = Color(0xFFAD1457),
+            alpha = 0.18f,
+            parallax = 0.045f,
+        )
+        haze(
+            cx = w * 0.66f,
+            cy = h * 0.46f,
+            radius = r * 0.22f,
+            color = Color(0xFF00ACC1),
+            alpha = 0.12f,
+            parallax = 0.05f,
+        )
+
+        // drobné hviezdy – ľahký parallax pre celé pole
+        val rnd = Random(seed)
+        withTransform({
+            translate(
+                left = -offsetX * 0.015f,
+                top = -offsetY * 0.015f,
+            )
+        }) {
+            repeat(350) {
+                val x = rnd.nextFloat() * w
+                val y = rnd.nextFloat() * h
+                val rad = 0.5f + rnd.nextFloat() * 1.5f
+                val a = 0.35f + rnd.nextFloat() * 0.45f
+                drawCircle(
+                    color = Color.White.copy(alpha = a),
+                    radius = rad,
+                    center =
+                        Offset(
+                            x = x,
+                            y = y,
+                        ),
+                )
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun StarCanvas(stars: List<StarPoint>) {
-    var scale by remember { mutableFloatStateOf(1f) }
-    var offsetX by remember { mutableFloatStateOf(0f) }
-    var offsetY by remember { mutableFloatStateOf(0f) }
-
-    val transformState =
-        rememberTransformableState { zoomChange, panChange, _ ->
-            scale = (scale * zoomChange).coerceIn(0.5f, 5f)
-            offsetX += panChange.x
-            offsetY += panChange.y
+private fun StarCanvas(
+    stars: List<StarPoint>,
+    transformState: TransformableState,
+    offsetX: Float,
+    offsetY: Float,
+    scale: Float,
+    reduceMotion: Boolean,
+) {
+    // twinkle animácia – vypneme, ak je reduceMotion
+    val tick =
+        if (reduceMotion) {
+            0f
+        } else {
+            val state =
+                rememberInfiniteTransition(
+                    label = "twinkle",
+                ).animateFloat(
+                    initialValue = 0f,
+                    targetValue = (2f * PI).toFloat(),
+                    animationSpec =
+                        infiniteRepeatable(
+                            animation =
+                                tween(
+                                    durationMillis = 2000,
+                                    easing = LinearEasing,
+                                ),
+                        ),
+                    label = "tick",
+                )
+            state.value
         }
 
     Box(
@@ -213,7 +404,7 @@ private fun StarCanvas(stars: List<StarPoint>) {
                 .transformable(transformState),
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
-            val strokeColor = Color.White.copy(alpha = 0.15f)
+            val strokeColor = Color.White.copy(alpha = 0.10f)
             val centerX = size.width / 2f
             val centerY = size.height / 2f
             val baseRadius = min(size.width, size.height) / 2f * 0.9f
@@ -229,12 +420,38 @@ private fun StarCanvas(stars: List<StarPoint>) {
                     val r = baseRadius * s.distance
                     val x = r * cos(s.angleRad)
                     val y = r * sin(s.angleRad)
-                    val sizePx = if (s.isWishNet) 6f + 6f * s.intensity else 3f + 4f * s.intensity
+
+                    val base = if (s.isWishNet) 6f + 6f * s.intensity else 3f + 4f * s.intensity
+                    val phase = ((s.id.hashCode() % 628) / 100f)
+                    val twinkle = ((kotlin.math.sin(tick + phase) + 1f) / 2f)
+                    val haloRadius = base * if (s.isWishNet) 3f else 2f
+                    val haloAlpha =
+                        if (reduceMotion) 0.10f * s.intensity else 0.08f + 0.20f * twinkle * s.intensity
+
                     drawCircle(
-                        color = color,
-                        radius = sizePx,
+                        color = color.copy(alpha = haloAlpha),
+                        radius = haloRadius,
                         center =
-                            androidx.compose.ui.geometry.Offset(
+                            Offset(
+                                x = x,
+                                y = y,
+                            ),
+                        blendMode = BlendMode.Plus,
+                    )
+                    drawCircle(
+                        color = color.copy(alpha = 0.95f),
+                        radius = base,
+                        center =
+                            Offset(
+                                x = x,
+                                y = y,
+                            ),
+                    )
+                    drawCircle(
+                        color = Color.White.copy(alpha = 0.90f),
+                        radius = base * 0.55f,
+                        center =
+                            Offset(
                                 x = x,
                                 y = y,
                             ),
@@ -311,10 +528,22 @@ private fun demoFakeSignals(count: Int): List<Signal> {
     repeat(count) { i ->
         out +=
             when (i % 4) {
-                0 -> TextSignal(text = "Hello #$i")
-                1 -> EmojiSignal(emoji = listOf("✨", "⭐", "🚀", "💙").random())
-                2 -> ImageSignal(imageUri = "content://demo/$i")
-                else -> MixSignal(parts = emptyList())
+                0 ->
+                    TextSignal(
+                        text = "Hello #$i",
+                    )
+                1 ->
+                    EmojiSignal(
+                        emoji = listOf("✨", "⭐", "🚀", "💙").random(),
+                    )
+                2 ->
+                    ImageSignal(
+                        imageUri = "content://demo/$i",
+                    )
+                else ->
+                    MixSignal(
+                        parts = emptyList(),
+                    )
             }
     }
     return out
