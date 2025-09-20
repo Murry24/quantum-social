@@ -65,6 +65,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.lifecycle.runtime.compose)
     implementation(libs.compose.animation)
+    implementation(libs.compose.foundation)
 
 }
 

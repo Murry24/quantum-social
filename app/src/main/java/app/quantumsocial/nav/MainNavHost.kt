@@ -18,8 +18,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import app.quantumsocial.ui.GalaxyScreen
 import app.quantumsocial.ui.screens.ProfileScreen
+import app.quantumsocial.ui.screens.StarMapScreen
 import app.quantumsocial.ui.screens.WishScreen
 
 @Composable
@@ -61,7 +61,7 @@ fun MainScaffold() {
             startDestination = Screen.Home.route,
             modifier = Modifier.padding(inner),
         ) {
-            composable(Screen.Home.route) { GalaxyScreen() }
+            composable(Screen.Home.route) { StarMapScreen() }
             composable(Screen.Wish.route) { WishScreen() }
             composable(Screen.Profile.route) { ProfileScreen() }
         }
