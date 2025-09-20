@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package app.quantumsocial.ui.screens
 
 import androidx.compose.animation.core.Animatable
@@ -17,14 +19,24 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -36,6 +48,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
@@ -64,8 +77,9 @@ import kotlin.random.Random
 
 private enum class Emotion { Joy, Calm, Energy, Love, Mystery }
 
+/** openFilters – ak true, hneď otvorí sheet (použité zo spodného baru). */
 @Composable
-fun StarMapScreen() {
+fun StarMapScreen(openFilters: Boolean = false) {
     val signals by InMemorySignalRepository.signals.collectAsState()
     val baseSignals = if (signals.isEmpty()) remember { demoFakeSignals(80) } else signals
     val stars = remember(baseSignals) { baseSignals.map { it.toStarPoint() } }
@@ -82,18 +96,15 @@ fun StarMapScreen() {
     var wishNetOnly by remember { mutableStateOf(false) }
     var reduceMotion by remember { mutableStateOf(false) }
 
-    // --- shared pan/zoom stav (animovateľný) ---
+    // pan/zoom – animovateľný
     val animScale = remember { Animatable(1f) }
     val animOffsetX = remember { Animatable(0f) }
     val animOffsetY = remember { Animatable(0f) }
-
     val transformState: TransformableState =
         rememberTransformableState { zoomChange, panChange, _ ->
-            // okamžitá reakcia na gesto (bez animácie)
             val nextScale = (animScale.value * zoomChange).coerceIn(0.5f, 5f)
             val nextX = animOffsetX.value + panChange.x
             val nextY = animOffsetY.value + panChange.y
-            // snapTo je "bez animácie"
             kotlinx.coroutines.runBlocking {
                 animScale.snapTo(nextScale)
                 animOffsetX.snapTo(nextX)
@@ -113,18 +124,209 @@ fun StarMapScreen() {
             }
         }
 
-    Column(
+    var showFilters by remember { mutableStateOf(openFilters) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    val scope = rememberCoroutineScope()
+    var canvasSize by remember { mutableStateOf(IntSize.Zero) }
+    val density = LocalDensity.current
+
+    Box(
         modifier =
             Modifier
                 .fillMaxSize()
                 .background(GalaxyGradient),
     ) {
-        Text(
-            text = "Filtre",
-            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
-            modifier = Modifier.align(Alignment.CenterHorizontally),
+        // MAPA + gestá
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .onSizeChanged { canvasSize = it }
+                    .pointerInput(filtered, canvasSize, reduceMotion) {
+                        detectTapGestures(
+                            onDoubleTap = { tap ->
+                                val width = canvasSize.width.toFloat()
+                                val height = canvasSize.height.toFloat()
+                                val centerX = width / 2f
+                                val centerY = height / 2f
+                                val worldX =
+                                    (tap.x - centerX - animOffsetX.value) / animScale.value
+                                val worldY =
+                                    (tap.y - centerY - animOffsetY.value) / animScale.value
+                                val targetScale = if (animScale.value < 1.8f) 2.2f else 1f
+                                val targetOffsetX = -targetScale * worldX
+                                val targetOffsetY = -targetScale * worldY
+                                scope.launch {
+                                    animScale.animateTo(
+                                        targetValue = targetScale,
+                                        animationSpec = tween(240, easing = LinearEasing),
+                                    )
+                                }
+                                scope.launch {
+                                    animOffsetX.animateTo(
+                                        targetValue = targetOffsetX,
+                                        animationSpec = tween(240, easing = LinearEasing),
+                                    )
+                                }
+                                scope.launch {
+                                    animOffsetY.animateTo(
+                                        targetValue = targetOffsetY,
+                                        animationSpec = tween(240, easing = LinearEasing),
+                                    )
+                                }
+                            },
+                            onTap = { tap ->
+                                val width = canvasSize.width.toFloat()
+                                val height = canvasSize.height.toFloat()
+                                val centerX = width / 2f
+                                val centerY = height / 2f
+                                val baseRadius = min(width, height) / 2f * 0.9f
+
+                                var best: Pair<StarPoint, Float>? = null
+                                for (s in filtered) {
+                                    val r = baseRadius * s.distance
+                                    val xw = r * cos(s.angleRad.toDouble()).toFloat()
+                                    val yw = r * sin(s.angleRad.toDouble()).toFloat()
+                                    val sx = centerX + animOffsetX.value + animScale.value * xw
+                                    val sy = centerY + animOffsetY.value + animScale.value * yw
+                                    val dx = tap.x - sx
+                                    val dy = tap.y - sy
+                                    val d2 = dx * dx + dy * dy
+                                    if (best == null || d2 < best!!.second) best = s to d2
+                                }
+
+                                val thresholdPx = with(density) { 24.dp.toPx() }
+                                val isHit = best != null && best!!.second <= thresholdPx * thresholdPx
+                                if (isHit) {
+                                    val s = best!!.first
+                                    val r = baseRadius * s.distance
+                                    val xw = r * cos(s.angleRad.toDouble()).toFloat()
+                                    val yw = r * sin(s.angleRad.toDouble()).toFloat()
+                                    val targetOffsetX = -animScale.value * xw
+                                    val targetOffsetY = -animScale.value * yw
+                                    scope.launch {
+                                        animOffsetX.animateTo(
+                                            targetValue = targetOffsetX,
+                                            animationSpec = tween(260, easing = LinearEasing),
+                                        )
+                                    }
+                                    scope.launch {
+                                        animOffsetY.animateTo(
+                                            targetValue = targetOffsetY,
+                                            animationSpec = tween(260, easing = LinearEasing),
+                                        )
+                                    }
+                                }
+                            },
+                        )
+                    },
+        ) {
+            NebulaBackground(
+                modifier = Modifier.fillMaxSize(),
+                offsetX = animOffsetX.value,
+                offsetY = animOffsetY.value,
+                scale = animScale.value,
+            )
+            StarCanvas(
+                stars = filtered,
+                transformState = transformState,
+                offsetX = animOffsetX.value,
+                offsetY = animOffsetY.value,
+                scale = animScale.value,
+                reduceMotion = reduceMotion,
+            )
+        }
+
+        // ───── MINI SLIDERY (vľavo dole) ─────
+        MiniKnobs(
+            minIntensity = minIntensity,
+            onIntensityChange = { minIntensity = it },
+            maxDistance = maxDistance,
+            onDistanceChange = { maxDistance = it },
+            modifier =
+                Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(8.dp),
         )
 
+        // ───── LEGENDA EMÓCIÍ (vpravo hore) ─────
+        LegendEmotions(
+            selected = selEmotions,
+            onToggle = { e, selected ->
+                if (selected) selEmotions.add(e) else selEmotions.remove(e)
+            },
+            modifier =
+                Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp),
+        )
+    }
+
+    // „Veľké“ filtre – v sheete (otvárané zo spodného baru cez openFilters)
+    if (showFilters) {
+        ModalBottomSheet(
+            onDismissRequest = { showFilters = false },
+            sheetState = sheetState,
+        ) {
+            FilterSheetContent(
+                langs = langs,
+                emotions = emotions,
+                topics = topics,
+                selLangs = selLangs,
+                selEmotions = selEmotions,
+                selTopics = selTopics,
+                minIntensity = minIntensity,
+                onIntensityChange = { minIntensity = it },
+                maxDistance = maxDistance,
+                onDistanceChange = { maxDistance = it },
+                wishNetOnly = wishNetOnly,
+                onWishToggle = { wishNetOnly = it },
+                reduceMotion = reduceMotion,
+                onReduceToggle = { reduceMotion = it },
+            )
+        }
+    }
+}
+
+// ------------------------------ SHEET UI --------------------------------
+
+@Composable
+private fun FilterSheetContent(
+    langs: List<String>,
+    emotions: List<Emotion>,
+    topics: List<String>,
+    selLangs: MutableList<String>,
+    selEmotions: MutableList<Emotion>,
+    selTopics: MutableList<String>,
+    minIntensity: Float,
+    onIntensityChange: (Float) -> Unit,
+    maxDistance: Float,
+    onDistanceChange: (Float) -> Unit,
+    wishNetOnly: Boolean,
+    onWishToggle: (Boolean) -> Unit,
+    reduceMotion: Boolean,
+    onReduceToggle: (Boolean) -> Unit,
+) {
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding()
+                .imePadding()
+                .verticalScroll(rememberScrollState())
+                .padding(bottom = 24.dp),
+    ) {
+        Text(
+            text = "Filtre",
+            fontWeight = FontWeight.SemiBold,
+            modifier =
+                Modifier
+                    .padding(top = 8.dp)
+                    .align(Alignment.CenterHorizontally),
+        )
+
+        // Jazyk – presunuté do sheetu
         ChipsRow(
             label = "Jazyk",
             items = langs,
@@ -153,153 +355,19 @@ fun StarMapScreen() {
             },
         )
 
-        LabeledSlider(
-            label = "Min. intenzita",
-            value = minIntensity,
-            onValueChange = { minIntensity = it },
-        )
-
-        LabeledSlider(
-            label = "Max. vzdialenosť",
-            value = maxDistance,
-            onValueChange = { maxDistance = it },
-        )
-
         ChipsRow(
             label = "WishNet",
             items = listOf("Len WishNet"),
             selected = if (wishNetOnly) listOf("Len WishNet") else emptyList(),
-            onToggle = { _, selected ->
-                wishNetOnly = selected
-            },
+            onToggle = { _, selected -> onWishToggle(selected) },
         )
 
         ChipsRow(
             label = "Animácie",
             items = listOf("Menej animácií"),
             selected = if (reduceMotion) listOf("Menej animácií") else emptyList(),
-            onToggle = { _, selected ->
-                reduceMotion = selected
-            },
+            onToggle = { _, selected -> onReduceToggle(selected) },
         )
-
-        // --- Map + gestá ---
-        val scope = rememberCoroutineScope()
-        var canvasSize by remember { mutableStateOf(IntSize.Zero) }
-        val density = LocalDensity.current
-
-        Box(
-            modifier =
-                Modifier
-                    .weight(1f)
-                    .fillMaxSize()
-                    .onSizeChanged { canvasSize = it }
-                    .pointerInput(filtered, canvasSize, reduceMotion) {
-                        detectTapGestures(
-                            onDoubleTap = { tap ->
-                                // double-tap: zoom toggle a centrovanie na miesto dotyku
-                                val width = canvasSize.width.toFloat()
-                                val height = canvasSize.height.toFloat()
-                                val centerX = width / 2f
-                                val centerY = height / 2f
-
-                                val worldX =
-                                    (tap.x - centerX - animOffsetX.value) / animScale.value
-                                val worldY =
-                                    (tap.y - centerY - animOffsetY.value) / animScale.value
-
-                                val targetScale =
-                                    if (animScale.value < 1.8f) 2.2f else 1f
-                                val targetOffsetX = -targetScale * worldX
-                                val targetOffsetY = -targetScale * worldY
-
-                                scope.launch {
-                                    animScale.animateTo(
-                                        targetValue = targetScale,
-                                        animationSpec = tween(durationMillis = 240, easing = LinearEasing),
-                                    )
-                                }
-                                scope.launch {
-                                    animOffsetX.animateTo(
-                                        targetValue = targetOffsetX,
-                                        animationSpec = tween(durationMillis = 240, easing = LinearEasing),
-                                    )
-                                }
-                                scope.launch {
-                                    animOffsetY.animateTo(
-                                        targetValue = targetOffsetY,
-                                        animationSpec = tween(durationMillis = 240, easing = LinearEasing),
-                                    )
-                                }
-                            },
-                            onTap = { tap ->
-                                // single tap: ak trafíme hviezdu (blízko), centrovať na ňu
-                                val width = canvasSize.width.toFloat()
-                                val height = canvasSize.height.toFloat()
-                                val centerX = width / 2f
-                                val centerY = height / 2f
-                                val baseRadius = min(width, height) / 2f * 0.9f
-
-                                // nájdi najbližšiu hviezdu (v screen súradniciach)
-                                var best: Pair<StarPoint, Float>? = null
-                                stars@ for (s in filtered) {
-                                    val r = baseRadius * s.distance
-                                    val xw = r * cos(s.angleRad)
-                                    val yw = r * sin(s.angleRad)
-                                    val sx = centerX + animOffsetX.value + animScale.value * xw
-                                    val sy = centerY + animOffsetY.value + animScale.value * yw
-                                    val dx = tap.x - sx
-                                    val dy = tap.y - sy
-                                    val d2 = dx * dx + dy * dy
-                                    if (best == null || d2 < best!!.second) {
-                                        best = s to d2
-                                    }
-                                }
-
-                                // prah: ~24dp
-                                val thresholdPx = with(density) { 24.dp.toPx() }
-                                val isHit = best != null && best!!.second <= thresholdPx * thresholdPx
-                                if (isHit) {
-                                    val s = best!!.first
-                                    val r = baseRadius * s.distance
-                                    val xw = r * cos(s.angleRad)
-                                    val yw = r * sin(s.angleRad)
-
-                                    val targetOffsetX = -animScale.value * xw
-                                    val targetOffsetY = -animScale.value * yw
-
-                                    scope.launch {
-                                        animOffsetX.animateTo(
-                                            targetValue = targetOffsetX,
-                                            animationSpec = tween(durationMillis = 260, easing = LinearEasing),
-                                        )
-                                    }
-                                    scope.launch {
-                                        animOffsetY.animateTo(
-                                            targetValue = targetOffsetY,
-                                            animationSpec = tween(durationMillis = 260, easing = LinearEasing),
-                                        )
-                                    }
-                                }
-                            },
-                        )
-                    },
-        ) {
-            NebulaBackground(
-                modifier = Modifier.fillMaxSize(),
-                offsetX = animOffsetX.value,
-                offsetY = animOffsetY.value,
-                scale = animScale.value,
-            )
-            StarCanvas(
-                stars = filtered,
-                transformState = transformState,
-                offsetX = animOffsetX.value,
-                offsetY = animOffsetY.value,
-                scale = animScale.value,
-                reduceMotion = reduceMotion,
-            )
-        }
     }
 }
 
@@ -310,14 +378,8 @@ private fun ChipsRow(
     selected: List<String>,
     onToggle: (String, Boolean) -> Unit,
 ) {
-    Text(
-        text = label,
-        style = MaterialTheme.typography.labelLarge,
-        modifier = Modifier.padding(start = 12.dp, top = 8.dp),
-    )
-    LazyRow(
-        contentPadding = PaddingValues(horizontal = 8.dp),
-    ) {
+    Text(text = label, modifier = Modifier.padding(start = 12.dp, top = 8.dp))
+    LazyRow(contentPadding = PaddingValues(horizontal = 8.dp)) {
         items(items) { item ->
             val isSel = selected.contains(item)
             FilterChip(
@@ -327,34 +389,91 @@ private fun ChipsRow(
                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 6.dp),
                 colors =
                     FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.25f),
+                        selectedContainerColor = Color.White.copy(alpha = 0.18f),
                     ),
             )
         }
     }
 }
 
+// --------------------------- MINI OVERLAY UI ----------------------------
+
 @Composable
-private fun LabeledSlider(
-    label: String,
-    value: Float,
-    onValueChange: (Float) -> Unit,
+private fun MiniKnobs(
+    minIntensity: Float,
+    onIntensityChange: (Float) -> Unit,
+    maxDistance: Float,
+    onDistanceChange: (Float) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Text(
-        text = "$label: ${(value * 100).toInt()}%",
-        style = MaterialTheme.typography.labelLarge,
-        modifier = Modifier.padding(start = 12.dp, top = 8.dp),
-    )
-    Slider(
-        value = value,
-        onValueChange = onValueChange,
-        valueRange = 0f..1f,
-        steps = 0,
-        modifier = Modifier.padding(start = 12.dp, end = 12.dp),
-    )
+    Box(
+        modifier =
+            modifier
+                .clip(RoundedCornerShape(12.dp))
+                .background(Color(0x66000000))
+                .padding(8.dp),
+    ) {
+        Column {
+            Text(text = "Min. intenzita: ${(minIntensity * 100).toInt()}%")
+            Slider(
+                value = minIntensity,
+                onValueChange = onIntensityChange,
+                valueRange = 0f..1f,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Text(text = "Max. vzdialenosť: ${(maxDistance * 100).toInt()}%")
+            Slider(
+                value = maxDistance,
+                onValueChange = onDistanceChange,
+                valueRange = 0f..1f,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+    }
 }
 
-/** Nebula pozadie s parallaxom. */
+// --------------------------- OVERLAY LEGENDA ----------------------------
+
+@Composable
+private fun LegendEmotions(
+    selected: List<Emotion>,
+    onToggle: (Emotion, Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    LazyRow(
+        modifier =
+            modifier
+                .clip(RoundedCornerShape(12.dp))
+                .background(Color(0x66000000))
+                .padding(horizontal = 8.dp, vertical = 6.dp),
+        contentPadding = PaddingValues(horizontal = 4.dp),
+    ) {
+        items(Emotion.values()) { e ->
+            val isSel = selected.contains(e)
+            FilterChip(
+                selected = isSel,
+                onClick = { onToggle(e, !isSel) },
+                label = { Text(e.label()) },
+                leadingIcon = {
+                    Box(
+                        modifier =
+                            Modifier
+                                .size(8.dp)
+                                .background(e.color(), CircleShape),
+                    )
+                },
+                modifier = Modifier.padding(horizontal = 2.dp),
+                colors =
+                    FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = e.color().copy(alpha = 0.25f),
+                    ),
+            )
+        }
+    }
+}
+
+// --------------------------- MAPA & POZADIE -----------------------------
+
 @Composable
 private fun NebulaBackground(
     modifier: Modifier = Modifier,
@@ -370,16 +489,8 @@ private fun NebulaBackground(
 
         val sky =
             Brush.radialGradient(
-                colors =
-                    listOf(
-                        Color(0xFF1A1457),
-                        Color(0xFF0B0B2B),
-                    ),
-                center =
-                    Offset(
-                        x = w * 0.60f,
-                        y = h * 0.40f,
-                    ),
+                colors = listOf(Color(0xFF1A1457), Color(0xFF0B0B2B)),
+                center = Offset(w * 0.60f, h * 0.40f),
                 radius = r,
             )
         drawRect(brush = sky, size = size)
@@ -394,79 +505,23 @@ private fun NebulaBackground(
         ) {
             val px = cx - offsetX * parallax
             val py = cy - offsetY * parallax
-            drawCircle(
-                color = color.copy(alpha = alpha),
-                radius = radius,
-                center =
-                    Offset(
-                        x = px,
-                        y = py,
-                    ),
-            )
+            drawCircle(color = color.copy(alpha = alpha), radius = radius, center = Offset(px, py))
         }
 
-        haze(
-            cx = w * 0.22f,
-            cy = h * 0.30f,
-            radius = r * 0.40f,
-            color = Color(0xFF7B1FA2),
-            alpha = 0.25f,
-            parallax = 0.02f,
-        )
-        haze(
-            cx = w * 0.78f,
-            cy = h * 0.22f,
-            radius = r * 0.30f,
-            color = Color(0xFF3949AB),
-            alpha = 0.20f,
-            parallax = 0.03f,
-        )
-        haze(
-            cx = w * 0.58f,
-            cy = h * 0.66f,
-            radius = r * 0.42f,
-            color = Color(0xFF512DA8),
-            alpha = 0.22f,
-            parallax = 0.035f,
-        )
-        haze(
-            cx = w * 0.40f,
-            cy = h * 0.78f,
-            radius = r * 0.28f,
-            color = Color(0xFFAD1457),
-            alpha = 0.18f,
-            parallax = 0.045f,
-        )
-        haze(
-            cx = w * 0.66f,
-            cy = h * 0.46f,
-            radius = r * 0.22f,
-            color = Color(0xFF00ACC1),
-            alpha = 0.12f,
-            parallax = 0.05f,
-        )
+        haze(w * 0.22f, h * 0.30f, r * 0.40f, Color(0xFF7B1FA2), 0.25f, 0.02f)
+        haze(w * 0.78f, h * 0.22f, r * 0.30f, Color(0xFF3949AB), 0.20f, 0.03f)
+        haze(w * 0.58f, h * 0.66f, r * 0.42f, Color(0xFF512DA8), 0.22f, 0.035f)
+        haze(w * 0.40f, h * 0.78f, r * 0.28f, Color(0xFFAD1457), 0.18f, 0.045f)
+        haze(w * 0.66f, h * 0.46f, r * 0.22f, Color(0xFF00ACC1), 0.12f, 0.05f)
 
         val rnd = Random(seed)
-        withTransform({
-            translate(
-                left = -offsetX * 0.015f,
-                top = -offsetY * 0.015f,
-            )
-        }) {
+        withTransform({ translate(left = -offsetX * 0.015f, top = -offsetY * 0.015f) }) {
             repeat(350) {
                 val x = rnd.nextFloat() * w
                 val y = rnd.nextFloat() * h
                 val rad = 0.5f + rnd.nextFloat() * 1.5f
                 val a = 0.35f + rnd.nextFloat() * 0.45f
-                drawCircle(
-                    color = Color.White.copy(alpha = a),
-                    radius = rad,
-                    center =
-                        Offset(
-                            x = x,
-                            y = y,
-                        ),
-                )
+                drawCircle(color = Color.White.copy(alpha = a), radius = rad, center = Offset(x, y))
             }
         }
     }
@@ -486,23 +541,11 @@ private fun StarCanvas(
         if (reduceMotion) {
             0f
         } else {
-            val state =
-                rememberInfiniteTransition(
-                    label = "twinkle",
-                ).animateFloat(
-                    initialValue = 0f,
-                    targetValue = (2f * PI).toFloat(),
-                    animationSpec =
-                        infiniteRepeatable(
-                            animation =
-                                tween(
-                                    durationMillis = 2000,
-                                    easing = LinearEasing,
-                                ),
-                        ),
-                    label = "tick",
-                )
-            state.value
+            rememberInfiniteTransition().animateFloat(
+                initialValue = 0f,
+                targetValue = (2f * PI).toFloat(),
+                animationSpec = infiniteRepeatable(animation = tween(2000, easing = LinearEasing)),
+            ).value
         }
 
     Box(
@@ -526,12 +569,12 @@ private fun StarCanvas(
                 stars.forEach { s ->
                     val color = s.emotionColor()
                     val r = baseRadius * s.distance
-                    val x = r * cos(s.angleRad)
-                    val y = r * sin(s.angleRad)
+                    val x = r * cos(s.angleRad.toDouble()).toFloat()
+                    val y = r * sin(s.angleRad.toDouble()).toFloat()
 
                     val base = if (s.isWishNet) 6f + 6f * s.intensity else 3f + 4f * s.intensity
-                    val phase = ((s.id.hashCode() % 628) / 100f)
-                    val twinkle = ((kotlin.math.sin(tick + phase) + 1f) / 2f)
+                    val phase = (s.id.hashCode() % 628) / 100f
+                    val twinkle = (kotlin.math.sin(tick + phase) + 1f) / 2f
                     val haloRadius = base * if (s.isWishNet) 3f else 2f
                     val haloAlpha =
                         if (reduceMotion) 0.10f * s.intensity else 0.08f + 0.20f * twinkle * s.intensity
@@ -539,36 +582,22 @@ private fun StarCanvas(
                     drawCircle(
                         color = color.copy(alpha = haloAlpha),
                         radius = haloRadius,
-                        center =
-                            Offset(
-                                x = x,
-                                y = y,
-                            ),
+                        center = Offset(x, y),
                         blendMode = BlendMode.Plus,
                     )
-                    drawCircle(
-                        color = color.copy(alpha = 0.95f),
-                        radius = base,
-                        center =
-                            Offset(
-                                x = x,
-                                y = y,
-                            ),
-                    )
+                    drawCircle(color = color.copy(alpha = 0.95f), radius = base, center = Offset(x, y))
                     drawCircle(
                         color = Color.White.copy(alpha = 0.90f),
                         radius = base * 0.55f,
-                        center =
-                            Offset(
-                                x = x,
-                                y = y,
-                            ),
+                        center = Offset(x, y),
                     )
                 }
             }
         }
     }
 }
+
+// -------------------------- DATA & HELPERS ------------------------------
 
 private data class StarPoint(
     val id: String,
@@ -612,6 +641,15 @@ private fun Signal.toStarPoint(): StarPoint {
     )
 }
 
+private fun Emotion.label(): String =
+    when (this) {
+        Emotion.Joy -> "Joy"
+        Emotion.Calm -> "Calm"
+        Emotion.Energy -> "Energy"
+        Emotion.Love -> "Love"
+        Emotion.Mystery -> "Mystery"
+    }
+
 private fun Emotion.color(): Color =
     when (this) {
         Emotion.Joy -> Color(0xFFFFD54F)
@@ -636,22 +674,10 @@ private fun demoFakeSignals(count: Int): List<Signal> {
     repeat(count) { i ->
         out +=
             when (i % 4) {
-                0 ->
-                    TextSignal(
-                        text = "Hello #$i",
-                    )
-                1 ->
-                    EmojiSignal(
-                        emoji = listOf("✨", "⭐", "🚀", "💙").random(),
-                    )
-                2 ->
-                    ImageSignal(
-                        imageUri = "content://demo/$i",
-                    )
-                else ->
-                    MixSignal(
-                        parts = emptyList(),
-                    )
+                0 -> TextSignal(text = "Hello #$i")
+                1 -> EmojiSignal(emoji = listOf("✨", "⭐", "🚀", "💙").random())
+                2 -> ImageSignal(imageUri = "content://demo/$i")
+                else -> MixSignal(parts = emptyList())
             }
     }
     return out

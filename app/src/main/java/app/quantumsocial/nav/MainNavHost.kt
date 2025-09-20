@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -32,6 +33,7 @@ fun MainScaffold() {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
 
+                // Pôvodné položky
                 Screen.all.forEach { scr ->
                     val icon =
                         when (scr) {
@@ -53,6 +55,20 @@ fun MainScaffold() {
                         label = { Text(scr.label) },
                     )
                 }
+
+                // Extra: Filtre
+                NavigationBarItem(
+                    selected = currentRoute == "home_filters",
+                    onClick = {
+                        navController.navigate("home_filters") {
+                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                    icon = { Icon(imageVector = Icons.Filled.Tune, contentDescription = "Filtre") },
+                    label = { Text("Filtre") },
+                )
             }
         },
     ) { inner ->
@@ -62,6 +78,8 @@ fun MainScaffold() {
             modifier = Modifier.padding(inner),
         ) {
             composable(Screen.Home.route) { StarMapScreen() }
+            composable("home_filters") { StarMapScreen(openFilters = true) }
+
             composable(Screen.Wish.route) { WishScreen() }
             composable(Screen.Profile.route) { ProfileScreen() }
         }
