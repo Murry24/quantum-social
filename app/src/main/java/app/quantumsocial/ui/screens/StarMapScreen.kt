@@ -1,5 +1,6 @@
 package app.quantumsocial.ui.screens
 
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -9,6 +10,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.TransformableState
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Box
@@ -30,6 +32,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,7 +41,11 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.withTransform
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import app.quantumsocial.core.data.InMemorySignalRepository
 import app.quantumsocial.core.model.EmojiSignal
@@ -48,6 +55,7 @@ import app.quantumsocial.core.model.Signal
 import app.quantumsocial.core.model.SignalCategory
 import app.quantumsocial.core.model.TextSignal
 import app.quantumsocial.core.ui.theme.GalaxyGradient
+import kotlinx.coroutines.launch
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.min
@@ -74,15 +82,23 @@ fun StarMapScreen() {
     var wishNetOnly by remember { mutableStateOf(false) }
     var reduceMotion by remember { mutableStateOf(false) }
 
-    // shared pan/zoom
-    var scale by remember { mutableFloatStateOf(1f) }
-    var offsetX by remember { mutableFloatStateOf(0f) }
-    var offsetY by remember { mutableFloatStateOf(0f) }
-    val transformState =
+    // --- shared pan/zoom stav (animovateľný) ---
+    val animScale = remember { Animatable(1f) }
+    val animOffsetX = remember { Animatable(0f) }
+    val animOffsetY = remember { Animatable(0f) }
+
+    val transformState: TransformableState =
         rememberTransformableState { zoomChange, panChange, _ ->
-            scale = (scale * zoomChange).coerceIn(0.5f, 5f)
-            offsetX += panChange.x
-            offsetY += panChange.y
+            // okamžitá reakcia na gesto (bez animácie)
+            val nextScale = (animScale.value * zoomChange).coerceIn(0.5f, 5f)
+            val nextX = animOffsetX.value + panChange.x
+            val nextY = animOffsetY.value + panChange.y
+            // snapTo je "bez animácie"
+            kotlinx.coroutines.runBlocking {
+                animScale.snapTo(nextScale)
+                animOffsetX.snapTo(nextX)
+                animOffsetY.snapTo(nextY)
+            }
         }
 
     val filtered =
@@ -158,7 +174,6 @@ fun StarMapScreen() {
             },
         )
 
-        // nový prepínač pre animácie
         ChipsRow(
             label = "Animácie",
             items = listOf("Menej animácií"),
@@ -168,24 +183,120 @@ fun StarMapScreen() {
             },
         )
 
+        // --- Map + gestá ---
+        val scope = rememberCoroutineScope()
+        var canvasSize by remember { mutableStateOf(IntSize.Zero) }
+        val density = LocalDensity.current
+
         Box(
             modifier =
                 Modifier
                     .weight(1f)
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .onSizeChanged { canvasSize = it }
+                    .pointerInput(filtered, canvasSize, reduceMotion) {
+                        detectTapGestures(
+                            onDoubleTap = { tap ->
+                                // double-tap: zoom toggle a centrovanie na miesto dotyku
+                                val width = canvasSize.width.toFloat()
+                                val height = canvasSize.height.toFloat()
+                                val centerX = width / 2f
+                                val centerY = height / 2f
+
+                                val worldX =
+                                    (tap.x - centerX - animOffsetX.value) / animScale.value
+                                val worldY =
+                                    (tap.y - centerY - animOffsetY.value) / animScale.value
+
+                                val targetScale =
+                                    if (animScale.value < 1.8f) 2.2f else 1f
+                                val targetOffsetX = -targetScale * worldX
+                                val targetOffsetY = -targetScale * worldY
+
+                                scope.launch {
+                                    animScale.animateTo(
+                                        targetValue = targetScale,
+                                        animationSpec = tween(durationMillis = 240, easing = LinearEasing),
+                                    )
+                                }
+                                scope.launch {
+                                    animOffsetX.animateTo(
+                                        targetValue = targetOffsetX,
+                                        animationSpec = tween(durationMillis = 240, easing = LinearEasing),
+                                    )
+                                }
+                                scope.launch {
+                                    animOffsetY.animateTo(
+                                        targetValue = targetOffsetY,
+                                        animationSpec = tween(durationMillis = 240, easing = LinearEasing),
+                                    )
+                                }
+                            },
+                            onTap = { tap ->
+                                // single tap: ak trafíme hviezdu (blízko), centrovať na ňu
+                                val width = canvasSize.width.toFloat()
+                                val height = canvasSize.height.toFloat()
+                                val centerX = width / 2f
+                                val centerY = height / 2f
+                                val baseRadius = min(width, height) / 2f * 0.9f
+
+                                // nájdi najbližšiu hviezdu (v screen súradniciach)
+                                var best: Pair<StarPoint, Float>? = null
+                                stars@ for (s in filtered) {
+                                    val r = baseRadius * s.distance
+                                    val xw = r * cos(s.angleRad)
+                                    val yw = r * sin(s.angleRad)
+                                    val sx = centerX + animOffsetX.value + animScale.value * xw
+                                    val sy = centerY + animOffsetY.value + animScale.value * yw
+                                    val dx = tap.x - sx
+                                    val dy = tap.y - sy
+                                    val d2 = dx * dx + dy * dy
+                                    if (best == null || d2 < best!!.second) {
+                                        best = s to d2
+                                    }
+                                }
+
+                                // prah: ~24dp
+                                val thresholdPx = with(density) { 24.dp.toPx() }
+                                val isHit = best != null && best!!.second <= thresholdPx * thresholdPx
+                                if (isHit) {
+                                    val s = best!!.first
+                                    val r = baseRadius * s.distance
+                                    val xw = r * cos(s.angleRad)
+                                    val yw = r * sin(s.angleRad)
+
+                                    val targetOffsetX = -animScale.value * xw
+                                    val targetOffsetY = -animScale.value * yw
+
+                                    scope.launch {
+                                        animOffsetX.animateTo(
+                                            targetValue = targetOffsetX,
+                                            animationSpec = tween(durationMillis = 260, easing = LinearEasing),
+                                        )
+                                    }
+                                    scope.launch {
+                                        animOffsetY.animateTo(
+                                            targetValue = targetOffsetY,
+                                            animationSpec = tween(durationMillis = 260, easing = LinearEasing),
+                                        )
+                                    }
+                                }
+                            },
+                        )
+                    },
         ) {
             NebulaBackground(
                 modifier = Modifier.fillMaxSize(),
-                offsetX = offsetX,
-                offsetY = offsetY,
-                scale = scale,
+                offsetX = animOffsetX.value,
+                offsetY = animOffsetY.value,
+                scale = animScale.value,
             )
             StarCanvas(
                 stars = filtered,
                 transformState = transformState,
-                offsetX = offsetX,
-                offsetY = offsetY,
-                scale = scale,
+                offsetX = animOffsetX.value,
+                offsetY = animOffsetY.value,
+                scale = animScale.value,
                 reduceMotion = reduceMotion,
             )
         }
@@ -294,7 +405,6 @@ private fun NebulaBackground(
             )
         }
 
-        // hlbšie vrstvy sa hýbu menej (menší parallax faktor)
         haze(
             cx = w * 0.22f,
             cy = h * 0.30f,
@@ -336,7 +446,6 @@ private fun NebulaBackground(
             parallax = 0.05f,
         )
 
-        // drobné hviezdy – ľahký parallax pre celé pole
         val rnd = Random(seed)
         withTransform({
             translate(
@@ -373,7 +482,6 @@ private fun StarCanvas(
     scale: Float,
     reduceMotion: Boolean,
 ) {
-    // twinkle animácia – vypneme, ak je reduceMotion
     val tick =
         if (reduceMotion) {
             0f
