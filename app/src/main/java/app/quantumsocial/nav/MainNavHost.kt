@@ -1,5 +1,6 @@
 package app.quantumsocial.nav
 
+import android.net.Uri
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -15,13 +16,29 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import app.quantumsocial.ui.screens.ProfileScreen
 import app.quantumsocial.ui.screens.StarMapScreen
+import app.quantumsocial.ui.screens.StarProfileScreen
 import app.quantumsocial.ui.screens.WishScreen
+
+private object Routes {
+    const val HOME = "home"
+    const val HOME_FILTERS = "home_filters"
+    const val HOME_FOCUS = "home_focus/{starId}"
+    const val WISH = "wish"
+    const val PROFILE = "profile"
+    const val STAR = "star/{starId}"
+
+    fun homeFocusEncoded(starId: String) = "home_focus/${Uri.encode(starId)}"
+
+    fun starEncoded(starId: String) = "star/${Uri.encode(starId)}"
+}
 
 @Composable
 fun MainScaffold() {
@@ -33,35 +50,61 @@ fun MainScaffold() {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
 
-                // Pôvodné položky
-                Screen.all.forEach { scr ->
-                    val icon =
-                        when (scr) {
-                            Screen.Home -> Icons.Filled.Home
-                            Screen.Wish -> Icons.Filled.Star
-                            Screen.Profile -> Icons.Filled.Person
-                        }
-
-                    NavigationBarItem(
-                        selected = currentRoute == scr.route,
-                        onClick = {
-                            navController.navigate(scr.route) {
-                                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        },
-                        icon = { Icon(imageVector = icon, contentDescription = scr.label) },
-                        label = { Text(scr.label) },
-                    )
-                }
-
-                // Extra: Filtre
                 NavigationBarItem(
-                    selected = currentRoute == "home_filters",
+                    selected =
+                        currentRoute == Routes.HOME ||
+                            currentRoute == Routes.HOME_FILTERS ||
+                            currentRoute == Routes.HOME_FOCUS,
                     onClick = {
-                        navController.navigate("home_filters") {
-                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                        navController.navigate(Routes.HOME) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                    icon = { Icon(imageVector = Icons.Filled.Home, contentDescription = "Home") },
+                    label = { Text("Home") },
+                )
+
+                NavigationBarItem(
+                    selected = currentRoute == Routes.WISH,
+                    onClick = {
+                        navController.navigate(Routes.WISH) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                    icon = { Icon(imageVector = Icons.Filled.Star, contentDescription = "WishNet") },
+                    label = { Text("WishNet") },
+                )
+
+                NavigationBarItem(
+                    selected = currentRoute == Routes.PROFILE,
+                    onClick = {
+                        navController.navigate(Routes.PROFILE) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                    icon = { Icon(imageVector = Icons.Filled.Person, contentDescription = "Profil") },
+                    label = { Text("Profil") },
+                )
+
+                NavigationBarItem(
+                    selected = currentRoute == Routes.HOME_FILTERS,
+                    onClick = {
+                        navController.navigate(Routes.HOME_FILTERS) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
                             launchSingleTop = true
                             restoreState = true
                         }
@@ -74,14 +117,71 @@ fun MainScaffold() {
     ) { inner ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Home.route,
+            startDestination = Routes.HOME,
             modifier = Modifier.padding(inner),
         ) {
-            composable(Screen.Home.route) { StarMapScreen() }
-            composable("home_filters") { StarMapScreen(openFilters = true) }
+            // Mapa (bežná)
+            composable(Routes.HOME) {
+                StarMapScreen(
+                    openFilters = false,
+                    onOpenStar = { id -> navController.navigate(Routes.starEncoded(id)) },
+                    focusStarId = null,
+                )
+            }
 
-            composable(Screen.Wish.route) { WishScreen() }
-            composable(Screen.Profile.route) { ProfileScreen() }
+            // Mapa s otvoreným filtrom
+            composable(Routes.HOME_FILTERS) {
+                StarMapScreen(
+                    openFilters = true,
+                    onOpenStar = { id -> navController.navigate(Routes.starEncoded(id)) },
+                    focusStarId = null,
+                )
+            }
+
+            // Mapa so soft-focusom na hviezdu
+            composable(
+                route = Routes.HOME_FOCUS,
+                arguments = listOf(navArgument("starId") { type = NavType.StringType }),
+            ) { backStack ->
+                val starId =
+                    backStack.arguments?.getString("starId")?.let { Uri.decode(it) }
+                        ?: return@composable
+                StarMapScreen(
+                    openFilters = false,
+                    onOpenStar = { id -> navController.navigate(Routes.starEncoded(id)) },
+                    focusStarId = starId,
+                )
+            }
+
+            // Wish
+            composable(Routes.WISH) { WishScreen() }
+
+            // Profile (user)
+            composable(Routes.PROFILE) { ProfileScreen() }
+
+            // Profil hviezdy
+            composable(
+                route = Routes.STAR,
+                arguments = listOf(navArgument("starId") { type = NavType.StringType }),
+            ) { backStackEntry ->
+                val starId =
+                    backStackEntry.arguments?.getString("starId")?.let { Uri.decode(it) }
+                        ?: return@composable
+
+                StarProfileScreen(
+                    starId = starId,
+                    onBack = { navController.popBackStack() },
+                    onViewOnMap = { id ->
+                        navController.navigate(Routes.homeFocusEncoded(id)) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                )
+            }
         }
     }
 }
