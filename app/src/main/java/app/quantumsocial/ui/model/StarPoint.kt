@@ -12,10 +12,13 @@ data class StarPoint(
     val lang: String,
     val emotion: Emotion,
     val topic: String,
-    val intensity: Float, // 0f..1f
-    val distance: Float, // 0f..1f (polomer)
+    // 0f..1f
+    val intensity: Float,
+    // 0f..1f (polomer)
+    val distance: Float,
     val isWishNet: Boolean,
-    val angleRad: Float, // 0..2π
+    // 0..2π
+    val angleRad: Float,
 )
 
 fun Signal.toStarPoint(): StarPoint {
