@@ -74,11 +74,17 @@ fun StarCanvas(
                 val x = r * cos(s.angleRad.toDouble()).toFloat()
                 val y = r * sin(s.angleRad.toDouble()).toFloat()
 
-                val base = if (s.isWishNet) 6f + 6f * s.intensity else 3f + 4f * s.intensity
+                // jas podľa životnosti: hviezda pri konci bledne a pri zhasnutí sa zmenšuje
+                val light = s.brightness.coerceIn(0f, 1f)
+                if (light <= 0f) return@forEach
+                val sizeFactor = 0.6f + 0.4f * light
+
+                val base = (if (s.isWishNet) 6f + 6f * s.intensity else 3f + 4f * s.intensity) * sizeFactor
                 val phase = (s.id.hashCode() % 628) / 100f
                 val twinkle = (kotlin.math.sin(tick + phase) + 1f) / 2f
                 val haloRadius = base * if (s.isWishNet) 3f else 2f
-                val haloAlpha = if (reduceMotion) 0.10f * s.intensity else 0.08f + 0.20f * twinkle * s.intensity
+                val haloAlpha =
+                    light * if (reduceMotion) 0.10f * s.intensity else 0.08f + 0.20f * twinkle * s.intensity
 
                 drawCircle(
                     color = color.copy(alpha = haloAlpha),
@@ -86,9 +92,9 @@ fun StarCanvas(
                     center = Offset(x, y),
                     blendMode = BlendMode.Plus,
                 )
-                drawCircle(color = color.copy(alpha = 0.95f), radius = base, center = Offset(x, y))
+                drawCircle(color = color.copy(alpha = 0.95f * light), radius = base, center = Offset(x, y))
                 drawCircle(
-                    color = Color.White.copy(alpha = 0.90f),
+                    color = Color.White.copy(alpha = 0.90f * light),
                     radius = base * 0.55f,
                     center = Offset(x, y),
                 )

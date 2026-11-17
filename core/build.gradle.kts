@@ -33,6 +33,7 @@ dependencies {
     implementation(libs.material3)
     implementation(libs.kotlinx.coroutines.core)
 
+    testImplementation(libs.junit)
 }
 
 ktlint {

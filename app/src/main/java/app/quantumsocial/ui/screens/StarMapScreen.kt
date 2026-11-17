@@ -35,8 +35,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -55,6 +57,7 @@ import app.quantumsocial.core.model.Emotion
 import app.quantumsocial.core.model.ImageSignal
 import app.quantumsocial.core.model.MixSignal
 import app.quantumsocial.core.model.Signal
+import app.quantumsocial.core.model.SignalLifecycle
 import app.quantumsocial.core.model.TextSignal
 import app.quantumsocial.core.ui.theme.GalaxyGradient
 import app.quantumsocial.ui.canvas.NebulaBackground
@@ -77,8 +80,24 @@ fun StarMapScreen(
     focusStarId: String? = null,
 ) {
     val signals by InMemorySignalRepository.signals.collectAsState()
-    val baseSignals = if (signals.isEmpty()) remember { demoFakeSignals(80) } else signals
-    val stars = remember(baseSignals) { baseSignals.map { it.toStarPoint() } }
+    val fadingSince by InMemorySignalRepository.fadingSince.collectAsState()
+    val isDemo = signals.isEmpty()
+    val baseSignals = if (isDemo) remember { demoFakeSignals(80) } else signals
+
+    // Bod 3: skutočné signály blednú a zhasínajú podľa životnosti (demo hviezdy svietia stále)
+    val now by produceState(initialValue = System.currentTimeMillis(), isDemo) {
+        while (!isDemo) {
+            value = System.currentTimeMillis()
+            delay(100)
+        }
+    }
+    val stars =
+        remember(baseSignals, fadingSince, now, isDemo) {
+            baseSignals.map { sig ->
+                val p = sig.toStarPoint()
+                if (isDemo) p else p.copy(brightness = SignalLifecycle.brightness(sig, now, fadingSince[sig.id]))
+            }
+        }
 
     val langs = listOf("SK", "EN", "CZ")
     val topics = listOf("Tech", "Life", "Art")
@@ -138,6 +157,9 @@ fun StarMapScreen(
 
     var focusVisible by remember { mutableStateOf(false) }
 
+    // aktuálny zoznam pre gestá – pointerInput sa tak nereštartuje pri každej zmene jasu hviezd
+    val currentFiltered by rememberUpdatedState(filtered)
+
     // Soft-focus pri návrate z profilu
     LaunchedEffect(focusStarId, canvasSize, stars) {
         val id = focusStarId ?: return@LaunchedEffect
@@ -183,6 +205,7 @@ fun StarMapScreen(
         var bestScore = Float.MAX_VALUE
 
         for (s in stars) {
+            if (s.brightness < 0.1f) continue
             val r = baseRadius * s.distance
             val xw = r * cos(s.angleRad.toDouble()).toFloat()
             val yw = r * sin(s.angleRad.toDouble()).toFloat()
@@ -220,7 +243,7 @@ fun StarMapScreen(
                     .fillMaxSize()
                     .onSizeChanged { canvasSize = it }
                     // 1) TAPY PRED transformable – stable keys (žiadne animScale/offset v kľúčoch)
-                    .pointerInput(filtered, canvasSize) {
+                    .pointerInput(canvasSize) {
                         detectTapGestures(
                             onTap = { tap ->
                                 val scaleNow = animScale.value
@@ -233,7 +256,7 @@ fun StarMapScreen(
                                     offX = offXNow,
                                     offY = offYNow,
                                     density = density,
-                                    stars = filtered,
+                                    stars = currentFiltered,
                                 )?.let { onOpenStar(it.id) }
                             },
                             onLongPress = { tap ->
@@ -247,7 +270,7 @@ fun StarMapScreen(
                                     offX = offXNow,
                                     offY = offYNow,
                                     density = density,
-                                    stars = filtered,
+                                    stars = currentFiltered,
                                 )?.let { onOpenStar(it.id) }
                             },
                         )

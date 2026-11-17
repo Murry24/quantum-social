@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
   pull_request:
-  workflow_dispatch:   # ← toto pridaj
+  workflow_dispatch:
 
 jobs:
   build:
@@ -22,5 +22,7 @@ jobs:
         run: chmod +x gradlew
       - name: Ktlint check
         run: ./gradlew ktlintCheck
+      - name: Unit tests (core)
+        run: ./gradlew :core:testDebugUnitTest
       - name: Build Debug
         run: ./gradlew :app:assembleDebug
