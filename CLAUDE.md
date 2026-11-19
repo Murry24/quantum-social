@@ -53,6 +53,22 @@ core/src/main/java/app/quantumsocial/core/
    a link na pull request.
 8. Aplikáciu Maroš spúšťa v **Android Studiu** na emulátore Pixel 7 Pro.
 
+## Lokálne prostredie (Windows)
+- **Java pre Gradle = JDK 17** (Temurin, rovnaké ako GitHub CI):
+  `C:\Program Files\Eclipse Adoptium\jdk-17.0.16.8-hotspot`.
+  - Nastavené v `JAVA_HOME` (používateľská premenná) aj v `.gradle\config.properties` (`java.home=...`).
+  - **Nie Java 25** (`jbr` v novom Android Studiu `C:\Program Files\Android\Android Studio1\jbr`):
+    Gradle 8.13 na nej nebeží. Starý `JAVA_HOME` ukazoval na neexistujúci
+    `...\Android Studio\jbr` → „Gradle project sync failed“ bez textu (chyba je v
+    `%LOCALAPPDATA%\Google\AndroidStudio*\log\idea.log`: „supplied javaHome seems to be invalid“).
+  - V termináli, ktorý bol otvorený pred zmenou `JAVA_HOME`, nastav pre reláciu:
+    `$env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-17.0.16.8-hotspot"`.
+- **Windows Defender** spomaľuje/blokuje Gradle cache – odporúčané výnimky v Defenderi:
+  `%USERPROFILE%\.gradle`, priečinok projektu, `%LOCALAPPDATA%\Android\Sdk`.
+- Počítač je slabší: nespúšťaj viac Gradle buildov naraz, na konci práce `.\gradlew.bat --stop`.
+- **Emulátor spúšťa Maroš v Android Studiu** (panel Running Devices), nie Claude cez `emulator.exe`.
+  Ak už beží (`adb devices`), nový nespúšťaj. Aplikácia sa spúšťa ▶ Run v Android Studiu.
+
 ## Aktuálny stav (19. 11. 2026)
 - Hotové v `main`: body 1, 2, väčšina 4, rozpracovaný 5 (profil hviezdy).
 - **PR #4 (`feat/3-signal-lifecycle`)**: bod 3 – životnosť signálov (stav „končí“,
