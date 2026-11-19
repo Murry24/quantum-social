@@ -26,3 +26,9 @@ jobs:
         run: ./gradlew :core:testDebugUnitTest
       - name: Build Debug
         run: ./gradlew :app:assembleDebug
+      - name: Upload APK (na vyskúšanie v emulátore)
+        uses: actions/upload-artifact@v4
+        with:
+          name: quantum-social-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
+          retention-days: 14
