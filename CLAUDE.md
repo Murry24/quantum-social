@@ -58,8 +58,11 @@ core/src/main/java/app/quantumsocial/core/
 - **PR #4 (`feat/3-signal-lifecycle`)**: bod 3 – životnosť signálov (stav „končí“,
   animácia zhasnutia, `SignalLifecycle` + testy). CI zelené, čaká na Marošovo vyskúšanie
   a zlúčenie. Ďalšie body staviaj na `main` až po jeho zlúčení (alebo na tejto vetve).
-- Ďalší krok podľa plánu: **bod 8** – posielanie signálov (klik na hviezdu → „poslať hviezde /
-  do chaosu“) + ZenNet (1 min ticha s bublinami). Potom dokončiť 4 a 5, potom 6 a 18.
+- **PR #6 (`feat/8-send-signal`, nadväzuje na PR #4)**: bod 8 – ťuk na hviezdu → panel s emóciami
+  → pulz letí k hviezde; tlačidlo „🌌 Do chaosu“ (náhodná hviezda); „○ ZenNet“ = minúta ticha
+  (`ZenScreen`). Logika v `core`: `PulseSignal`, `SignalTarget`, `ChaosPicker`, `PulseOutbox`,
+  `ZenSession` + testy. Dlhé podržanie hviezdy = profil.
+- Ďalej: dokončiť 4 a 5, potom 6 (úvodná obrazovka) a 18 (onboarding).
 
 ## Dohodnuté smerovanie
 - Prvá verzia bez servera – všetko lokálne, server (bod 9, 19) až keď bude jadro príjemné.

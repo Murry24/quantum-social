@@ -26,6 +26,7 @@ import app.quantumsocial.ui.screens.ProfileScreen
 import app.quantumsocial.ui.screens.StarMapScreen
 import app.quantumsocial.ui.screens.StarProfileScreen
 import app.quantumsocial.ui.screens.WishScreen
+import app.quantumsocial.ui.screens.ZenScreen
 
 private object Routes {
     const val HOME = "home"
@@ -34,6 +35,7 @@ private object Routes {
     const val WISH = "wish"
     const val PROFILE = "profile"
     const val STAR = "star/{starId}"
+    const val ZEN = "zen"
 
     fun homeFocusEncoded(starId: String) = "home_focus/${Uri.encode(starId)}"
 
@@ -126,6 +128,7 @@ fun MainScaffold() {
                     openFilters = false,
                     onOpenStar = { id -> navController.navigate(Routes.starEncoded(id)) },
                     focusStarId = null,
+                    onOpenZen = { navController.navigate(Routes.ZEN) },
                 )
             }
 
@@ -135,6 +138,7 @@ fun MainScaffold() {
                     openFilters = true,
                     onOpenStar = { id -> navController.navigate(Routes.starEncoded(id)) },
                     focusStarId = null,
+                    onOpenZen = { navController.navigate(Routes.ZEN) },
                 )
             }
 
@@ -150,11 +154,15 @@ fun MainScaffold() {
                     openFilters = false,
                     onOpenStar = { id -> navController.navigate(Routes.starEncoded(id)) },
                     focusStarId = starId,
+                    onOpenZen = { navController.navigate(Routes.ZEN) },
                 )
             }
 
             // Wish
             composable(Routes.WISH) { WishScreen() }
+
+            // ZenNet – minúta ticha (bod 8)
+            composable(Routes.ZEN) { ZenScreen(onClose = { navController.popBackStack() }) }
 
             // Profile (user)
             composable(Routes.PROFILE) { ProfileScreen() }
