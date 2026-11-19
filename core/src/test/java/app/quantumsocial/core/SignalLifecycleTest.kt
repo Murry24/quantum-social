@@ -67,7 +67,8 @@ class SignalLifecycleTest {
 
         InMemorySignalRepository.markRead(s.id, now = t0 + 1_000)
         assertTrue(InMemorySignalRepository.signals.value.any { it.id == s.id })
-        assertEquals(LifePhase.FadingOut, SignalLifecycle.phase(s, t0 + 1_100, InMemorySignalRepository.fadingSince.value[s.id]))
+        val fadingSince = InMemorySignalRepository.fadingSince.value[s.id]
+        assertEquals(LifePhase.FadingOut, SignalLifecycle.phase(s, t0 + 1_100, fadingSince))
 
         InMemorySignalRepository.sweep(t0 + 1_000 + SignalLifecycle.FADE_OUT_MS)
         assertFalse(InMemorySignalRepository.signals.value.any { it.id == s.id })
