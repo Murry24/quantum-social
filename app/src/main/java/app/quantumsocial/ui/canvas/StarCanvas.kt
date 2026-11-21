@@ -31,6 +31,8 @@ fun StarCanvas(
     reduceMotion: Boolean,
     focusStarId: String?,
     focusVisible: Boolean,
+    // bod 5: hviezdy, ktorých žiarenie sleduješ – majú jemný prstenec
+    watchedIds: Set<String> = emptySet(),
 ) {
     val tick =
         if (reduceMotion) {
@@ -98,6 +100,16 @@ fun StarCanvas(
                     radius = base * 0.55f,
                     center = Offset(x, y),
                 )
+
+                if (s.id in watchedIds) {
+                    val breath = if (reduceMotion) 0.5f else (kotlin.math.sin(tick * 0.5f + phase) + 1f) / 2f
+                    drawCircle(
+                        color = Color.White.copy(alpha = light * (0.30f + 0.20f * breath)),
+                        radius = base * 3.2f + 2f,
+                        center = Offset(x, y),
+                        style = Stroke(width = 1.dp.toPx() / scale.coerceAtLeast(0.5f)),
+                    )
+                }
             }
 
             if (focusVisible && focusStarId != null) {

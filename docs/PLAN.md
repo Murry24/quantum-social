@@ -13,7 +13,7 @@ Dáta najprv lokálne (mock), server až od bodu 9.
 | 2 | Formy správ | Typy signálov: text (200 zn.), emoji, audio 15 s, svetelný záblesk, obrázok, mix, WishNet; jednotné rozhranie `Signal` | ✅ |
 | 3 | Životnosť správ | Bežné signály miznú po prečítaní/čase, WishNet dlhšie; stav „končí“, animácia zhasnutia | 🟡 PR #4 |
 | 4 | Zobrazenie a filtre | Mapa hviezd (náhodné rozmiestnenie, zoom/pan) + filtre: jazyk, emócia, téma, intenzita, vzdialenosť, WishNet | 🟡 takmer hotové |
-| 5 | Profil hviezdy | Anonymný detail: kvanti-meno, jazyk, emócie, témy, posledné signály, archív prianí; akcie odpovedať / sledovať žiarenie | 🟡 |
+| 5 | Profil hviezdy | Anonymný detail: kvanti-meno, jazyk, emócie, témy, posledné signály, archív prianí; akcie odpovedať / sledovať žiarenie | 🟡 `feat/5-star-profile` – čaká na vyskúšanie |
 | 6 | Úvodná obrazovka | Finálny „veselý“ vizuál galaxie (gradienty, svetlušky), šetrič výkonu | ⬜ |
 | 7 | Odpoveď a sledovanie žiarenia | Krátke vlákno odpovedí, ktoré zhasne; „stopy“ hviezdy (nie follow) | ⬜ |
 | 8 | Posielanie správ + ZenNet | Klik na hviezdu → poslať hviezde / do chaosu; ZenNet = 1 min ticha s bublinami | 🟡 PR #6 |

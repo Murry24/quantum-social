@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import app.quantumsocial.core.data.InMemorySignalRepository
 import app.quantumsocial.core.data.PulseOutbox
+import app.quantumsocial.core.data.WatchedStars
 import app.quantumsocial.core.model.EmojiSignal
 import app.quantumsocial.core.model.Emotion
 import app.quantumsocial.core.model.ImageSignal
@@ -88,6 +89,7 @@ fun StarMapScreen(
 ) {
     val signals by InMemorySignalRepository.signals.collectAsState()
     val fadingSince by InMemorySignalRepository.fadingSince.collectAsState()
+    val watchedIds by WatchedStars.watched.collectAsState()
     val isDemo = signals.isEmpty()
     val baseSignals = if (isDemo) remember { demoFakeSignals(80) } else signals
 
@@ -303,6 +305,7 @@ fun StarMapScreen(
                 reduceMotion = reduceMotion,
                 focusStarId = focusStarId,
                 focusVisible = focusVisible,
+                watchedIds = watchedIds,
             )
             PulseFlightLayer(
                 flights = flights,
