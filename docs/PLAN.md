@@ -11,12 +11,12 @@ Dáta najprv lokálne (mock), server až od bodu 9.
 |---|-----|------|------|
 | 1 | Core definícia | Projekt Kotlin + Compose, moduly, CI, ktlint, galaxia s pulzujúcou hviezdou | ✅ |
 | 2 | Formy správ | Typy signálov: text (200 zn.), emoji, audio 15 s, svetelný záblesk, obrázok, mix, WishNet; jednotné rozhranie `Signal` | ✅ |
-| 3 | Životnosť správ | Bežné signály miznú po prečítaní/čase, WishNet dlhšie; stav „končí“, animácia zhasnutia | 🟡 PR #4 |
+| 3 | Životnosť správ | Bežné signály miznú po prečítaní/čase, WishNet dlhšie; stav „končí“, animácia zhasnutia | ✅ |
 | 4 | Zobrazenie a filtre | Mapa hviezd (náhodné rozmiestnenie, zoom/pan) + filtre: jazyk, emócia, téma, intenzita, vzdialenosť, WishNet | 🟡 takmer hotové |
-| 5 | Profil hviezdy | Anonymný detail: kvanti-meno, jazyk, emócie, témy, posledné signály, archív prianí; akcie odpovedať / sledovať žiarenie | 🟡 PR #7 |
-| 6 | Úvodná obrazovka | Finálny „veselý“ vizuál galaxie (gradienty, svetlušky), šetrič výkonu | 🟡 PR #8 |
-| 7 | Odpoveď a sledovanie žiarenia | Krátke vlákno odpovedí, ktoré zhasne; „stopy“ hviezdy (nie follow) | 🟡 `feat/7-replies` |
-| 8 | Posielanie správ + ZenNet | Klik na hviezdu → poslať hviezde / do chaosu; ZenNet = 1 min ticha s bublinami | 🟡 PR #6 |
+| 5 | Profil hviezdy | Anonymný detail: kvanti-meno, jazyk, emócie, témy, posledné signály, archív prianí; akcie odpovedať / sledovať žiarenie | ✅ |
+| 6 | Úvodná obrazovka | Finálny „veselý“ vizuál galaxie (gradienty, svetlušky), šetrič výkonu | ✅ |
+| 7 | Odpoveď a sledovanie žiarenia | Krátke vlákno odpovedí, ktoré zhasne; „stopy“ hviezdy (nie follow) | ✅ |
+| 8 | Posielanie správ + ZenNet | Klik na hviezdu → poslať hviezde / do chaosu; ZenNet = 1 min ticha s bublinami | ✅ |
 | 9 | Bezpečnosť a anonymita | API kontrakty, šifrovanie E2E (koncept), kľúče v Keystore, minimum dát | ⬜ |
 | 10 | Serendipity | Denné náhodné párovanie 1:1 na 24 h („svetelný most“) | ⬜ |
 | 11 | EchoNet | Zvuky dňa: nahrávka 5–15 s, prehrávanie, tag nálady | ⬜ |
@@ -26,7 +26,7 @@ Dáta najprv lokálne (mock), server až od bodu 9.
 | 15 | Notifikácie | Jemné, poetické (pulz/iskra namiesto červených odznakov), voliteľný push | ⬜ |
 | 16 | Svetelné levely | Iskra → Hviezda → Pulzár → Hmlovina → Supernova podľa aktivity | ⬜ |
 | 17 | Galactic Moments | Kolektívne globálne udalosti (zmena farieb, téma dňa) | ⬜ |
-| 18 | Onboarding | „Zrodenie hviezdy“ za 60 s: jazyk, emócia, kvanti-meno, obnovovací kľúč, tutoriál | 🟡 PR #9 |
+| 18 | Onboarding | „Zrodenie hviezdy“ za 60 s: jazyk, emócia, kvanti-meno, obnovovací kľúč, tutoriál | ✅ |
 | 19 | Overenie a Aurora | 1 zariadenie = 1 hviezda, SMS overenie, captcha, moderácia, report/blok | ⬜ |
 | 20 | StarDust | Jediná (nepredajná) mena za pozitívne interakcie; spúšťač Galactic Moments | ⬜ |
 | 21 | LightSignature | Jedinečný svetelno-zvukový podpis hviezdy | ⬜ |
@@ -39,7 +39,7 @@ Dáta najprv lokálne (mock), server až od bodu 9.
 | 28 | StarChords | Osobná melódia hviezdy, zmena raz za kvartál | ⬜ |
 | 29 | Empatický StarDust | Bonus StarDust za pomoc iným + aurora efekt | ⬜ |
 | 30 | FutureSeeds → FutureBlooms | Semienka budúcnosti, ktoré rastú podporou komunity | ⬜ |
-| 31 | Galaxie priateľov | Vlastné malé galaxie, vstup čiernou dierou (pozvánka), odchod bielou dierou, červie diery medzi galaxiami, zhasnutie po 7 dňoch | 🟡 `feat/31-friend-galaxies` |
+| 31 | Galaxie priateľov | Vlastné malé galaxie, vstup čiernou dierou (pozvánka), odchod bielou dierou, červie diery medzi galaxiami, zhasnutie po 7 dňoch | ✅ |
 
 ## Poznámky
 - Pri každom bode: úlohy rozdelené na Android / Backend / Design, výstup = funkčné demo

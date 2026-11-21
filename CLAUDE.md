@@ -70,27 +70,14 @@ core/src/main/java/app/quantumsocial/core/
   Ak už beží (`adb devices`), nový nespúšťaj. Aplikácia sa spúšťa ▶ Run v Android Studiu.
 
 ## Aktuálny stav (21. 11. 2026)
-- Hotové v `main`: body 1, 2, väčšina 4.
-- Otvorené PR idú v reťazi (každý na predchádzajúcom), CI zelené na všetkých; zlučovať v poradí #4 → #6 → #7 → #8 → #9.
-- **PR #4 (`feat/3-signal-lifecycle`)**: bod 3 – životnosť signálov (stav „končí“,
-  animácia zhasnutia, `SignalLifecycle` + testy). CI zelené, čaká na Marošovo vyskúšanie
-  a zlúčenie. Ďalšie body staviaj na `main` až po jeho zlúčení (alebo na tejto vetve).
-- **PR #6 (`feat/8-send-signal`, nadväzuje na PR #4)**: bod 8 – ťuk na hviezdu → panel s emóciami
-  → pulz letí k hviezde; tlačidlo „🌌 Do chaosu“ (náhodná hviezda); „○ ZenNet“ = minúta ticha
-  (`ZenScreen`). Logika v `core`: `PulseSignal`, `SignalTarget`, `ChaosPicker`, `PulseOutbox`,
-  `ZenSession` + testy. Dlhé podržanie hviezdy = profil.
-- **PR #7 (`feat/5-star-profile`, nadväzuje na PR #6)**: bod 5 – kvanti-meno (`QuantName`), sledovanie žiarenia (`WatchedStars`, prstenec na mape),
-  Pošli pulz z profilu.
-- **PR #8 (`feat/6-happy-galaxy`, nadväzuje na PR #7)**: bod 6 – `GalaxyPalette`, svetlušky (`FireflyLayer`), šetrič výkonu
-  (`PerformancePolicy` v core, `ui/perf`), prepínač v Profile.
-- **PR #9 (`feat/18-onboarding`, nadväzuje na PR #8)**: bod 18 – „Zrodenie hviezdy“ (`ui/onboarding`), `OnboardingState` + `RecoveryKey`
-  v core. Kľúč zatiaľ v SharedPreferences (TODO bod 9: Keystore). Profil → „Znova prejsť zrodením“.
-- **`feat/31-friend-galaxies`** (nadväzuje na PR #9): bod 31 – galaxie priateľov. `FriendGalaxy`, `GalaxyRules`,
-  `GalaxyStore` (shared s demo „Kamaráti“, kód `KVANT7`) + testy; UI v `ui/galaxies` (čierna diera na mape,
-  `MyGalaxiesSheet`, `FriendGalaxyScreen`, `warp` animácia). Id mojej hviezdy: `OnboardingPrefs.myStarId`.
-- **`feat/7-replies`** (nadväzuje na bod 31): bod 7 – `Reply`, `ReplyThread`, `ReplyStore` (vlákno zmizne v
-  `InMemorySignalRepository.sweep`) + testy; vo WishNet „Odpovedať svetlom“ (`ReplySheet`), iskry v `WishNetCard`.
-- Ďalej: dokončiť 4, potom 9 (server, bezpečnosť).
+- Hotové v `main` (zlúčené PR #4, #6–#11): body 1, 2, 3, 5, 6, 7, 8, 18, 31; bod 4 takmer hotový.
+- Kde čo je: životnosť `SignalLifecycle`; pulzy/ZenNet `PulseSignal`, `PulseOutbox`, `ZenSession`;
+  profil `QuantName`, `WatchedStars`; galaxia `GalaxyPalette`, `FireflyLayer`, `PerformancePolicy`;
+  onboarding `ui/onboarding`, `OnboardingState`, `RecoveryKey` (kľúč zatiaľ v SharedPreferences – TODO bod 9: Keystore);
+  galaxie priateľov `FriendGalaxy`, `GalaxyRules`, `GalaxyStore` (demo „Kamaráti“, kód `KVANT7`), `ui/galaxies`;
+  odpovede `Reply`, `ReplyThread`, `ReplyStore`, `ReplySheet`.
+- Nové body staviaj z aktuálneho `main`.
+- Ďalej: dokončiť 4, potom 9 (bezpečnosť, Keystore), 19, 20.
 
 ## Dohodnuté smerovanie
 - Prvá verzia bez servera – všetko lokálne, server (bod 9, 19) až keď bude jadro príjemné.
