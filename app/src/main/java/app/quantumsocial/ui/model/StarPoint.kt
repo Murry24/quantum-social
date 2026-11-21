@@ -26,13 +26,10 @@ data class StarPoint(
 fun Signal.toStarPoint(): StarPoint {
     val seed = id.hashCode()
     val rnd = Random(seed)
-    val langs = listOf("SK", "EN", "CZ")
-    val topics = listOf("Tech", "Life", "Art")
-    val emotions = Emotion.values()
 
-    val lang = langs[absMod(seed, langs.size)]
-    val topic = topics[absMod(seed / 3, topics.size)]
-    val emotion = emotions[absMod(seed / 5, emotions.size)]
+    val lang = starLangForId(id)
+    val topic = starTopicForId(id)
+    val emotion = starEmotionForId(id)
     val intensity = 0.2f + rnd.nextFloat() * 0.8f
     val dist = 0.1f + rnd.nextFloat() * 0.9f
     val angle = (rnd.nextFloat() * 2f * PI).toFloat()
@@ -52,6 +49,19 @@ fun Signal.toStarPoint(): StarPoint {
         isWishNet = wish,
         angleRad = angle,
     )
+}
+
+// Vlastnosti hviezdy len z jej id – rovnaké na mape aj v profile (bod 5)
+private val starLangs = listOf("SK", "EN", "CZ")
+private val starTopics = listOf("Tech", "Life", "Art")
+
+fun starLangForId(id: String): String = starLangs[absMod(id.hashCode(), starLangs.size)]
+
+fun starTopicForId(id: String): String = starTopics[absMod(id.hashCode() / 3, starTopics.size)]
+
+fun starEmotionForId(id: String): Emotion {
+    val emotions = Emotion.values()
+    return emotions[absMod(id.hashCode() / 5, emotions.size)]
 }
 
 private fun absMod(
