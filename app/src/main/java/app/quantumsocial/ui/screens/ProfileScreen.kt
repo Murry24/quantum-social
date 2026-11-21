@@ -19,6 +19,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -27,9 +28,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import app.quantumsocial.audio.ToneSynth
 import app.quantumsocial.core.data.StarDust
 import app.quantumsocial.core.model.DustAction
 import app.quantumsocial.core.model.PerformanceChoice
+import app.quantumsocial.core.model.StarChord
 import app.quantumsocial.core.model.StarDustState
 import app.quantumsocial.core.model.StarLevel
 import app.quantumsocial.core.ui.theme.GalaxyTheme
@@ -93,6 +96,19 @@ fun ProfileScreen(onRebirth: () -> Unit) {
             }
         }
 
+        // bod 28: moja melódia hviezdy (zmena najviac raz za štvrťrok)
+        val chordState by ChordPrefs.state.collectAsState()
+        val myStar = OnboardingPrefs.myStarId(context)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            OutlinedButton(onClick = { ToneSynth.play(StarChord.of(myStar, chordState.first)) }) {
+                Text("🎵 Moja melódia")
+            }
+            TextButton(
+                onClick = { ChordPrefs.change(context) },
+                enabled = ChordPrefs.canChange(),
+            ) { Text(if (ChordPrefs.canChange()) "Zmeniť melódiu" else "Zmena až o štvrťrok") }
+        }
+
         // bod 32: farebná nálada oblohy hlavnej galaxie
         Text("Farba galaxie", style = MaterialTheme.typography.titleMedium)
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -144,4 +160,6 @@ private fun DustAction.label() =
         DustAction.Galaxy -> "Nová galaxia"
         DustAction.Gratitude -> "Vďačnosť"
         DustAction.Challenge -> "Výzva dňa"
+        DustAction.Empathy -> "Prvá pomoc prianiu"
+        DustAction.Seed -> "Zaliate semienko"
     }
