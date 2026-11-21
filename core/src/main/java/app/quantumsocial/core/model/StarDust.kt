@@ -28,7 +28,21 @@ data class StarDustState(
     // deň (epoch day), ku ktorému patria dnešné počty
     val day: Long = 0,
     val today: Map<DustAction, Int> = emptyMap(),
+    // minutý prach (Pulse Alerts) – levely rátajú celoživotný zisk, nie zostatok
+    val spent: Int = 0,
+    // deň posledného naliehavého pulzu (bod 27)
+    val alertDay: Long? = null,
 ) {
+    val lifetime: Int get() = balance + spent
+
+    /** Naliehavý pulz (bod 27): stojí [ALERT_COST] a ide najviac raz denne. */
+    fun canAlert(epochDay: Long): Boolean = balance >= ALERT_COST && alertDay != epochDay
+
+    fun useAlert(epochDay: Long): StarDustState? {
+        if (!canAlert(epochDay)) return null
+        return copy(balance = balance - ALERT_COST, spent = spent + ALERT_COST, alertDay = epochDay)
+    }
+
     fun countToday(action: DustAction): Int = today[action] ?: 0
 
     /** @return nový stav a koľko prachu pribudlo (0, ak je dnešný strop vyčerpaný) */
@@ -48,12 +62,17 @@ data class StarDustState(
     }
 
     /** Krátky textový zápis na uloženie do nastavení. */
-    fun encode(): String = "$balance|$day|" + today.entries.joinToString(",") { "${it.key.name}:${it.value}" }
+    fun encode(): String {
+        val counts = today.entries.joinToString(",") { "${it.key.name}:${it.value}" }
+        return "$balance|$day|$counts|$spent|${alertDay ?: ""}"
+    }
 
     companion object {
+        const val ALERT_COST = 10
+
         fun decode(stored: String?): StarDustState {
             val parts = stored?.split("|") ?: return StarDustState()
-            if (parts.size != 3) return StarDustState()
+            if (parts.size != 3 && parts.size != 5) return StarDustState()
             val balance = parts[0].toIntOrNull() ?: return StarDustState()
             val day = parts[1].toLongOrNull() ?: return StarDustState()
             val today =
@@ -62,7 +81,9 @@ data class StarDustState(
                     val action = DustAction.values().firstOrNull { it.name == name } ?: return@mapNotNull null
                     count.toIntOrNull()?.let { action to it }
                 }.toMap()
-            return StarDustState(balance.coerceAtLeast(0), day, today)
+            val spent = parts.getOrNull(3)?.toIntOrNull() ?: 0
+            val alertDay = parts.getOrNull(4)?.toLongOrNull()
+            return StarDustState(balance.coerceAtLeast(0), day, today, spent.coerceAtLeast(0), alertDay)
         }
 
         fun epochDay(

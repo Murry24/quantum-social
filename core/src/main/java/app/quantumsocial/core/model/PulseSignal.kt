@@ -20,6 +20,8 @@ data class PulseSignal(
     val target: SignalTarget,
     val emoji: String? = null,
     val effect: PulseEffect? = null,
+    // bod 27: naliehavý pulz – zvýraznený, stojí StarDust, max 1× denne
+    val urgent: Boolean = false,
     override val id: String = UUID.randomUUID().toString(),
     override val createdAt: Long = System.currentTimeMillis(),
     override val category: SignalCategory = SignalCategory.Ephemeral,
