@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.ModalBottomSheet
@@ -52,21 +53,26 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import app.quantumsocial.core.data.InMemorySignalRepository
+import app.quantumsocial.core.data.PulseOutbox
 import app.quantumsocial.core.model.EmojiSignal
 import app.quantumsocial.core.model.Emotion
 import app.quantumsocial.core.model.ImageSignal
 import app.quantumsocial.core.model.MixSignal
 import app.quantumsocial.core.model.Signal
 import app.quantumsocial.core.model.SignalLifecycle
+import app.quantumsocial.core.model.SignalTarget
 import app.quantumsocial.core.model.TextSignal
 import app.quantumsocial.core.ui.theme.GalaxyGradient
 import app.quantumsocial.ui.canvas.NebulaBackground
+import app.quantumsocial.ui.canvas.PulseFlight
+import app.quantumsocial.ui.canvas.PulseFlightLayer
 import app.quantumsocial.ui.canvas.StarCanvas
 import app.quantumsocial.ui.components.LegendEmotions
 import app.quantumsocial.ui.components.MiniKnobs
 import app.quantumsocial.ui.components.ZoomThinBar
 import app.quantumsocial.ui.model.StarPoint
 import app.quantumsocial.ui.model.toStarPoint
+import app.quantumsocial.ui.signals.SendPulseSheet
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.cos
@@ -78,6 +84,7 @@ fun StarMapScreen(
     openFilters: Boolean = false,
     onOpenStar: (String) -> Unit = {},
     focusStarId: String? = null,
+    onOpenZen: () -> Unit = {},
 ) {
     val signals by InMemorySignalRepository.signals.collectAsState()
     val fadingSince by InMemorySignalRepository.fadingSince.collectAsState()
@@ -156,6 +163,11 @@ fun StarMapScreen(
     val density = LocalDensity.current
 
     var focusVisible by remember { mutableStateOf(false) }
+
+    // Bod 8: posielanie pocitových pulzov
+    var sendTarget by remember { mutableStateOf<SignalTarget?>(null) }
+    val sendSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val flights = remember { mutableStateListOf<PulseFlight>() }
 
     // aktuálny zoznam pre gestá – pointerInput sa tak nereštartuje pri každej zmene jasu hviezd
     val currentFiltered by rememberUpdatedState(filtered)
@@ -257,7 +269,7 @@ fun StarMapScreen(
                                     offY = offYNow,
                                     density = density,
                                     stars = currentFiltered,
-                                )?.let { onOpenStar(it.id) }
+                                )?.let { sendTarget = SignalTarget.Star(it.id) }
                             },
                             onLongPress = { tap ->
                                 val scaleNow = animScale.value
@@ -292,6 +304,30 @@ fun StarMapScreen(
                 focusStarId = focusStarId,
                 focusVisible = focusVisible,
             )
+            PulseFlightLayer(
+                flights = flights,
+                stars = stars,
+                offsetX = animOffsetX.value,
+                offsetY = animOffsetY.value,
+                scale = animScale.value,
+                onFinished = { id -> flights.removeAll { it.id == id } },
+            )
+        }
+
+        // Bod 8: pulz do chaosu + ZenNet (pravý spodok)
+        Column(
+            modifier = Modifier.align(Alignment.BottomEnd).padding(8.dp),
+            horizontalAlignment = Alignment.End,
+        ) {
+            FilledTonalButton(onClick = { sendTarget = SignalTarget.Chaos }) {
+                Text("🌌 Do chaosu")
+            }
+            FilledTonalButton(
+                onClick = onOpenZen,
+                modifier = Modifier.padding(top = 6.dp),
+            ) {
+                Text("○ ZenNet")
+            }
         }
 
         // Ovládanie (ľavý spodok)
@@ -334,6 +370,32 @@ fun StarMapScreen(
                     }
                 },
                 modifier = Modifier.padding(top = 6.dp),
+            )
+        }
+    }
+
+    // Bod 8: panel na odoslanie pulzu
+    sendTarget?.let { target ->
+        ModalBottomSheet(
+            onDismissRequest = { sendTarget = null },
+            sheetState = sendSheetState,
+        ) {
+            SendPulseSheet(
+                target = target,
+                onSend = { emotion ->
+                    PulseOutbox.send(
+                        target = target,
+                        emotion = emotion,
+                        visibleStarIds = currentFiltered.filter { it.brightness > 0.1f }.map { it.id },
+                    )?.let { sent ->
+                        flights.add(PulseFlight(sent.signal.id, sent.resolvedStarId, emotion.color()))
+                    }
+                    sendTarget = null
+                },
+                onOpenProfile = { id ->
+                    sendTarget = null
+                    onOpenStar(id)
+                },
             )
         }
     }

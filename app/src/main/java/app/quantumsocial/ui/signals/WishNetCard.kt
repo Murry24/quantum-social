@@ -22,6 +22,7 @@ import app.quantumsocial.core.model.FlashSignal
 import app.quantumsocial.core.model.ImageSignal
 import app.quantumsocial.core.model.LifePhase
 import app.quantumsocial.core.model.MixSignal
+import app.quantumsocial.core.model.PulseSignal
 import app.quantumsocial.core.model.Signal
 import app.quantumsocial.core.model.SignalCategory
 import app.quantumsocial.core.model.SignalLifecycle
@@ -102,6 +103,11 @@ fun WishNetCard(
                 is MixSignal ->
                     Text(
                         "Mix ${signal.parts.size} prvkov",
+                        modifier = Modifier.padding(top = 6.dp),
+                    )
+                is PulseSignal ->
+                    Text(
+                        "✦ Pulz: ${signal.emotion.name}",
                         modifier = Modifier.padding(top = 6.dp),
                     )
             }
