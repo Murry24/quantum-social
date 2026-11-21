@@ -7,7 +7,7 @@ import kotlin.math.roundToInt
 
 /**
  * Veselá galaxia (bod 6) – svetlá „úsvitová“ obloha namiesto temného vesmíru.
- * Farby sú ako ARGB Long, aby sa dali testovať bez Androidu (kontrast v `GalaxyPaletteTest`).
+ * Farby sú ako ARGB Long, aby sa dali testovať bez Androidu (kontrast v `HappyGalaxyTest`).
  * Obrazovky berú farby len odtiaľto, nie napevno.
  */
 object GalaxyPalette {
