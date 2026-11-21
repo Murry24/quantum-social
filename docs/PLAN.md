@@ -13,8 +13,8 @@ Dáta najprv lokálne (mock), server až od bodu 9.
 | 2 | Formy správ | Typy signálov: text (200 zn.), emoji, audio 15 s, svetelný záblesk, obrázok, mix, WishNet; jednotné rozhranie `Signal` | ✅ |
 | 3 | Životnosť správ | Bežné signály miznú po prečítaní/čase, WishNet dlhšie; stav „končí“, animácia zhasnutia | 🟡 PR #4 |
 | 4 | Zobrazenie a filtre | Mapa hviezd (náhodné rozmiestnenie, zoom/pan) + filtre: jazyk, emócia, téma, intenzita, vzdialenosť, WishNet | 🟡 takmer hotové |
-| 5 | Profil hviezdy | Anonymný detail: kvanti-meno, jazyk, emócie, témy, posledné signály, archív prianí; akcie odpovedať / sledovať žiarenie | 🟡 `feat/5-star-profile` – čaká na vyskúšanie |
-| 6 | Úvodná obrazovka | Finálny „veselý“ vizuál galaxie (gradienty, svetlušky), šetrič výkonu | 🟡 `feat/6-happy-galaxy` – čaká na vyskúšanie |
+| 5 | Profil hviezdy | Anonymný detail: kvanti-meno, jazyk, emócie, témy, posledné signály, archív prianí; akcie odpovedať / sledovať žiarenie | 🟡 PR #7 |
+| 6 | Úvodná obrazovka | Finálny „veselý“ vizuál galaxie (gradienty, svetlušky), šetrič výkonu | 🟡 PR #8 |
 | 7 | Odpoveď a sledovanie žiarenia | Krátke vlákno odpovedí, ktoré zhasne; „stopy“ hviezdy (nie follow) | ⬜ |
 | 8 | Posielanie správ + ZenNet | Klik na hviezdu → poslať hviezde / do chaosu; ZenNet = 1 min ticha s bublinami | 🟡 PR #6 |
 | 9 | Bezpečnosť a anonymita | API kontrakty, šifrovanie E2E (koncept), kľúče v Keystore, minimum dát | ⬜ |
@@ -26,7 +26,7 @@ Dáta najprv lokálne (mock), server až od bodu 9.
 | 15 | Notifikácie | Jemné, poetické (pulz/iskra namiesto červených odznakov), voliteľný push | ⬜ |
 | 16 | Svetelné levely | Iskra → Hviezda → Pulzár → Hmlovina → Supernova podľa aktivity | ⬜ |
 | 17 | Galactic Moments | Kolektívne globálne udalosti (zmena farieb, téma dňa) | ⬜ |
-| 18 | Onboarding | „Zrodenie hviezdy“ za 60 s: jazyk, emócia, kvanti-meno, obnovovací kľúč, tutoriál | 🟡 `feat/18-onboarding` – čaká na vyskúšanie |
+| 18 | Onboarding | „Zrodenie hviezdy“ za 60 s: jazyk, emócia, kvanti-meno, obnovovací kľúč, tutoriál | 🟡 PR #9 |
 | 19 | Overenie a Aurora | 1 zariadenie = 1 hviezda, SMS overenie, captcha, moderácia, report/blok | ⬜ |
 | 20 | StarDust | Jediná (nepredajná) mena za pozitívne interakcie; spúšťač Galactic Moments | ⬜ |
 | 21 | LightSignature | Jedinečný svetelno-zvukový podpis hviezdy | ⬜ |

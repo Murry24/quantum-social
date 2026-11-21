@@ -70,7 +70,8 @@ core/src/main/java/app/quantumsocial/core/
   Ak už beží (`adb devices`), nový nespúšťaj. Aplikácia sa spúšťa ▶ Run v Android Studiu.
 
 ## Aktuálny stav (21. 11. 2026)
-- Hotové v `main`: body 1, 2, väčšina 4, rozpracovaný 5 (profil hviezdy).
+- Hotové v `main`: body 1, 2, väčšina 4.
+- Otvorené PR idú v reťazi (každý na predchádzajúcom), CI zelené na všetkých; zlučovať v poradí #4 → #6 → #7 → #8 → #9.
 - **PR #4 (`feat/3-signal-lifecycle`)**: bod 3 – životnosť signálov (stav „končí“,
   animácia zhasnutia, `SignalLifecycle` + testy). CI zelené, čaká na Marošovo vyskúšanie
   a zlúčenie. Ďalšie body staviaj na `main` až po jeho zlúčení (alebo na tejto vetve).
@@ -78,11 +79,11 @@ core/src/main/java/app/quantumsocial/core/
   → pulz letí k hviezde; tlačidlo „🌌 Do chaosu“ (náhodná hviezda); „○ ZenNet“ = minúta ticha
   (`ZenScreen`). Logika v `core`: `PulseSignal`, `SignalTarget`, `ChaosPicker`, `PulseOutbox`,
   `ZenSession` + testy. Dlhé podržanie hviezdy = profil.
-- **`feat/5-star-profile`** (z PR #6): bod 5 – kvanti-meno (`QuantName`), sledovanie žiarenia (`WatchedStars`, prstenec na mape),
+- **PR #7 (`feat/5-star-profile`, nadväzuje na PR #6)**: bod 5 – kvanti-meno (`QuantName`), sledovanie žiarenia (`WatchedStars`, prstenec na mape),
   Pošli pulz z profilu.
-- **`feat/6-happy-galaxy`** (z bodu 5): bod 6 – `GalaxyPalette`, svetlušky (`FireflyLayer`), šetrič výkonu
+- **PR #8 (`feat/6-happy-galaxy`, nadväzuje na PR #7)**: bod 6 – `GalaxyPalette`, svetlušky (`FireflyLayer`), šetrič výkonu
   (`PerformancePolicy` v core, `ui/perf`), prepínač v Profile.
-- **`feat/18-onboarding`** (z bodu 6): bod 18 – „Zrodenie hviezdy“ (`ui/onboarding`), `OnboardingState` + `RecoveryKey`
+- **PR #9 (`feat/18-onboarding`, nadväzuje na PR #8)**: bod 18 – „Zrodenie hviezdy“ (`ui/onboarding`), `OnboardingState` + `RecoveryKey`
   v core. Kľúč zatiaľ v SharedPreferences (TODO bod 9: Keystore). Profil → „Znova prejsť zrodením“.
 - Ďalej: dokončiť 4, potom 9 (server, bezpečnosť).
 
