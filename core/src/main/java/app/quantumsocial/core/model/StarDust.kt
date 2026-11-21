@@ -18,6 +18,8 @@ enum class DustAction(
     Galaxy(reward = 5, dailyCap = 1),
     Gratitude(reward = 2, dailyCap = 1),
     Challenge(reward = 3, dailyCap = 1),
+    Empathy(reward = 2, dailyCap = 5),
+    Seed(reward = 1, dailyCap = 3),
 }
 
 data class StarDustState(

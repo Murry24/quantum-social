@@ -21,6 +21,8 @@ object ReplyStore {
         if (!thread.canReply) return false
         _threads.value = _threads.value + (signalId to thread.add(reply))
         StarDust.earn(DustAction.Reply)
+        // bod 29: kto ako prvý podá svetlo prianiu bez odpovede, dostane bonus za empatiu
+        if (thread.replies.isEmpty()) StarDust.earn(DustAction.Empathy)
         return true
     }
 
