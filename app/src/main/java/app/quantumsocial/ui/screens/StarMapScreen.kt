@@ -240,7 +240,8 @@ fun StarMapScreen(
         val cy = h / 2f
         val baseRadius = min(w, h) / 2f * 0.9f
 
-        val minPx = with(density) { 28.dp.toPx() }
+        // väčší dotykový polomer – drobné hviezdy sa ľahšie trafia
+        val minPx = with(density) { 40.dp.toPx() }
         val maxPx = with(density) { 120.dp.toPx() }
 
         var best: StarPoint? = null
@@ -347,18 +348,12 @@ fun StarMapScreen(
             )
         }
 
-        // Bod 31: čierna diera na okraji veľkej galaxie (ľavý horný roh)
-        HoleButton(
-            kind = HoleKind.Black,
-            label = "Moje galaxie",
-            modifier = Modifier.align(Alignment.TopStart).padding(8.dp),
-        ) { showGalaxies = true }
-
-        // Bod 8: pulz do chaosu + ZenNet (pravý spodok)
+        // Bod 8 + 31: čierna diera, pulz do chaosu, ZenNet (pravý spodok, vedľa posuvníkov – nie pod lištou emócií)
         Column(
             modifier = Modifier.align(Alignment.BottomEnd).padding(8.dp),
             horizontalAlignment = Alignment.End,
         ) {
+            HoleButton(kind = HoleKind.Black, label = "Moje galaxie") { showGalaxies = true }
             FilledTonalButton(onClick = { sendTarget = SignalTarget.Chaos }) {
                 Text("🌌 Do chaosu")
             }
@@ -376,7 +371,8 @@ fun StarMapScreen(
             onIntensityChange = { minIntensity = it },
             maxDistance = maxDistance,
             onDistanceChange = { maxDistance = it },
-            modifier = Modifier.align(Alignment.BottomStart).padding(8.dp),
+            // užší panel, aby ho neprekrývali tlačidlá vpravo
+            modifier = Modifier.align(Alignment.BottomStart).padding(8.dp).fillMaxWidth(0.55f),
         )
 
         // Emócie + tenký zoom bar (pravý horný roh)
@@ -519,10 +515,10 @@ private fun FilterSheetContent(
 
         ChipsRow(
             label = "Emócia",
-            items = emotions.map { it.name },
-            selected = selEmotions.map { it.name },
+            items = emotions.map { it.label() },
+            selected = selEmotions.map { it.label() },
             onToggle = { name, selected ->
-                val e = Emotion.valueOf(name)
+                val e = emotions.first { it.label() == name }
                 if (selected) selEmotions.add(e) else selEmotions.remove(e)
             },
         )

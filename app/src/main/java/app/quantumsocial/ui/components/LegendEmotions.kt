@@ -17,7 +17,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import app.quantumsocial.core.model.Emotion
+import app.quantumsocial.core.ui.theme.GalaxyPalette
 import app.quantumsocial.ui.screens.color // from EmotionUi.kt
+import app.quantumsocial.ui.screens.label
 
 @Composable
 fun LegendEmotions(
@@ -38,7 +40,7 @@ fun LegendEmotions(
             FilterChip(
                 selected = isSel,
                 onClick = { onToggle(e, !isSel) },
-                label = { Text(e.name) },
+                label = { Text(e.label()) },
                 leadingIcon = {
                     androidx.compose.foundation.layout.Box(
                         modifier =
@@ -51,6 +53,9 @@ fun LegendEmotions(
                 colors =
                     FilterChipDefaults.filterChipColors(
                         selectedContainerColor = e.color().copy(alpha = 0.25f),
+                        // svetlý text na tmavej lište
+                        labelColor = Color(GalaxyPalette.ON_SKY),
+                        selectedLabelColor = Color(GalaxyPalette.ON_SKY),
                     ),
             )
         }
