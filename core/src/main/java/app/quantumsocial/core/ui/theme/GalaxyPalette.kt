@@ -45,6 +45,10 @@ object GalaxyPalette {
     val skyBrush: Brush
         get() = Brush.verticalGradient(skyStops.map { Color(it) })
 
+    // jemná (pastelová) verzia oblohy pre obrazovky s bežným tmavým textom, napr. WishNet
+    val softSkyBrush: Brush
+        get() = Brush.verticalGradient(skyStops.map { Color(it).copy(alpha = 0.22f) })
+
     val zenBrush: Brush
         get() = Brush.verticalGradient(listOf(Color(ZEN_TOP), Color(ZEN_BOTTOM)))
 
