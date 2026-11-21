@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -17,7 +18,7 @@ import app.quantumsocial.core.model.PerformanceChoice
 import app.quantumsocial.ui.perf.PerformanceSettings
 
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(onRebirth: () -> Unit) {
     val context = LocalContext.current
     val choice by PerformanceSettings.choice.collectAsState()
 
@@ -35,6 +36,9 @@ fun ProfileScreen() {
                 )
             }
         }
+
+        // bod 18: na testovanie – otvorí onboarding znova, obnovovací kľúč ostáva
+        OutlinedButton(onClick = onRebirth) { Text("Znova prejsť zrodením") }
     }
 }
 

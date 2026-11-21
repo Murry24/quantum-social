@@ -107,7 +107,7 @@ fun SendPulseSheet(
 }
 
 @Composable
-private fun EmotionOrb(
+internal fun EmotionOrb(
     emotion: Emotion,
     selected: Boolean,
     onClick: () -> Unit,
