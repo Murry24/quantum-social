@@ -12,17 +12,24 @@ sealed interface SignalTarget {
 
 /**
  * Pocitový pulz – signál bez slov, len emócia a svetlo (bod 8).
+ * Voliteľne nesie 1 emoji z [EmojiCatalog] a 1 svetelný efekt.
  * Zhasne po prečítaní alebo po 30 s.
  */
 data class PulseSignal(
     val emotion: Emotion,
     val target: SignalTarget,
+    val emoji: String? = null,
+    val effect: PulseEffect? = null,
     override val id: String = UUID.randomUUID().toString(),
     override val createdAt: Long = System.currentTimeMillis(),
     override val category: SignalCategory = SignalCategory.Ephemeral,
     override val expireOnRead: Boolean = true,
     override val ttlMillis: Long? = 30_000L,
-) : Signal
+) : Signal {
+    init {
+        require(emoji == null || EmojiCatalog.isAllowed(emoji)) { "pulz nesie len emoji z katalógu" }
+    }
+}
 
 /** Výber náhodnej hviezdy pre signál „do chaosu“. */
 object ChaosPicker {

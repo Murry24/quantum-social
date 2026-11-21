@@ -29,14 +29,14 @@ fun MiniKnobs(
                 .padding(8.dp),
     ) {
         Column {
-            Text(text = "Min. intenzita: ${(minIntensity * 100).toInt()}%")
+            Text(text = "Min. intenzita: ${(minIntensity * 100).toInt()}%", color = Color.White)
             Slider(
                 value = minIntensity,
                 onValueChange = onIntensityChange,
                 valueRange = 0f..1f,
                 modifier = Modifier.fillMaxWidth(),
             )
-            Text(text = "Max. vzdialenosť: ${(maxDistance * 100).toInt()}%")
+            Text(text = "Max. vzdialenosť: ${(maxDistance * 100).toInt()}%", color = Color.White)
             Slider(
                 value = maxDistance,
                 onValueChange = onDistanceChange,

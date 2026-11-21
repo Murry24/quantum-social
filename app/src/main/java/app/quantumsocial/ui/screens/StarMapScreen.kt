@@ -22,8 +22,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.ModalBottomSheet
@@ -72,7 +72,7 @@ import app.quantumsocial.ui.canvas.PulseFlightLayer
 import app.quantumsocial.ui.canvas.StarCanvas
 import app.quantumsocial.ui.components.LegendEmotions
 import app.quantumsocial.ui.components.MiniKnobs
-import app.quantumsocial.ui.components.ZoomThinBar
+import app.quantumsocial.ui.components.TopDrawer
 import app.quantumsocial.ui.galaxies.HoleButton
 import app.quantumsocial.ui.galaxies.HoleKind
 import app.quantumsocial.ui.galaxies.MyGalaxiesSheet
@@ -85,6 +85,7 @@ import app.quantumsocial.ui.perf.LocalPerformanceMode
 import app.quantumsocial.ui.signals.SendPulseSheet
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.min
 import kotlin.math.sin
@@ -94,7 +95,6 @@ fun StarMapScreen(
     openFilters: Boolean = false,
     onOpenStar: (String) -> Unit = {},
     focusStarId: String? = null,
-    onOpenZen: () -> Unit = {},
     onOpenGalaxy: (String) -> Unit = {},
 ) {
     val signals by InMemorySignalRepository.signals.collectAsState()
@@ -199,6 +199,22 @@ fun StarMapScreen(
         }
     }
 
+    // ✦ v spodnej lište: Do chaosu / Moje galaxie
+    val request by MapRequests.pending.collectAsState()
+    LaunchedEffect(request) {
+        when (request) {
+            MapRequest.Chaos -> sendTarget = SignalTarget.Chaos
+            MapRequest.Galaxies -> showGalaxies = true
+            null -> return@LaunchedEffect
+        }
+        MapRequests.consume()
+    }
+
+    // bod 6: horná lišta je skrytá, kým ju netreba
+    var topOpen by remember { mutableStateOf(false) }
+    val filtersActive = selEmotions.isNotEmpty() || minIntensity > 0f || maxDistance < 1f
+    val zoomed = abs(animScale.value - 1f) > 0.01f || abs(animOffsetX.value) > 1f || abs(animOffsetY.value) > 1f
+
     // aktuálny zoznam pre gestá – pointerInput sa tak nereštartuje pri každej zmene jasu hviezd
     val currentFiltered by rememberUpdatedState(filtered)
 
@@ -240,7 +256,8 @@ fun StarMapScreen(
         val cy = h / 2f
         val baseRadius = min(w, h) / 2f * 0.9f
 
-        val minPx = with(density) { 28.dp.toPx() }
+        // väčší dotykový polomer – drobné hviezdy sa ľahšie trafia
+        val minPx = with(density) { 40.dp.toPx() }
         val maxPx = with(density) { 120.dp.toPx() }
 
         var best: StarPoint? = null
@@ -347,69 +364,44 @@ fun StarMapScreen(
             )
         }
 
-        // Bod 31: čierna diera na okraji veľkej galaxie (ľavý horný roh)
+        // Bod 31: čierna diera na okraji veľkej galaxie (ľavý horný roh) – nič ju neprekrýva
         HoleButton(
             kind = HoleKind.Black,
             label = "Moje galaxie",
             modifier = Modifier.align(Alignment.TopStart).padding(8.dp),
         ) { showGalaxies = true }
 
-        // Bod 8: pulz do chaosu + ZenNet (pravý spodok)
-        Column(
-            modifier = Modifier.align(Alignment.BottomEnd).padding(8.dp),
-            horizontalAlignment = Alignment.End,
-        ) {
-            FilledTonalButton(onClick = { sendTarget = SignalTarget.Chaos }) {
-                Text("🌌 Do chaosu")
-            }
-            FilledTonalButton(
-                onClick = onOpenZen,
-                modifier = Modifier.padding(top = 6.dp),
-            ) {
-                Text("○ ZenNet")
-            }
+        // zoom je dvoma prstami; „1×“ sa ukáže, len keď je mapa priblížená alebo posunutá
+        if (zoomed) {
+            AssistChip(
+                onClick = {
+                    scope.launch {
+                        launch { animScale.animateTo(1f, tween(200, easing = LinearEasing)) }
+                        launch { animOffsetX.animateTo(0f, tween(200, easing = LinearEasing)) }
+                        launch { animOffsetY.animateTo(0f, tween(200, easing = LinearEasing)) }
+                    }
+                },
+                label = { Text("1×") },
+                modifier = Modifier.align(Alignment.BottomEnd).padding(8.dp),
+            )
         }
 
-        // Ovládanie (ľavý spodok)
-        MiniKnobs(
-            minIntensity = minIntensity,
-            onIntensityChange = { minIntensity = it },
-            maxDistance = maxDistance,
-            onDistanceChange = { maxDistance = it },
-            modifier = Modifier.align(Alignment.BottomStart).padding(8.dp),
-        )
-
-        // Emócie + tenký zoom bar (pravý horný roh)
-        Column(
-            modifier = Modifier.align(Alignment.TopEnd).padding(8.dp),
-            horizontalAlignment = Alignment.End,
+        // filtre emócií a posuvníky – skrytá horná lišta
+        TopDrawer(
+            open = topOpen,
+            active = filtersActive,
+            onOpenChange = { topOpen = it },
         ) {
             LegendEmotions(
                 selected = selEmotions,
                 onToggle = { e, selected -> if (selected) selEmotions.add(e) else selEmotions.remove(e) },
             )
-            ZoomThinBar(
-                scale = animScale.value,
-                onZoomIn = {
-                    scope.launch {
-                        val target = (animScale.value * 1.25f).coerceAtMost(5f)
-                        animScale.animateTo(target, tween(160, easing = LinearEasing))
-                    }
-                },
-                onZoomOut = {
-                    scope.launch {
-                        val target = (animScale.value / 1.25f).coerceAtLeast(0.5f)
-                        animScale.animateTo(target, tween(160, easing = LinearEasing))
-                    }
-                },
-                onReset = {
-                    scope.launch {
-                        animScale.animateTo(1f, tween(200, easing = LinearEasing))
-                        animOffsetX.animateTo(0f, tween(200, easing = LinearEasing))
-                        animOffsetY.animateTo(0f, tween(200, easing = LinearEasing))
-                    }
-                },
-                modifier = Modifier.padding(top = 6.dp),
+            MiniKnobs(
+                minIntensity = minIntensity,
+                onIntensityChange = { minIntensity = it },
+                maxDistance = maxDistance,
+                onDistanceChange = { maxDistance = it },
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
             )
         }
     }
@@ -422,13 +414,15 @@ fun StarMapScreen(
         ) {
             SendPulseSheet(
                 target = target,
-                onSend = { emotion ->
+                onSend = { emotion, emoji, effect ->
                     PulseOutbox.send(
                         target = target,
                         emotion = emotion,
                         visibleStarIds = currentFiltered.filter { it.brightness > 0.1f }.map { it.id },
+                        emoji = emoji,
+                        effect = effect,
                     )?.let { sent ->
-                        flights.add(PulseFlight(sent.signal.id, sent.resolvedStarId, emotion.color()))
+                        flights.add(PulseFlight.of(sent, emotion.color()))
                     }
                     sendTarget = null
                 },
@@ -519,10 +513,10 @@ private fun FilterSheetContent(
 
         ChipsRow(
             label = "Emócia",
-            items = emotions.map { it.name },
-            selected = selEmotions.map { it.name },
+            items = emotions.map { it.label() },
+            selected = selEmotions.map { it.label() },
             onToggle = { name, selected ->
-                val e = Emotion.valueOf(name)
+                val e = emotions.first { it.label() == name }
                 if (selected) selEmotions.add(e) else selEmotions.remove(e)
             },
         )

@@ -5,6 +5,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -89,7 +90,7 @@ fun WishNetCard(
                     signal.category == SignalCategory.WishNet -> "💫 WishNet"
                     else -> "⏳ mizne"
                 }
-            Text("$badge • ${signal::class.simpleName}")
+            Text("$badge • ${signal.typeLabel()}")
 
             when (signal) {
                 is TextSignal -> Text(signal.text, modifier = Modifier.padding(top = 6.dp))
@@ -117,27 +118,48 @@ fun WishNetCard(
                     )
                 is PulseSignal ->
                     Text(
-                        "✦ Pulz: ${signal.emotion.name}",
+                        "✦ Pulz: ${signal.emotion.label()}",
                         modifier = Modifier.padding(top = 6.dp),
                     )
             }
 
             val remaining = signal.remainingMillis(now)
             if (phase != LifePhase.FadingOut && remaining != null && remaining > 0) {
-                Text("Zostáva: ${(remaining + 999) / 1000}s", modifier = Modifier.padding(top = 6.dp))
+                Text("Zostáva: ${remainingText(remaining)}", modifier = Modifier.padding(top = 6.dp))
             }
 
             replies.forEach { r ->
-                Text(
-                    text = "✦ " + (r.text ?: r.emotion?.label().orEmpty()),
-                    color = r.emotion?.color() ?: Color.Unspecified,
-                    fontSize = 13.sp,
-                    modifier = Modifier.padding(start = 12.dp, top = 4.dp),
-                )
+                Row(modifier = Modifier.padding(start = 12.dp, top = 4.dp)) {
+                    // farebná iskra, text v bežnej farbe (žltá na bielej by bola nečitateľná)
+                    Text("✦ ", color = r.emotion?.color() ?: Color.Unspecified, fontSize = 13.sp)
+                    Text(r.text ?: r.emotion?.label().orEmpty(), fontSize = 13.sp)
+                }
             }
             if (onReply != null && phase != LifePhase.FadingOut && replies.size < ReplyThread.MAX_REPLIES) {
                 TextButton(onClick = onReply) { Text("Odpovedať svetlom") }
             }
         }
+    }
+}
+
+/** Slovenský názov typu signálu (namiesto technického názvu triedy). */
+fun Signal.typeLabel(): String =
+    when (this) {
+        is TextSignal -> "Text"
+        is EmojiSignal -> "Emoji"
+        is AudioSignal -> "Zvuk"
+        is ImageSignal -> "Obrázok"
+        is FlashSignal -> "Záblesk"
+        is MixSignal -> "Mix"
+        is PulseSignal -> "Pulz"
+    }
+
+// sekundy len pri krátkych signáloch, WishNet žije hodiny
+private fun remainingText(ms: Long): String {
+    val s = (ms + 999) / 1000
+    return when {
+        s < 60 -> "$s s"
+        s < 3600 -> "${s / 60} min"
+        else -> "${s / 3600} h"
     }
 }

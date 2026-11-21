@@ -77,5 +77,20 @@ data class MixSignal(
     override val createdAt: Long = System.currentTimeMillis(),
     override val category: SignalCategory = SignalCategory.WishNet,
     override val expireOnRead: Boolean = false,
-    override val ttlMillis: Long? = 86_400_000L,
+    override val ttlMillis: Long? = SignalLifecycle.WISHNET_TTL_MS,
 ) : Signal
+
+/** Signál poslaný do WishNet žije ako WishNet (24 h, nezhasne prečítaním), nie ako bežný 30 s signál. */
+fun Signal.asWishNet(): Signal {
+    val c = SignalCategory.WishNet
+    val ttl = SignalLifecycle.WISHNET_TTL_MS
+    return when (this) {
+        is TextSignal -> copy(category = c, expireOnRead = false, ttlMillis = ttl)
+        is EmojiSignal -> copy(category = c, expireOnRead = false, ttlMillis = ttl)
+        is AudioSignal -> copy(category = c, expireOnRead = false, ttlMillis = ttl)
+        is ImageSignal -> copy(category = c, expireOnRead = false, ttlMillis = ttl)
+        is FlashSignal -> copy(category = c, expireOnRead = false, ttlMillis = ttl)
+        is MixSignal -> copy(category = c, expireOnRead = false, ttlMillis = ttl)
+        is PulseSignal -> copy(category = c, expireOnRead = false, ttlMillis = ttl)
+    }
+}

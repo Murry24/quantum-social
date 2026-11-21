@@ -18,7 +18,13 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.withTransform
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import app.quantumsocial.core.data.PulseOutbox
+import app.quantumsocial.core.model.PulseEffect
 import app.quantumsocial.ui.model.StarPoint
 import kotlin.math.cos
 import kotlin.math.min
@@ -29,7 +35,26 @@ data class PulseFlight(
     val id: String,
     val starId: String,
     val color: Color,
-)
+    val emoji: String? = null,
+    val effect: PulseEffect? = null,
+) {
+    companion object {
+        fun of(
+            sent: PulseOutbox.Sent,
+            color: Color,
+        ) = PulseFlight(sent.signal.id, sent.resolvedStarId, color, sent.signal.emoji, sent.signal.effect)
+    }
+}
+
+private val rainbow =
+    listOf(
+        Color(0xFFFF6B6B),
+        Color(0xFFFFC145),
+        Color(0xFFFFF06B),
+        Color(0xFF6BFF9E),
+        Color(0xFF6BC8FF),
+        Color(0xFFB26BFF),
+    )
 
 private const val FLIGHT_MS = 1_400
 private const val ARRIVAL_PART = 0.8f
@@ -50,6 +75,7 @@ fun PulseFlightLayer(
 ) {
     val progress = remember { mutableStateMapOf<String, Float>() }
     val finish by rememberUpdatedState(onFinished)
+    val textMeasurer = rememberTextMeasurer()
 
     flights.forEach { f ->
         key(f.id) {
@@ -87,8 +113,9 @@ fun PulseFlightLayer(
                     for (i in TRAIL_STEPS downTo 0) {
                         val t = (travel - i * 0.035f).coerceAtLeast(0f)
                         val fade = 1f - i.toFloat() / (TRAIL_STEPS + 1)
+                        val trailColor = if (f.effect == PulseEffect.Rainbow) rainbow[i % rainbow.size] else f.color
                         drawCircle(
-                            color = f.color.copy(alpha = 0.55f * fade),
+                            color = trailColor.copy(alpha = 0.55f * fade),
                             radius = orb * (0.5f + 0.5f * fade),
                             center = Offset(tx * t, ty * t),
                             blendMode = BlendMode.Plus,
@@ -99,18 +126,53 @@ fun PulseFlightLayer(
                         radius = orb * 0.55f,
                         center = Offset(tx * travel, ty * travel),
                     )
+                    if (f.effect == PulseEffect.Sparks) {
+                        // iskry: drobné bodky rozhádzané okolo hlavy pulzu
+                        for (k in 0 until 6) {
+                            val a = k * 1.047f + travel * 12f
+                            drawCircle(
+                                color = Color.White.copy(alpha = 0.8f),
+                                radius = orb * 0.18f,
+                                center = Offset(tx * travel + cos(a) * orb * 1.6f, ty * travel + sin(a) * orb * 1.6f),
+                            )
+                        }
+                    }
+                    f.emoji?.let { e ->
+                        val layout = textMeasurer.measure(e, TextStyle(fontSize = (18 / scale).sp))
+                        drawText(
+                            textLayoutResult = layout,
+                            topLeft =
+                                Offset(
+                                    tx * travel - layout.size.width / 2f,
+                                    ty * travel - layout.size.height - orb,
+                                ),
+                        )
+                    }
                 }
 
                 // dopad: rozvlnený kruh okolo hviezdy
                 if (p >= ARRIVAL_PART) {
                     val wave = (p - ARRIVAL_PART) / (1f - ARRIVAL_PART)
-                    drawCircle(
-                        color = f.color.copy(alpha = 0.8f * (1f - wave)),
-                        radius = orb * (1.5f + 5f * wave),
-                        center = Offset(tx, ty),
-                        style = Stroke(width = 2.dp.toPx() / scale),
-                        blendMode = BlendMode.Plus,
-                    )
+                    // vlna = 3 kruhy za sebou, inak 1
+                    val rings = if (f.effect == PulseEffect.Wave) 3 else 1
+                    for (ring in 0 until rings) {
+                        val w = (wave - ring * 0.2f).coerceAtLeast(0f)
+                        drawCircle(
+                            color = f.color.copy(alpha = 0.8f * (1f - w)),
+                            radius = orb * (1.5f + 5f * w),
+                            center = Offset(tx, ty),
+                            style = Stroke(width = 2.dp.toPx() / scale),
+                            blendMode = BlendMode.Plus,
+                        )
+                    }
+                    if (f.effect == PulseEffect.Flash) {
+                        drawCircle(
+                            color = Color.White.copy(alpha = 0.7f * (1f - wave)),
+                            radius = orb * 4f,
+                            center = Offset(tx, ty),
+                            blendMode = BlendMode.Plus,
+                        )
+                    }
                 }
             }
         }

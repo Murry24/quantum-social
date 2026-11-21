@@ -34,7 +34,7 @@ data class OnboardingState(
 object RecoveryKey {
     const val WORD_COUNT = 8
 
-    // shortcut: 64 slov × 8 = 48 bitov, pre server (bod 9) treba väčší zoznam (BIP39 má 2048)
+    // shortcut: 8 rôznych z 64 slov ≈ 47 bitov, pre server (bod 9) treba väčší zoznam (BIP39 má 2048)
     val words: List<String> =
         listOf(
             "iskra", "hviezda", "kométa", "dúha", "vlna", "perla", "ozvena", "aurora",
@@ -47,6 +47,7 @@ object RecoveryKey {
             "svetlo", "tieň", "úsvit", "súmrak", "zima", "jar", "leto", "jeseň",
         )
 
+    // bez opakovania – dvakrát to isté slovo mätie pri prepisovaní
     fun generate(random: Random = SecureRandom().asKotlinRandom()): List<String> =
-        List(WORD_COUNT) { words[random.nextInt(words.size)] }
+        words.shuffled(random).take(WORD_COUNT)
 }

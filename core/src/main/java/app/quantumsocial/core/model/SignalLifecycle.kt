@@ -16,6 +16,9 @@ object SignalLifecycle {
     /** Ako dlho trvá animácia zhasnutia, kým signál úplne zmizne. */
     const val FADE_OUT_MS = 1_200L
 
+    /** WishNet signály žijú dlhšie – 24 h (rovnako ako MixSignal). */
+    const val WISHNET_TTL_MS = 86_400_000L
+
     /** Najnižší jas počas fázy Expiring (aby bol signál stále viditeľný). */
     private const val EXPIRING_MIN_BRIGHTNESS = 0.35f
 

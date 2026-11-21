@@ -13,8 +13,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -31,21 +35,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.quantumsocial.core.model.Emotion
+import app.quantumsocial.core.model.PulseEffect
 import app.quantumsocial.core.model.SignalTarget
 import app.quantumsocial.ui.screens.color
 import app.quantumsocial.ui.screens.label
 
 /**
  * Obsah spodného panelu na odoslanie pocitového pulzu (bod 8).
- * Bez písania – vyberieš emóciu (farebné svetlo) a pošleš.
+ * Bez písania – vyberieš emóciu (farebné svetlo), voliteľne emoji a efekt, a pošleš.
  */
 @Composable
 fun SendPulseSheet(
     target: SignalTarget,
-    onSend: (Emotion) -> Unit,
+    onSend: (Emotion, String?, PulseEffect?) -> Unit,
     onOpenProfile: ((String) -> Unit)? = null,
 ) {
     var selected by remember { mutableStateOf(Emotion.Joy) }
+    var emoji by remember { mutableStateOf<String?>(null) }
+    var effect by remember { mutableStateOf<PulseEffect?>(null) }
 
     Column(
         modifier =
@@ -87,10 +94,29 @@ fun SendPulseSheet(
             }
         }
 
-        Spacer(Modifier.height(20.dp))
+        Spacer(Modifier.height(16.dp))
+
+        Text(
+            text = "Pridaj k pulzu (nepovinné)",
+            fontSize = 13.sp,
+            modifier = Modifier.alpha(0.7f).fillMaxWidth(),
+        )
+        EmojiStrip(selected = emoji) { emoji = it }
+        LazyRow(modifier = Modifier.fillMaxWidth()) {
+            items(PulseEffect.values()) { e ->
+                FilterChip(
+                    selected = effect == e,
+                    onClick = { effect = if (effect == e) null else e },
+                    label = { Text(e.label()) },
+                    modifier = Modifier.padding(end = 6.dp).wrapContentWidth(),
+                )
+            }
+        }
+
+        Spacer(Modifier.height(16.dp))
 
         Button(
-            onClick = { onSend(selected) },
+            onClick = { onSend(selected, emoji, effect) },
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text("Vypustiť pulz ✦")
@@ -143,3 +169,11 @@ internal fun EmotionOrb(
         )
     }
 }
+
+internal fun PulseEffect.label(): String =
+    when (this) {
+        PulseEffect.Sparks -> "✨ Iskry"
+        PulseEffect.Rainbow -> "🌈 Dúha"
+        PulseEffect.Wave -> "🌊 Vlna"
+        PulseEffect.Flash -> "⚡ Záblesk"
+    }
