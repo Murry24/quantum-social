@@ -5,6 +5,7 @@ import app.quantumsocial.core.model.WallpaperScene
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import kotlin.math.abs
 
 class WallpaperSceneTest {
     @Test
@@ -33,15 +34,15 @@ class WallpaperSceneTest {
             val (x0, y0) = scene.hazeCenter(i, 0f)
             for (t in listOf(10f, 100f, 1000f)) {
                 val (x, y) = scene.hazeCenter(i, t)
-                assertTrue(kotlin.math.abs(x - x0) <= 0.13f && kotlin.math.abs(y - y0) <= 0.13f)
+                assertTrue(abs(x - x0) <= 0.13f && abs(y - y0) <= 0.13f)
             }
         }
     }
 
     @Test
     fun saver_redraws_less_often() {
-        assertTrue(
-            WallpaperScene.frameIntervalMs(PerformanceMode.Saver) > WallpaperScene.frameIntervalMs(PerformanceMode.Full),
-        )
+        val saver = WallpaperScene.frameIntervalMs(PerformanceMode.Saver)
+        val full = WallpaperScene.frameIntervalMs(PerformanceMode.Full)
+        assertTrue(saver > full)
     }
 }
