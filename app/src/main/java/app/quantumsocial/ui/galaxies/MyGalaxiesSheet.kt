@@ -32,6 +32,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import app.quantumsocial.core.data.GalaxyStore
+import app.quantumsocial.core.data.StarDust
+import app.quantumsocial.core.model.DustAction
 import app.quantumsocial.core.model.Emotion
 import app.quantumsocial.core.model.EnterResult
 import app.quantumsocial.core.model.GalaxyRules
@@ -109,6 +111,7 @@ fun MyGalaxiesSheet(
                 Button(onClick = {
                     val g = store.create(name, emotion, myStarId)
                     if (g != null) {
+                        StarDust.earn(DustAction.Galaxy)
                         onOpen(g.id)
                     } else {
                         message = "Nedá sa: meno nesmie byť prázdne, max 2 vlastné a 5 galaxií."

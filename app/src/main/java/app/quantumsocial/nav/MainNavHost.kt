@@ -16,6 +16,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,6 +38,7 @@ import app.quantumsocial.ui.onboarding.OnboardingScreen
 import app.quantumsocial.ui.screens.MapRequest
 import app.quantumsocial.ui.screens.MapRequests
 import app.quantumsocial.ui.screens.ProfileScreen
+import app.quantumsocial.ui.screens.StarDustPrefs
 import app.quantumsocial.ui.screens.StarMapScreen
 import app.quantumsocial.ui.screens.StarProfileScreen
 import app.quantumsocial.ui.screens.WishScreen
@@ -71,6 +73,8 @@ fun MainScaffold() {
     val rootEntry by navController.currentBackStackEntryAsState()
     val openGalaxy: (String) -> Unit = { id -> navController.navigate(Routes.galaxyEncoded(id)) }
     var showActions by remember { mutableStateOf(false) }
+    // bod 20: StarDust sa načíta pri štarte a ukladá pri každej zmene
+    LaunchedEffect(Unit) { StarDustPrefs.keepSaved(context) }
     val goHome = {
         navController.navigate(Routes.HOME) {
             popUpTo(navController.graph.findStartDestination().id) { saveState = true }

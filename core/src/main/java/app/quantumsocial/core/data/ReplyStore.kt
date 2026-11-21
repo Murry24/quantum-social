@@ -1,5 +1,6 @@
 package app.quantumsocial.core.data
 
+import app.quantumsocial.core.model.DustAction
 import app.quantumsocial.core.model.Reply
 import app.quantumsocial.core.model.ReplyThread
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +20,7 @@ object ReplyStore {
         val thread = _threads.value[signalId] ?: ReplyThread(signalId)
         if (!thread.canReply) return false
         _threads.value = _threads.value + (signalId to thread.add(reply))
+        StarDust.earn(DustAction.Reply)
         return true
     }
 

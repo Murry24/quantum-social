@@ -1,6 +1,7 @@
 package app.quantumsocial.core.data
 
 import app.quantumsocial.core.model.ChaosPicker
+import app.quantumsocial.core.model.DustAction
 import app.quantumsocial.core.model.Emotion
 import app.quantumsocial.core.model.PulseEffect
 import app.quantumsocial.core.model.PulseSignal
@@ -59,6 +60,7 @@ object PulseOutbox {
                 resolvedStarId = starId,
             )
         _sent.value = (listOf(sent) + _sent.value).take(MAX_HISTORY)
+        StarDust.earn(DustAction.Pulse, now)
         return sent
     }
 

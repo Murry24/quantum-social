@@ -10,6 +10,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
@@ -26,6 +27,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.quantumsocial.core.data.StarDust
+import app.quantumsocial.core.model.DustAction
 import app.quantumsocial.core.model.ZenSession
 import app.quantumsocial.core.ui.theme.GalaxyPalette
 import app.quantumsocial.ui.perf.LocalPerformanceMode
@@ -82,6 +85,8 @@ fun ZenScreen(onClose: () -> Unit) {
     val active = session
     val progress = active?.progress(now) ?: 0f
     val finished = active?.isFinished(now) == true
+    // bod 20: dokončená minúta ticha je pozitívny čin
+    LaunchedEffect(finished) { if (finished) StarDust.earn(DustAction.Zen) }
     // relatívny čas (Float by pri absolútnych ms stratil presnosť)
     val seconds = (now - openedAt) / 1000f
     // dych: 4 s nádych, 4 s výdych – z toho istého času, aby šetrič spomalil aj kruh
