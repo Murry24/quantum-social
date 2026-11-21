@@ -3,6 +3,7 @@ package app.quantumsocial.core
 import app.quantumsocial.core.data.ReplyStore
 import app.quantumsocial.core.data.SeedStore
 import app.quantumsocial.core.data.StarDust
+import app.quantumsocial.core.model.CustomSound
 import app.quantumsocial.core.model.DustAction
 import app.quantumsocial.core.model.Emotion
 import app.quantumsocial.core.model.Reply
@@ -47,6 +48,14 @@ class Balik3Test {
         assertTrue(StarChord.canChange(null, q))
         assertFalse(StarChord.canChange(q, q))
         assertTrue(StarChord.canChange(q, q + 1))
+    }
+
+    @Test
+    fun custom_sound_must_be_short_and_small() {
+        assertNull(CustomSound.problem(8_000, 300_000))
+        assertTrue(CustomSound.problem(null, 300_000) != null)
+        assertTrue(CustomSound.problem(16_000, 300_000)!!.contains("15"))
+        assertTrue(CustomSound.problem(5_000, 3_000_000)!!.contains("2 MB"))
     }
 
     // bod 29

@@ -40,3 +40,21 @@ data class StarChord(
         ): Boolean = lastChangedQuarter == null || nowQuarter > lastChangedQuarter
     }
 }
+
+/** Vlastný zvuk hviezdy (bod 28): krátky a malý, aby bol jemný a nezaťažil telefón. */
+object CustomSound {
+    const val MAX_DURATION_MS = 15_000L
+    const val MAX_BYTES = 2_000_000L
+
+    /** @return null ak je zvuk v poriadku, inak dôvod po slovensky */
+    fun problem(
+        durationMs: Long?,
+        bytes: Long,
+    ): String? =
+        when {
+            durationMs == null || durationMs <= 0 -> "Toto nie je zvuk, ktorý sa dá prehrať."
+            durationMs > MAX_DURATION_MS -> "Zvuk je dlhší ako 15 sekúnd – vyber kratší."
+            bytes > MAX_BYTES -> "Súbor je väčší ako 2 MB – vyber menší."
+            else -> null
+        }
+}
