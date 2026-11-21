@@ -21,20 +21,20 @@ Dáta najprv lokálne (mock), server až od bodu 9.
 | 10 | Serendipity | Denné náhodné párovanie 1:1 na 24 h („svetelný most“) | ⬜ |
 | 11 | EchoNet | Zvuky dňa: nahrávka 5–15 s, prehrávanie, tag nálady | ⬜ |
 | 12 | DreamMirror | Zápis snov, podobnosti snov („snový most“) | ⬜ |
-| 13 | ChallengeNet | Globálna denná výzva (24 h), galéria splnení | ⬜ |
-| 14 | GratNet | 1 zápis vďačnosti denne, zlaté iskry, podobnosti | ⬜ |
+| 13 | ChallengeNet | Globálna denná výzva (24 h), galéria splnení | 🟡 lokálne (výzva dňa) |
+| 14 | GratNet | 1 zápis vďačnosti denne, zlaté iskry, podobnosti | 🟡 lokálne (zlaté iskry) |
 | 15 | Notifikácie | Jemné, poetické (pulz/iskra namiesto červených odznakov), voliteľný push | ⬜ |
-| 16 | Svetelné levely | Iskra → Hviezda → Pulzár → Hmlovina → Supernova podľa aktivity | ⬜ |
+| 16 | Svetelné levely | Iskra → Hviezda → Pulzár → Hmlovina → Supernova podľa aktivity | 🟡 lokálne (podľa StarDust) |
 | 17 | Galactic Moments | Kolektívne globálne udalosti (zmena farieb, téma dňa) | ⬜ |
 | 18 | Onboarding | „Zrodenie hviezdy“ za 60 s: jazyk, emócia, kvanti-meno, obnovovací kľúč, tutoriál | ✅ |
 | 19 | Overenie a Aurora | 1 zariadenie = 1 hviezda, SMS overenie, captcha, moderácia, report/blok | ⬜ |
 | 20 | StarDust | Jediná (nepredajná) mena za pozitívne interakcie; spúšťač Galactic Moments | 🟡 lokálne (StarDust v profile) |
-| 21 | LightSignature | Jedinečný svetelno-zvukový podpis hviezdy | ⬜ |
+| 21 | LightSignature | Jedinečný svetelno-zvukový podpis hviezdy | 🟡 vizuálny podpis (bez zvuku) |
 | 22 | Constellations | Dočasné skupiny do 10 hviezd na tému/emóciu (3 dni) | ⬜ |
 | 23 | SoulLinks | Dlhodobé 1:1 kanály po obojstrannom súhlase (max 5) | ⬜ |
 | 24 | Memory Nebula | Súkromný šifrovaný archív výnimočných momentov | ⬜ |
 | 25 | Lingua Bridges | Voliteľné AI preklady (originál ↔ preklad) | ⬜ |
-| 26 | Mood Waves | Živé globálne vlny nálad „tu a teraz“ | ⬜ |
+| 26 | Mood Waves | Živé globálne vlny nálad „tu a teraz“ | 🟡 lokálne (z mapy) |
 | 27 | Pulse Alerts | Zvýraznený naliehavý signál, stojí StarDust, max 1/deň | ⬜ |
 | 28 | StarChords | Osobná melódia hviezdy, zmena raz za kvartál | ⬜ |
 | 29 | Empatický StarDust | Bonus StarDust za pomoc iným + aurora efekt | ⬜ |

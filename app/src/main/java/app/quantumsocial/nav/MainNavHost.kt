@@ -35,8 +35,12 @@ import app.quantumsocial.ui.nav.ActionOrb
 import app.quantumsocial.ui.nav.ActionsSheet
 import app.quantumsocial.ui.onboarding.OnboardingPrefs
 import app.quantumsocial.ui.onboarding.OnboardingScreen
+import app.quantumsocial.ui.screens.ChallengeScreen
+import app.quantumsocial.ui.screens.DailyPrefs
+import app.quantumsocial.ui.screens.GratitudeScreen
 import app.quantumsocial.ui.screens.MapRequest
 import app.quantumsocial.ui.screens.MapRequests
+import app.quantumsocial.ui.screens.MoodWavesScreen
 import app.quantumsocial.ui.screens.ProfileScreen
 import app.quantumsocial.ui.screens.StarDustPrefs
 import app.quantumsocial.ui.screens.StarMapScreen
@@ -54,6 +58,9 @@ private object Routes {
     const val ZEN = "zen"
     const val ONBOARDING = "onboarding"
     const val GALAXY = "galaxy/{galaxyId}"
+    const val GRATITUDE = "gratitude"
+    const val CHALLENGE = "challenge"
+    const val MOOD = "mood"
 
     fun galaxyEncoded(galaxyId: String) = "galaxy/${Uri.encode(galaxyId)}"
 
@@ -75,6 +82,7 @@ fun MainScaffold() {
     var showActions by remember { mutableStateOf(false) }
     // bod 20: StarDust sa načíta pri štarte a ukladá pri každej zmene
     LaunchedEffect(Unit) { StarDustPrefs.keepSaved(context) }
+    LaunchedEffect(Unit) { DailyPrefs.keepSaved(context) }
     val goHome = {
         navController.navigate(Routes.HOME) {
             popUpTo(navController.graph.findStartDestination().id) { saveState = true }
@@ -184,6 +192,18 @@ fun MainScaffold() {
                         MapRequests.request(MapRequest.Galaxies)
                         goHome()
                     },
+                    onGratitude = {
+                        showActions = false
+                        navController.navigate(Routes.GRATITUDE)
+                    },
+                    onChallenge = {
+                        showActions = false
+                        navController.navigate(Routes.CHALLENGE)
+                    },
+                    onMood = {
+                        showActions = false
+                        navController.navigate(Routes.MOOD)
+                    },
                 )
             }
         }
@@ -249,6 +269,11 @@ fun MainScaffold() {
 
             // ZenNet – minúta ticha (bod 8)
             composable(Routes.ZEN) { ZenScreen(onClose = { navController.popBackStack() }) }
+
+            // body 14, 13, 26: vďačnosť, výzva dňa, vlny nálad
+            composable(Routes.GRATITUDE) { GratitudeScreen(onBack = { navController.popBackStack() }) }
+            composable(Routes.CHALLENGE) { ChallengeScreen(onBack = { navController.popBackStack() }) }
+            composable(Routes.MOOD) { MoodWavesScreen(onBack = { navController.popBackStack() }) }
 
             // Profile (user)
             composable(Routes.PROFILE) {
