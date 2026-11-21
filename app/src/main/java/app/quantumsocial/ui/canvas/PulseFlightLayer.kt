@@ -37,12 +37,20 @@ data class PulseFlight(
     val color: Color,
     val emoji: String? = null,
     val effect: PulseEffect? = null,
+    val urgent: Boolean = false,
 ) {
     companion object {
         fun of(
             sent: PulseOutbox.Sent,
             color: Color,
-        ) = PulseFlight(sent.signal.id, sent.resolvedStarId, color, sent.signal.emoji, sent.signal.effect)
+        ) = PulseFlight(
+            sent.signal.id,
+            sent.resolvedStarId,
+            color,
+            sent.signal.emoji,
+            sent.signal.effect,
+            sent.signal.urgent,
+        )
     }
 }
 
@@ -123,9 +131,17 @@ fun PulseFlightLayer(
                     }
                     drawCircle(
                         color = Color.White.copy(alpha = 0.95f),
-                        radius = orb * 0.55f,
+                        radius = orb * if (f.urgent) 1f else 0.55f,
                         center = Offset(tx * travel, ty * travel),
                     )
+                    if (f.urgent) {
+                        drawCircle(
+                            color = f.color,
+                            radius = orb * 1.8f,
+                            center = Offset(tx * travel, ty * travel),
+                            style = Stroke(width = 2.dp.toPx() / scale),
+                        )
+                    }
                     if (f.effect == PulseEffect.Sparks) {
                         // iskry: drobné bodky rozhádzané okolo hlavy pulzu
                         for (k in 0 until 6) {

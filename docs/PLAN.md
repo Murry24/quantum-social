@@ -32,10 +32,10 @@ Dáta najprv lokálne (mock), server až od bodu 9.
 | 21 | LightSignature | Jedinečný svetelno-zvukový podpis hviezdy | 🟡 vizuálny podpis (bez zvuku) |
 | 22 | Constellations | Dočasné skupiny do 10 hviezd na tému/emóciu (3 dni) | ⬜ |
 | 23 | SoulLinks | Dlhodobé 1:1 kanály po obojstrannom súhlase (max 5) | ⬜ |
-| 24 | Memory Nebula | Súkromný šifrovaný archív výnimočných momentov | ⬜ |
+| 24 | Memory Nebula | Súkromný šifrovaný archív výnimočných momentov | 🟡 šifrovaný archív v telefóne |
 | 25 | Lingua Bridges | Voliteľné AI preklady (originál ↔ preklad) | ⬜ |
 | 26 | Mood Waves | Živé globálne vlny nálad „tu a teraz“ | 🟡 lokálne (z mapy) |
-| 27 | Pulse Alerts | Zvýraznený naliehavý signál, stojí StarDust, max 1/deň | ⬜ |
+| 27 | Pulse Alerts | Zvýraznený naliehavý signál, stojí StarDust, max 1/deň | 🟡 naliehavý pulz za 10 StarDust, 1× denne |
 | 28 | StarChords | Osobná melódia hviezdy, zmena raz za kvartál | 🟡 melódia z pentatoniky, zmena raz za štvrťrok |
 | 29 | Empatický StarDust | Bonus StarDust za pomoc iným + aurora efekt | 🟡 bonus za prvú odpoveď prianiu |
 | 30 | FutureSeeds → FutureBlooms | Semienka budúcnosti, ktoré rastú podporou komunity | 🟡 lokálne (zalievanie raz denne) |

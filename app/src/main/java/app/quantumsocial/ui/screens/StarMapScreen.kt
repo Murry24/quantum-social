@@ -64,6 +64,7 @@ import app.quantumsocial.core.model.Signal
 import app.quantumsocial.core.model.SignalLifecycle
 import app.quantumsocial.core.model.SignalTarget
 import app.quantumsocial.core.model.TextSignal
+import app.quantumsocial.core.model.WorldLanguages
 import app.quantumsocial.ui.canvas.FireflyLayer
 import app.quantumsocial.ui.canvas.NebulaBackground
 import app.quantumsocial.ui.canvas.PulseFlight
@@ -118,7 +119,7 @@ fun StarMapScreen(
             }
         }
 
-    val langs = listOf("SK", "EN", "CZ")
+    val langs = WorldLanguages.codes
     val topics = listOf("Tech", "Life", "Art")
     val emotions = Emotion.values().toList()
 
@@ -414,13 +415,14 @@ fun StarMapScreen(
         ) {
             SendPulseSheet(
                 target = target,
-                onSend = { emotion, emoji, effect ->
+                onSend = { emotion, emoji, effect, urgent ->
                     PulseOutbox.send(
                         target = target,
                         emotion = emotion,
                         visibleStarIds = currentFiltered.filter { it.brightness > 0.1f }.map { it.id },
                         emoji = emoji,
                         effect = effect,
+                        urgent = urgent,
                     )?.let { sent ->
                         flights.add(PulseFlight.of(sent, emotion.color()))
                     }
@@ -509,6 +511,7 @@ private fun FilterSheetContent(
             items = langs,
             selected = selLangs,
             onToggle = { item, selected -> if (selected) selLangs.add(item) else selLangs.remove(item) },
+            labelOf = WorldLanguages::chip,
         )
 
         ChipsRow(
@@ -550,6 +553,7 @@ private fun ChipsRow(
     items: List<String>,
     selected: List<String>,
     onToggle: (String, Boolean) -> Unit,
+    labelOf: (String) -> String = { it },
 ) {
     Text(text = label, modifier = Modifier.padding(start = 12.dp, top = 8.dp))
     LazyRow(contentPadding = PaddingValues(horizontal = 8.dp)) {
@@ -558,7 +562,7 @@ private fun ChipsRow(
             FilterChip(
                 selected = isSel,
                 onClick = { onToggle(item, !isSel) },
-                label = { Text(item) },
+                label = { Text(labelOf(item)) },
                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 6.dp),
                 colors =
                     FilterChipDefaults.filterChipColors(

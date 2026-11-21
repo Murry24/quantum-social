@@ -23,7 +23,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -58,7 +57,8 @@ import app.quantumsocial.ui.signals.EmotionOrb
 import java.util.UUID
 
 // rovnaké jazyky ako filter na mape
-private val languages = listOf("SK", "EN", "CZ")
+// predvolený jazyk; výber je z celého sveta (WorldLanguages)
+private const val DEFAULT_LANGUAGE = "SK"
 
 private val stateSaver =
     listSaver<OnboardingState, Any>(
@@ -71,7 +71,7 @@ private val stateSaver =
 fun OnboardingScreen(onDone: () -> Unit) {
     val context = LocalContext.current
     var state by rememberSaveable(stateSaver = stateSaver) { mutableStateOf(OnboardingState()) }
-    var language by rememberSaveable { mutableStateOf(languages.first()) }
+    var language by rememberSaveable { mutableStateOf(DEFAULT_LANGUAGE) }
     var emotion by rememberSaveable { mutableStateOf(Emotion.Joy) }
     var starId by rememberSaveable { mutableStateOf(UUID.randomUUID().toString()) }
     var notifications by rememberSaveable { mutableStateOf(false) }
@@ -97,15 +97,8 @@ fun OnboardingScreen(onDone: () -> Unit) {
                     OnboardingStep.Birth -> BirthStep()
                     OnboardingStep.Language -> {
                         Title("Akým jazykom žiariš?")
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            languages.forEach { l ->
-                                FilterChip(
-                                    selected = l == language,
-                                    onClick = { language = l },
-                                    label = { Text(l) },
-                                )
-                            }
-                        }
+                        // celý svet, nielen SK / EN / CZ
+                        LanguagePicker(selected = language) { language = it }
                     }
                     OnboardingStep.Emotion -> {
                         Title("Aký pocit dnes vyžaruješ?")

@@ -70,6 +70,7 @@ fun ActionsSheet(
     onDream: () -> Unit,
     onSeeds: () -> Unit,
     onEcho: () -> Unit,
+    onMemory: () -> Unit,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(6.dp),
@@ -88,6 +89,7 @@ fun ActionsSheet(
         BigAction("🌙  DreamMirror – snový most", onDream)
         BigAction("🌱  Semienka budúcnosti", onSeeds)
         BigAction("🎧  EchoNet – ozvena dňa", onEcho)
+        BigAction("🔮  Memory Nebula – moje chvíle", onMemory)
     }
 }
 
