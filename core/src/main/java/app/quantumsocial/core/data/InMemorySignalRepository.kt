@@ -1,6 +1,8 @@
 package app.quantumsocial.core.data
 
+import app.quantumsocial.core.model.DustAction
 import app.quantumsocial.core.model.Signal
+import app.quantumsocial.core.model.SignalCategory
 import app.quantumsocial.core.model.SignalLifecycle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -43,6 +45,8 @@ object InMemorySignalRepository {
 
     fun send(signal: Signal) {
         _signals.value = listOf(signal) + _signals.value
+        // bod 20: prianie do WishNet je pozitívny čin
+        if (signal.category == SignalCategory.WishNet) StarDust.earn(DustAction.Wish, signal.createdAt)
     }
 
     /** Prečítanie: signál s expireOnRead začne zhasínať. */

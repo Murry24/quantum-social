@@ -28,7 +28,7 @@ Dáta najprv lokálne (mock), server až od bodu 9.
 | 17 | Galactic Moments | Kolektívne globálne udalosti (zmena farieb, téma dňa) | ⬜ |
 | 18 | Onboarding | „Zrodenie hviezdy“ za 60 s: jazyk, emócia, kvanti-meno, obnovovací kľúč, tutoriál | ✅ |
 | 19 | Overenie a Aurora | 1 zariadenie = 1 hviezda, SMS overenie, captcha, moderácia, report/blok | ⬜ |
-| 20 | StarDust | Jediná (nepredajná) mena za pozitívne interakcie; spúšťač Galactic Moments | ⬜ |
+| 20 | StarDust | Jediná (nepredajná) mena za pozitívne interakcie; spúšťač Galactic Moments | 🟡 lokálne (StarDust v profile) |
 | 21 | LightSignature | Jedinečný svetelno-zvukový podpis hviezdy | ⬜ |
 | 22 | Constellations | Dočasné skupiny do 10 hviezd na tému/emóciu (3 dni) | ⬜ |
 | 23 | SoulLinks | Dlhodobé 1:1 kanály po obojstrannom súhlase (max 5) | ⬜ |
