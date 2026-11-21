@@ -82,7 +82,9 @@ core/src/main/java/app/quantumsocial/core/
   Pošli pulz z profilu.
 - **`feat/6-happy-galaxy`** (z bodu 5): bod 6 – `GalaxyPalette`, svetlušky (`FireflyLayer`), šetrič výkonu
   (`PerformancePolicy` v core, `ui/perf`), prepínač v Profile.
-- Ďalej: bod 18 (onboarding, `feat/18-onboarding`), potom dokončiť 4.
+- **`feat/18-onboarding`** (z bodu 6): bod 18 – „Zrodenie hviezdy“ (`ui/onboarding`), `OnboardingState` + `RecoveryKey`
+  v core. Kľúč zatiaľ v SharedPreferences (TODO bod 9: Keystore). Profil → „Znova prejsť zrodením“.
+- Ďalej: dokončiť 4, potom 9 (server, bezpečnosť).
 
 ## Dohodnuté smerovanie
 - Prvá verzia bez servera – všetko lokálne, server (bod 9, 19) až keď bude jadro príjemné.
