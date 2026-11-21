@@ -23,6 +23,9 @@ class GalaxyStore {
 
     fun galaxy(id: String): FriendGalaxy? = _galaxies.value.firstOrNull { it.id == id }
 
+    /** Kam vedie čierna diera s týmto kódom (aby UI vedelo, kam po vstupe letieť). */
+    fun galaxyIdForCode(code: String): String? = invites[code.trim().uppercase()]?.galaxyId
+
     /** Galaxie, v ktorých hviezda svieti (zhasnuté nie). */
     fun galaxiesOf(
         starId: String,

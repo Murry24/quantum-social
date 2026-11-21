@@ -47,6 +47,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Density
@@ -72,8 +73,14 @@ import app.quantumsocial.ui.canvas.StarCanvas
 import app.quantumsocial.ui.components.LegendEmotions
 import app.quantumsocial.ui.components.MiniKnobs
 import app.quantumsocial.ui.components.ZoomThinBar
+import app.quantumsocial.ui.galaxies.HoleButton
+import app.quantumsocial.ui.galaxies.HoleKind
+import app.quantumsocial.ui.galaxies.MyGalaxiesSheet
+import app.quantumsocial.ui.galaxies.warp
+import app.quantumsocial.ui.galaxies.warpMillis
 import app.quantumsocial.ui.model.StarPoint
 import app.quantumsocial.ui.model.toStarPoint
+import app.quantumsocial.ui.onboarding.OnboardingPrefs
 import app.quantumsocial.ui.perf.LocalPerformanceMode
 import app.quantumsocial.ui.signals.SendPulseSheet
 import kotlinx.coroutines.delay
@@ -88,6 +95,7 @@ fun StarMapScreen(
     onOpenStar: (String) -> Unit = {},
     focusStarId: String? = null,
     onOpenZen: () -> Unit = {},
+    onOpenGalaxy: (String) -> Unit = {},
 ) {
     val signals by InMemorySignalRepository.signals.collectAsState()
     val fadingSince by InMemorySignalRepository.fadingSince.collectAsState()
@@ -177,6 +185,20 @@ fun StarMapScreen(
     val sendSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val flights = remember { mutableStateListOf<PulseFlight>() }
 
+    // Bod 31: čierna diera → Moje galaxie; prelet = obrazovka sa zatočí a stiahne do stredu
+    val context = LocalContext.current
+    val myStarId = remember { OnboardingPrefs.myStarId(context) }
+    var showGalaxies by remember { mutableStateOf(false) }
+    val warpOut = remember { Animatable(0f) }
+
+    fun flyToGalaxy(id: String) {
+        showGalaxies = false
+        scope.launch {
+            warpOut.animateTo(1f, tween(warpMillis(perf)))
+            onOpenGalaxy(id)
+        }
+    }
+
     // aktuálny zoznam pre gestá – pointerInput sa tak nereštartuje pri každej zmene jasu hviezd
     val currentFiltered by rememberUpdatedState(filtered)
 
@@ -255,6 +277,7 @@ fun StarMapScreen(
         modifier =
             Modifier
                 .fillMaxSize()
+                .warp(warpOut.value, perf)
                 .background(GalaxyGradient),
     ) {
         Box(
@@ -323,6 +346,13 @@ fun StarMapScreen(
                 onFinished = { id -> flights.removeAll { it.id == id } },
             )
         }
+
+        // Bod 31: čierna diera na okraji veľkej galaxie (ľavý horný roh)
+        HoleButton(
+            kind = HoleKind.Black,
+            label = "Moje galaxie",
+            modifier = Modifier.align(Alignment.TopStart).padding(8.dp),
+        ) { showGalaxies = true }
 
         // Bod 8: pulz do chaosu + ZenNet (pravý spodok)
         Column(
@@ -407,6 +437,16 @@ fun StarMapScreen(
                     onOpenStar(id)
                 },
             )
+        }
+    }
+
+    // Bod 31: Moje galaxie
+    if (showGalaxies) {
+        ModalBottomSheet(
+            onDismissRequest = { showGalaxies = false },
+            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        ) {
+            MyGalaxiesSheet(myStarId = myStarId, onOpen = ::flyToGalaxy)
         }
     }
 

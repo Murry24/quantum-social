@@ -37,6 +37,9 @@ object GalaxyPalette {
     // text a jadrá hviezd na oblohe
     const val ON_SKY = 0xFFFFFFFF
 
+    // bod 31: stred čiernej diery – hlboká indigová, nie strašidelná čierna
+    const val HOLE_CORE = 0xFF241E4E
+
     val skyStops: List<Long> = listOf(SKY_TOP, SKY_MIDDLE, SKY_BOTTOM)
 
     val skyBrush: Brush
