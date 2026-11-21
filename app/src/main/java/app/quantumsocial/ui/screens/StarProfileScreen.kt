@@ -264,6 +264,9 @@ fun StarProfileScreen(
             )
         }
 
+        // bod 23: trvalé spojenie 1:1 po obojstrannom súhlase
+        Row(modifier = Modifier.padding(horizontal = 8.dp)) { SoulLinkOffer(starId) }
+
         Row(
             modifier =
                 Modifier

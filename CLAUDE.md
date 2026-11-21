@@ -69,15 +69,11 @@ core/src/main/java/app/quantumsocial/core/
 - **Emulátor spúšťa Maroš v Android Studiu** (panel Running Devices), nie Claude cez `emulator.exe`.
   Ak už beží (`adb devices`), nový nespúšťaj. Aplikácia sa spúšťa ▶ Run v Android Studiu.
 
-## Aktuálny stav (21. 11. 2026)
-- Hotové v `main` (zlúčené PR #4, #6–#11): body 1, 2, 3, 5, 6, 7, 8, 18, 31; bod 4 takmer hotový.
-- Kde čo je: životnosť `SignalLifecycle`; pulzy/ZenNet `PulseSignal`, `PulseOutbox`, `ZenSession`;
-  profil `QuantName`, `WatchedStars`; galaxia `GalaxyPalette`, `FireflyLayer`, `PerformancePolicy`;
-  onboarding `ui/onboarding`, `OnboardingState`, `RecoveryKey` (kľúč zatiaľ v SharedPreferences – TODO bod 9: Keystore);
-  galaxie priateľov `FriendGalaxy`, `GalaxyRules`, `GalaxyStore` (demo „Kamaráti“, kód `KVANT7`), `ui/galaxies`;
-  odpovede `Reply`, `ReplyThread`, `ReplyStore`, `ReplySheet`.
-- Nové body staviaj z aktuálneho `main`.
-- Ďalej: dokončiť 4, potom 9 (bezpečnosť, Keystore), 19, 20.
+## Aktuálny stav (21. 11. 2026 večer)
+- **Najprv si prečítaj `docs/STAV.md`** – odovzdávka: čo čaká na test, poradie zlúčenia, ďalšie kroky.
+- V `main`: body 1–8, 18, 31 a lokálne 3, 5, 6, 7, 9, 20 (zlúčené PR #4–#15).
+- Na spoločný test čakajú PR #16–#23 (vetva `feat/balik-10-22-23` obsahuje všetko).
+- Server až úplne na záver; dovtedy ukážkové hviezdy (`DemoStars`).
 
 ## Dohodnuté smerovanie
 - Prvá verzia bez servera – všetko lokálne, server (bod 9, 19) až keď bude jadro príjemné.

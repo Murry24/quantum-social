@@ -2,12 +2,14 @@ package app.quantumsocial.ui.screens
 
 import android.content.Context
 import app.quantumsocial.core.data.ChallengeStore
+import app.quantumsocial.core.data.ConnectionStore
 import app.quantumsocial.core.data.EchoStore
 import app.quantumsocial.core.data.GratitudeStore
 import app.quantumsocial.core.data.SeedStore
 import app.quantumsocial.core.model.EchoDay
 import app.quantumsocial.core.model.GratitudeJournal
 import app.quantumsocial.core.model.SeedGarden
+import app.quantumsocial.core.model.SoulLinks
 import app.quantumsocial.core.model.StarDustState
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -20,6 +22,8 @@ object DailyPrefs {
     private const val KEY_CHALLENGE = "challenge_done_day"
     private const val KEY_SEEDS = "future_seeds"
     private const val KEY_ECHOES = "echoes"
+    private const val KEY_LINKS = "soul_links"
+    private const val KEY_JOINED = "constellations_joined"
 
     suspend fun keepSaved(context: Context) {
         val prefs = context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
@@ -31,10 +35,17 @@ object DailyPrefs {
         val today = StarDustState.epochDay(System.currentTimeMillis())
         echoes.expired(today).forEach { File(it.filePath).delete() }
         EchoStore.restore(EchoDay(echoes.today(today)))
+        ConnectionStore.restore(
+            SoulLinks.decode(prefs.getString(KEY_LINKS, null)),
+            prefs.getStringSet(KEY_JOINED, emptySet()).orEmpty().toSet(),
+        )
+        ConnectionStore.refresh()
         coroutineScope {
             launch { GratitudeStore.journal.collect { prefs.edit().putString(KEY_GRATITUDE, it.encode()).apply() } }
             launch { SeedStore.garden.collect { prefs.edit().putString(KEY_SEEDS, it.encode()).apply() } }
             launch { EchoStore.day.collect { prefs.edit().putString(KEY_ECHOES, it.encode()).apply() } }
+            launch { ConnectionStore.links.collect { prefs.edit().putString(KEY_LINKS, it.encode()).apply() } }
+            launch { ConnectionStore.joined.collect { prefs.edit().putStringSet(KEY_JOINED, it).apply() } }
             launch {
                 ChallengeStore.doneDay.collect { d ->
                     prefs.edit().apply { if (d == null) remove(KEY_CHALLENGE) else putLong(KEY_CHALLENGE, d) }.apply()
