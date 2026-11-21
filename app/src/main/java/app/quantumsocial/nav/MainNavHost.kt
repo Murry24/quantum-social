@@ -14,7 +14,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -52,7 +54,8 @@ fun MainScaffold() {
     val navController = rememberNavController()
     val context = LocalContext.current
     // bod 18: pri prvom spustení začína „Zrodenie hviezdy“
-    val start = remember { if (OnboardingPrefs.isDone(context)) Routes.HOME else Routes.ONBOARDING }
+    // stav, nie len hodnota: graf sa môže postaviť nanovo (napr. pri zmene šetriča) a musí mať aktuálny štart
+    var start by remember { mutableStateOf(if (OnboardingPrefs.isDone(context)) Routes.HOME else Routes.ONBOARDING) }
     val rootEntry by navController.currentBackStackEntryAsState()
 
     Scaffold(
@@ -178,10 +181,7 @@ fun MainScaffold() {
             // Profile (user)
             composable(Routes.PROFILE) {
                 ProfileScreen(
-                    onRebirth = {
-                        OnboardingPrefs.restart(context)
-                        navController.navigate(Routes.ONBOARDING)
-                    },
+                    onRebirth = { navController.navigate(Routes.ONBOARDING) },
                 )
             }
 
@@ -190,7 +190,7 @@ fun MainScaffold() {
                 OnboardingScreen(
                     onDone = {
                         // odteraz je domovom mapa (aj pre spodnú lištu) a späť sa do onboardingu nevracia
-                        navController.graph.setStartDestination(Routes.HOME)
+                        start = Routes.HOME
                         navController.navigate(Routes.HOME) { popUpTo(navController.graph.id) { inclusive = true } }
                     },
                 )

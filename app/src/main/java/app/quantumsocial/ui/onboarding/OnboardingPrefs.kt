@@ -12,9 +12,6 @@ object OnboardingPrefs {
 
     fun isDone(context: Context) = prefs(context).getBoolean(KEY_DONE, false)
 
-    /** „Znova prejsť zrodením“ – zmaže len príznak, kľúč ostáva. */
-    fun restart(context: Context) = prefs(context).edit().putBoolean(KEY_DONE, false).apply()
-
     /** Existujúci kľúč, alebo nový (vygeneruje a uloží). Nikdy ho nelogovať ani neposielať. */
     fun recoveryKey(context: Context): List<String> {
         val p = prefs(context)

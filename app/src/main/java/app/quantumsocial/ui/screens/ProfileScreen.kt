@@ -37,7 +37,7 @@ fun ProfileScreen(onRebirth: () -> Unit) {
             }
         }
 
-        // bod 18: na testovanie – zmaže len príznak, obnovovací kľúč ostáva
+        // bod 18: na testovanie – otvorí onboarding znova, obnovovací kľúč ostáva
         OutlinedButton(onClick = onRebirth) { Text("Znova prejsť zrodením") }
     }
 }
