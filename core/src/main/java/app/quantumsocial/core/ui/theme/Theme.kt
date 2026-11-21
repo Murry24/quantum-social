@@ -23,7 +23,7 @@ val DarkColors: ColorScheme =
     )
 
 val GalaxyGradient: Brush
-    get() = Brush.verticalGradient(listOf(GalaxyBgTop, GalaxyBgBottom))
+    get() = GalaxyPalette.skyBrush
 
 @Composable
 fun AppTheme(content: @Composable () -> Unit) {
