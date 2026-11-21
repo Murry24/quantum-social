@@ -5,6 +5,7 @@ import app.quantumsocial.core.model.PerformanceMode
 import app.quantumsocial.core.model.PerformancePolicy
 import app.quantumsocial.core.ui.theme.ColorContrast
 import app.quantumsocial.core.ui.theme.GalaxyPalette
+import app.quantumsocial.core.ui.theme.GalaxyTheme
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -36,6 +37,27 @@ class HappyGalaxyTest {
         for (sky in GalaxyPalette.skyStops) {
             assertTrue(ColorContrast.ratio(0xFF000000, sky) > ColorContrast.ratio(0xFF000000, oldDark))
         }
+    }
+
+    @Test
+    fun every_galaxy_theme_keeps_text_and_stars_readable() {
+        for (theme in GalaxyTheme.values()) {
+            for (sky in theme.skyStops) {
+                val r = ColorContrast.ratio(GalaxyPalette.ON_SKY, sky)
+                assertTrue("${theme.name}: kontrast ${"%.2f".format(r)}", r >= 4.5)
+                for (haze in GalaxyPalette.hazes) {
+                    val mixed = ColorContrast.blend(haze.argb, haze.alpha, sky)
+                    assertTrue("${theme.name}: hmlovina", ColorContrast.ratio(GalaxyPalette.ON_SKY, mixed) >= 3.0)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun stored_theme_parsing() {
+        assertEquals(GalaxyTheme.Ocean, GalaxyTheme.parse("Ocean"))
+        assertEquals(GalaxyTheme.Dawn, GalaxyTheme.parse(null))
+        assertEquals(GalaxyTheme.Dawn, GalaxyTheme.parse("nezmysel"))
     }
 
     @Test
