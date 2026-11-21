@@ -18,6 +18,7 @@ data class LightSignature(
                 h = (h xor ch.code.toLong()) * 0x01000193L and 0xFFFFFFFFL
             }
             val emotions = Emotion.values()
+
             fun pick(shift: Int) = ((h shr shift) and 0xFF).toInt()
             return LightSignature(
                 colors = listOf(pick(0), pick(8), pick(16)).map { emotions[it % emotions.size] },
