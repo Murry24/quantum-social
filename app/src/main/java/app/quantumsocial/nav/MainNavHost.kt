@@ -40,6 +40,7 @@ import app.quantumsocial.ui.onboarding.OnboardingPrefs
 import app.quantumsocial.ui.onboarding.OnboardingScreen
 import app.quantumsocial.ui.screens.ChallengeScreen
 import app.quantumsocial.ui.screens.ChordPrefs
+import app.quantumsocial.ui.screens.ConstellationsScreen
 import app.quantumsocial.ui.screens.DailyPrefs
 import app.quantumsocial.ui.screens.DreamScreen
 import app.quantumsocial.ui.screens.EchoScreen
@@ -51,6 +52,8 @@ import app.quantumsocial.ui.screens.MemoryScreen
 import app.quantumsocial.ui.screens.MoodWavesScreen
 import app.quantumsocial.ui.screens.ProfileScreen
 import app.quantumsocial.ui.screens.SeedsScreen
+import app.quantumsocial.ui.screens.SerendipityScreen
+import app.quantumsocial.ui.screens.SoulLinksScreen
 import app.quantumsocial.ui.screens.StarDustPrefs
 import app.quantumsocial.ui.screens.StarMapScreen
 import app.quantumsocial.ui.screens.StarProfileScreen
@@ -74,6 +77,9 @@ private object Routes {
     const val SEEDS = "seeds"
     const val ECHO = "echo"
     const val MEMORY = "memory"
+    const val BRIDGE = "bridge"
+    const val CONSTELLATIONS = "constellations"
+    const val SOULLINKS = "soullinks"
 
     fun galaxyEncoded(galaxyId: String) = "galaxy/${Uri.encode(galaxyId)}"
 
@@ -236,6 +242,18 @@ fun MainScaffold() {
                         showActions = false
                         navController.navigate(Routes.MEMORY)
                     },
+                    onBridge = {
+                        showActions = false
+                        navController.navigate(Routes.BRIDGE)
+                    },
+                    onConstellations = {
+                        showActions = false
+                        navController.navigate(Routes.CONSTELLATIONS)
+                    },
+                    onSoulLinks = {
+                        showActions = false
+                        navController.navigate(Routes.SOULLINKS)
+                    },
                 )
             }
         }
@@ -314,6 +332,19 @@ fun MainScaffold() {
                 composable(Routes.SEEDS) { SeedsScreen(onBack = { navController.popBackStack() }) }
                 composable(Routes.ECHO) { EchoScreen(onBack = { navController.popBackStack() }) }
                 composable(Routes.MEMORY) { MemoryScreen(onBack = { navController.popBackStack() }) }
+                composable(Routes.BRIDGE) {
+                    SerendipityScreen(
+                        onBack = { navController.popBackStack() },
+                        onOpenStar = { id -> navController.navigate(Routes.starEncoded(id)) },
+                    )
+                }
+                composable(Routes.CONSTELLATIONS) { ConstellationsScreen(onBack = { navController.popBackStack() }) }
+                composable(Routes.SOULLINKS) {
+                    SoulLinksScreen(
+                        onBack = { navController.popBackStack() },
+                        onOpenStar = { id -> navController.navigate(Routes.starEncoded(id)) },
+                    )
+                }
 
                 // Profile (user)
                 composable(Routes.PROFILE) {

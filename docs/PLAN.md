@@ -18,7 +18,7 @@ Dáta najprv lokálne (mock), server až od bodu 9.
 | 7 | Odpoveď a sledovanie žiarenia | Krátke vlákno odpovedí, ktoré zhasne; „stopy“ hviezdy (nie follow) | ✅ |
 | 8 | Posielanie správ + ZenNet | Klik na hviezdu → poslať hviezde / do chaosu; ZenNet = 1 min ticha s bublinami | ✅ |
 | 9 | Bezpečnosť a anonymita | API kontrakty, šifrovanie E2E (koncept), kľúče v Keystore, minimum dát | 🟡 lokálne (Keystore), koncept v docs/BEZPECNOST.md |
-| 10 | Serendipity | Denné náhodné párovanie 1:1 na 24 h („svetelný most“) | ⬜ |
+| 10 | Serendipity | Denné náhodné párovanie 1:1 na 24 h („svetelný most“) | 🟡 svetelný most dňa (ukážkové hviezdy) |
 | 11 | EchoNet | Zvuky dňa: nahrávka 5–15 s, prehrávanie, tag nálady | 🟡 lokálne (nahrávanie, nálada, zhasne o polnoci) |
 | 12 | DreamMirror | Zápis snov, podobnosti snov („snový most“) | 🟡 lokálne (sny len v pamäti) |
 | 13 | ChallengeNet | Globálna denná výzva (24 h), galéria splnení | 🟡 lokálne (výzva dňa) |
@@ -30,8 +30,8 @@ Dáta najprv lokálne (mock), server až od bodu 9.
 | 19 | Overenie a Aurora | 1 zariadenie = 1 hviezda, SMS overenie, captcha, moderácia, report/blok | ⬜ |
 | 20 | StarDust | Jediná (nepredajná) mena za pozitívne interakcie; spúšťač Galactic Moments | 🟡 lokálne (StarDust v profile) |
 | 21 | LightSignature | Jedinečný svetelno-zvukový podpis hviezdy | 🟡 vizuálny podpis (bez zvuku) |
-| 22 | Constellations | Dočasné skupiny do 10 hviezd na tému/emóciu (3 dni) | ⬜ |
-| 23 | SoulLinks | Dlhodobé 1:1 kanály po obojstrannom súhlase (max 5) | ⬜ |
+| 22 | Constellations | Dočasné skupiny do 10 hviezd na tému/emóciu (3 dni) | 🟡 súhvezdia dňa (ukážkové hviezdy) |
+| 23 | SoulLinks | Dlhodobé 1:1 kanály po obojstrannom súhlase (max 5) | 🟡 SoulLinks so súhlasom (ukážkový) |
 | 24 | Memory Nebula | Súkromný šifrovaný archív výnimočných momentov | 🟡 šifrovaný archív v telefóne |
 | 25 | Lingua Bridges | Voliteľné AI preklady (originál ↔ preklad) | ⬜ |
 | 26 | Mood Waves | Živé globálne vlny nálad „tu a teraz“ | 🟡 lokálne (z mapy) |

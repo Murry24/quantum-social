@@ -5,6 +5,7 @@ import app.quantumsocial.core.model.Echo
 import app.quantumsocial.core.model.EchoDay
 import app.quantumsocial.core.model.GratitudeJournal
 import app.quantumsocial.core.model.SeedGarden
+import app.quantumsocial.core.model.SoulLinks
 import app.quantumsocial.core.model.StarDustState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -96,5 +97,44 @@ object EchoStore {
 
     fun restore(day: EchoDay) {
         _day.value = day
+    }
+}
+
+/** Moje spojenia (body 22, 23): SoulLinks a súhvezdia, do ktorých som vstúpil. Ukladanie rieši app. */
+object ConnectionStore {
+    private val _links = MutableStateFlow(SoulLinks())
+    val links: StateFlow<SoulLinks> = _links.asStateFlow()
+
+    private val _joined = MutableStateFlow<Set<String>>(emptySet())
+    val joined: StateFlow<Set<String>> = _joined.asStateFlow()
+
+    fun requestLink(
+        starId: String,
+        now: Long = System.currentTimeMillis(),
+    ): Boolean {
+        val next = _links.value.request(starId, StarDustState.epochDay(now)) ?: return false
+        _links.value = next
+        return true
+    }
+
+    fun removeLink(starId: String) {
+        _links.value = _links.value.remove(starId)
+    }
+
+    /** Ukážkové hviezdy odpovedajú na druhý deň. */
+    fun refresh(now: Long = System.currentTimeMillis()) {
+        _links.value = _links.value.demoAcceptances(StarDustState.epochDay(now))
+    }
+
+    fun toggleConstellation(id: String) {
+        _joined.value = if (id in _joined.value) _joined.value - id else _joined.value + id
+    }
+
+    fun restore(
+        links: SoulLinks,
+        joined: Set<String>,
+    ) {
+        _links.value = links
+        _joined.value = joined
     }
 }
