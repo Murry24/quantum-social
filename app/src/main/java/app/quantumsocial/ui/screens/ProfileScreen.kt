@@ -30,6 +30,7 @@ import app.quantumsocial.core.model.StarDustState
 import app.quantumsocial.core.ui.theme.GalaxyTheme
 import app.quantumsocial.ui.perf.GalaxyThemeSettings
 import app.quantumsocial.ui.perf.PerformanceSettings
+import app.quantumsocial.wallpaper.WallpaperLauncher
 
 @Composable
 fun ProfileScreen(onRebirth: () -> Unit) {
@@ -75,6 +76,9 @@ fun ProfileScreen(onRebirth: () -> Unit) {
                 )
             }
         }
+
+        // bod 33: moja galaxia ako pohyblivá tapeta telefónu
+        OutlinedButton(onClick = { WallpaperLauncher.open(context) }) { Text("✨ Nastaviť galaxiu ako tapetu") }
 
         // bod 6: ručné prepnutie šetriča výkonu (Auto = podľa šetriča batérie v Androide)
         Text("Animácie galaxie", style = MaterialTheme.typography.titleMedium)
