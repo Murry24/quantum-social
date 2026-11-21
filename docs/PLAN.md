@@ -19,11 +19,11 @@ Dáta najprv lokálne (mock), server až od bodu 9.
 | 8 | Posielanie správ + ZenNet | Klik na hviezdu → poslať hviezde / do chaosu; ZenNet = 1 min ticha s bublinami | ✅ |
 | 9 | Bezpečnosť a anonymita | API kontrakty, šifrovanie E2E (koncept), kľúče v Keystore, minimum dát | 🟡 lokálne (Keystore), koncept v docs/BEZPECNOST.md |
 | 10 | Serendipity | Denné náhodné párovanie 1:1 na 24 h („svetelný most“) | ⬜ |
-| 11 | EchoNet | Zvuky dňa: nahrávka 5–15 s, prehrávanie, tag nálady | ⬜ |
+| 11 | EchoNet | Zvuky dňa: nahrávka 5–15 s, prehrávanie, tag nálady | 🟡 lokálne (nahrávanie, nálada, zhasne o polnoci) |
 | 12 | DreamMirror | Zápis snov, podobnosti snov („snový most“) | 🟡 lokálne (sny len v pamäti) |
 | 13 | ChallengeNet | Globálna denná výzva (24 h), galéria splnení | 🟡 lokálne (výzva dňa) |
 | 14 | GratNet | 1 zápis vďačnosti denne, zlaté iskry, podobnosti | 🟡 lokálne (zlaté iskry) |
-| 15 | Notifikácie | Jemné, poetické (pulz/iskra namiesto červených odznakov), voliteľný push | ⬜ |
+| 15 | Notifikácie | Jemné, poetické (pulz/iskra namiesto červených odznakov), voliteľný push | 🟡 večerná jemná pripomienka |
 | 16 | Svetelné levely | Iskra → Hviezda → Pulzár → Hmlovina → Supernova podľa aktivity | 🟡 lokálne (podľa StarDust) |
 | 17 | Galactic Moments | Kolektívne globálne udalosti (zmena farieb, téma dňa) | 🟡 lokálne (moment pri leveli, emócia dňa) |
 | 18 | Onboarding | „Zrodenie hviezdy“ za 60 s: jazyk, emócia, kvanti-meno, obnovovací kľúč, tutoriál | ✅ |

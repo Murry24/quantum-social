@@ -44,6 +44,14 @@ object CustomSoundStore {
         return null
     }
 
+    /** Použije už nahratý súbor (napr. ozvenu z EchoNet) ako zvuk hviezdy. */
+    fun useFile(
+        context: Context,
+        source: File,
+    ) {
+        if (source.exists()) source.copyTo(file(context), overwrite = true)
+    }
+
     fun play(context: Context) {
         val player = MediaPlayer.create(context, Uri.fromFile(file(context))) ?: return
         player.setOnCompletionListener { it.release() }

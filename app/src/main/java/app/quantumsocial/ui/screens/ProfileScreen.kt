@@ -20,6 +20,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -42,6 +43,7 @@ import app.quantumsocial.core.model.StarChord
 import app.quantumsocial.core.model.StarDustState
 import app.quantumsocial.core.model.StarLevel
 import app.quantumsocial.core.ui.theme.GalaxyTheme
+import app.quantumsocial.notify.GentleReminders
 import app.quantumsocial.ui.onboarding.OnboardingPrefs
 import app.quantumsocial.ui.perf.GalaxyThemeSettings
 import app.quantumsocial.ui.perf.PerformanceSettings
@@ -165,6 +167,19 @@ fun ProfileScreen(onRebirth: () -> Unit) {
         // bod 33: moja galaxia ako pohyblivá tapeta telefónu
         OutlinedButton(onClick = { WallpaperLauncher.open(context) }) { Text("✨ Nastaviť galaxiu ako tapetu") }
 
+        // bod 15: jemná večerná pripomienka (bez čísiel a odznakov)
+        var gentle by remember { mutableStateOf(GentleReminders.isOn(context)) }
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Switch(
+                checked = gentle,
+                onCheckedChange = {
+                    gentle = it
+                    GentleReminders.setOn(context, it)
+                },
+            )
+            Text("🌙 Jemná pripomienka večer")
+        }
+
         // bod 6: ručné prepnutie šetriča výkonu (Auto = podľa šetriča batérie v Androide)
         Text("Animácie galaxie", style = MaterialTheme.typography.titleMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -200,4 +215,5 @@ private fun DustAction.label() =
         DustAction.Challenge -> "Výzva dňa"
         DustAction.Empathy -> "Prvá pomoc prianiu"
         DustAction.Seed -> "Zaliate semienko"
+        DustAction.Echo -> "Ozvena dňa"
     }

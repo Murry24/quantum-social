@@ -32,6 +32,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import app.quantumsocial.notify.GentleReminders
 import app.quantumsocial.ui.galaxies.FriendGalaxyScreen
 import app.quantumsocial.ui.nav.ActionOrb
 import app.quantumsocial.ui.nav.ActionsSheet
@@ -41,6 +42,7 @@ import app.quantumsocial.ui.screens.ChallengeScreen
 import app.quantumsocial.ui.screens.ChordPrefs
 import app.quantumsocial.ui.screens.DailyPrefs
 import app.quantumsocial.ui.screens.DreamScreen
+import app.quantumsocial.ui.screens.EchoScreen
 import app.quantumsocial.ui.screens.GalacticMomentOverlay
 import app.quantumsocial.ui.screens.GratitudeScreen
 import app.quantumsocial.ui.screens.MapRequest
@@ -69,6 +71,7 @@ private object Routes {
     const val MOOD = "mood"
     const val DREAM = "dream"
     const val SEEDS = "seeds"
+    const val ECHO = "echo"
 
     fun galaxyEncoded(galaxyId: String) = "galaxy/${Uri.encode(galaxyId)}"
 
@@ -92,6 +95,8 @@ fun MainScaffold() {
     LaunchedEffect(Unit) { StarDustPrefs.keepSaved(context) }
     LaunchedEffect(Unit) { DailyPrefs.keepSaved(context) }
     LaunchedEffect(Unit) { ChordPrefs.load(context) }
+    // bod 15: večerná jemná pripomienka podľa nastavenia
+    LaunchedEffect(Unit) { GentleReminders.apply(context) }
     val goHome = {
         navController.navigate(Routes.HOME) {
             popUpTo(navController.graph.findStartDestination().id) { saveState = true }
@@ -221,6 +226,10 @@ fun MainScaffold() {
                         showActions = false
                         navController.navigate(Routes.SEEDS)
                     },
+                    onEcho = {
+                        showActions = false
+                        navController.navigate(Routes.ECHO)
+                    },
                 )
             }
         }
@@ -297,6 +306,7 @@ fun MainScaffold() {
                 composable(Routes.MOOD) { MoodWavesScreen(onBack = { navController.popBackStack() }) }
                 composable(Routes.DREAM) { DreamScreen(onBack = { navController.popBackStack() }) }
                 composable(Routes.SEEDS) { SeedsScreen(onBack = { navController.popBackStack() }) }
+                composable(Routes.ECHO) { EchoScreen(onBack = { navController.popBackStack() }) }
 
                 // Profile (user)
                 composable(Routes.PROFILE) {
