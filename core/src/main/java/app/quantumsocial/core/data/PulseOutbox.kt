@@ -2,6 +2,7 @@ package app.quantumsocial.core.data
 
 import app.quantumsocial.core.model.ChaosPicker
 import app.quantumsocial.core.model.Emotion
+import app.quantumsocial.core.model.PulseEffect
 import app.quantumsocial.core.model.PulseSignal
 import app.quantumsocial.core.model.SignalTarget
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,6 +38,8 @@ object PulseOutbox {
         visibleStarIds: List<String>,
         now: Long = System.currentTimeMillis(),
         random: Random = Random.Default,
+        emoji: String? = null,
+        effect: PulseEffect? = null,
     ): Sent? {
         val starId =
             when (target) {
@@ -45,7 +48,14 @@ object PulseOutbox {
             }
         val sent =
             Sent(
-                signal = PulseSignal(emotion = emotion, target = target, createdAt = now),
+                signal =
+                    PulseSignal(
+                        emotion = emotion,
+                        target = target,
+                        emoji = emoji,
+                        effect = effect,
+                        createdAt = now,
+                    ),
                 resolvedStarId = starId,
             )
         _sent.value = (listOf(sent) + _sent.value).take(MAX_HISTORY)

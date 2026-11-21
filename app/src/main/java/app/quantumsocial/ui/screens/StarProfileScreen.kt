@@ -293,11 +293,13 @@ fun StarProfileScreen(
         ) {
             SendPulseSheet(
                 target = SignalTarget.Star(starId),
-                onSend = { emotion ->
+                onSend = { emotion, emoji, effect ->
                     PulseOutbox.send(
                         target = SignalTarget.Star(starId),
                         emotion = emotion,
                         visibleStarIds = emptyList(),
+                        emoji = emoji,
+                        effect = effect,
                     )
                     showPulse = false
                     pulseSentAt = System.currentTimeMillis()

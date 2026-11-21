@@ -44,6 +44,8 @@ fun ReplySheet(onSend: (Reply) -> Unit) {
                 EmotionOrb(emotion = e, selected = e == emotion) { emotion = e }
             }
         }
+        // emoji ide ako krátky text odpovede
+        EmojiStrip(selected = text.takeIf { it.isNotEmpty() }) { text = it.orEmpty() }
         OutlinedTextField(
             value = text,
             onValueChange = { text = it.take(ReplyThread.MAX_TEXT) },

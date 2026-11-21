@@ -7,11 +7,14 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,8 +30,12 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import app.quantumsocial.ui.galaxies.FriendGalaxyScreen
+import app.quantumsocial.ui.nav.ActionOrb
+import app.quantumsocial.ui.nav.ActionsSheet
 import app.quantumsocial.ui.onboarding.OnboardingPrefs
 import app.quantumsocial.ui.onboarding.OnboardingScreen
+import app.quantumsocial.ui.screens.MapRequest
+import app.quantumsocial.ui.screens.MapRequests
 import app.quantumsocial.ui.screens.ProfileScreen
 import app.quantumsocial.ui.screens.StarMapScreen
 import app.quantumsocial.ui.screens.StarProfileScreen
@@ -53,6 +60,7 @@ private object Routes {
     fun starEncoded(starId: String) = "star/${Uri.encode(starId)}"
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScaffold() {
     val navController = rememberNavController()
@@ -62,6 +70,14 @@ fun MainScaffold() {
     var start by remember { mutableStateOf(if (OnboardingPrefs.isDone(context)) Routes.HOME else Routes.ONBOARDING) }
     val rootEntry by navController.currentBackStackEntryAsState()
     val openGalaxy: (String) -> Unit = { id -> navController.navigate(Routes.galaxyEncoded(id)) }
+    var showActions by remember { mutableStateOf(false) }
+    val goHome = {
+        navController.navigate(Routes.HOME) {
+            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
 
     Scaffold(
         bottomBar = {
@@ -103,6 +119,14 @@ fun MainScaffold() {
                         label = { Text("WishNet") },
                     )
 
+                    // ✦ = akcie: Do chaosu, ZenNet, Moje galaxie (namiesto tlačidiel na mape)
+                    NavigationBarItem(
+                        selected = false,
+                        onClick = { showActions = true },
+                        icon = { ActionOrb() },
+                        label = { Text("Vesmír") },
+                    )
+
                     NavigationBarItem(
                         selected = currentRoute == Routes.PROFILE,
                         onClick = {
@@ -136,6 +160,30 @@ fun MainScaffold() {
             }
         },
     ) { inner ->
+        if (showActions) {
+            ModalBottomSheet(
+                onDismissRequest = { showActions = false },
+                sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+            ) {
+                ActionsSheet(
+                    onChaos = {
+                        showActions = false
+                        MapRequests.request(MapRequest.Chaos)
+                        goHome()
+                    },
+                    onZen = {
+                        showActions = false
+                        navController.navigate(Routes.ZEN)
+                    },
+                    onGalaxies = {
+                        showActions = false
+                        MapRequests.request(MapRequest.Galaxies)
+                        goHome()
+                    },
+                )
+            }
+        }
+
         NavHost(
             navController = navController,
             startDestination = start,
@@ -147,7 +195,6 @@ fun MainScaffold() {
                     openFilters = false,
                     onOpenStar = { id -> navController.navigate(Routes.starEncoded(id)) },
                     focusStarId = null,
-                    onOpenZen = { navController.navigate(Routes.ZEN) },
                     onOpenGalaxy = openGalaxy,
                 )
             }
@@ -158,7 +205,6 @@ fun MainScaffold() {
                     openFilters = true,
                     onOpenStar = { id -> navController.navigate(Routes.starEncoded(id)) },
                     focusStarId = null,
-                    onOpenZen = { navController.navigate(Routes.ZEN) },
                     onOpenGalaxy = openGalaxy,
                 )
             }
@@ -190,7 +236,6 @@ fun MainScaffold() {
                     openFilters = false,
                     onOpenStar = { id -> navController.navigate(Routes.starEncoded(id)) },
                     focusStarId = starId,
-                    onOpenZen = { navController.navigate(Routes.ZEN) },
                     onOpenGalaxy = openGalaxy,
                 )
             }
