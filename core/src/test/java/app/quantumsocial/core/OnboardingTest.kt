@@ -44,6 +44,7 @@ class OnboardingTest {
             val key = RecoveryKey.generate()
             assertEquals(8, key.size)
             assertTrue(key.all { it in RecoveryKey.words })
+            assertEquals("slová sa neopakujú", 8, key.toSet().size)
         }
     }
 }

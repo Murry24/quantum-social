@@ -84,8 +84,8 @@ fun MainScaffold() {
                                 restoreState = true
                             }
                         },
-                        icon = { Icon(imageVector = Icons.Filled.Home, contentDescription = "Home") },
-                        label = { Text("Home") },
+                        icon = { Icon(imageVector = Icons.Filled.Home, contentDescription = "Galaxia") },
+                        label = { Text("Galaxia") },
                     )
 
                     NavigationBarItem(
@@ -212,9 +212,13 @@ fun MainScaffold() {
             composable(Routes.ONBOARDING) {
                 OnboardingScreen(
                     onDone = {
-                        // odteraz je domovom mapa (aj pre spodnú lištu) a späť sa do onboardingu nevracia
-                        start = Routes.HOME
-                        navController.navigate(Routes.HOME) { popUpTo(navController.graph.id) { inclusive = true } }
+                        // odteraz je domovom mapa a späť sa do onboardingu nevracia.
+                        // Prvé spustenie: zmena štartu prestaví graf a ten sám otvorí mapu (navigate by ju staval 2×).
+                        if (start == Routes.HOME) {
+                            navController.navigate(Routes.HOME) { popUpTo(navController.graph.id) { inclusive = true } }
+                        } else {
+                            start = Routes.HOME
+                        }
                     },
                 )
             }

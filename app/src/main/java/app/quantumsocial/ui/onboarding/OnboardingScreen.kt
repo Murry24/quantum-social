@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.LocalContentColor
@@ -144,13 +145,19 @@ fun OnboardingScreen(onDone: () -> Unit) {
                 }
 
                 Spacer(Modifier.height(8.dp))
-                Button(onClick = { state = state.next() }, enabled = state.canContinue) {
-                    Text(if (state.step == OnboardingStep.Birth) "Zrodiť hviezdu ✦" else "Pokračovať")
+                if (state.done) {
+                    // kým sa načíta mapa, nech je vidieť, že sa niečo deje
+                    CircularProgressIndicator(color = Color(GalaxyPalette.ON_SKY))
+                } else {
+                    Button(onClick = { state = state.next() }, enabled = state.canContinue) {
+                        Text(if (state.step == OnboardingStep.Birth) "Zrodiť hviezdu ✦" else "Pokračovať")
+                    }
                 }
                 if (state.canSkip) {
+                    // biela, nie modrá tlačidla – na modrej oblohe by nebola čitateľná
                     TextButton(
                         onClick = { state = state.skip() },
-                    ) { Text("Preskočiť", color = LocalContentColor.current) }
+                    ) { Text("Preskočiť", color = Color(GalaxyPalette.ON_SKY)) }
                 }
             }
         }
