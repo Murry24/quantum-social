@@ -21,6 +21,13 @@ object StarDust {
         return gained
     }
 
+    /** Zaplatí naliehavý pulz (bod 27). @return false, ak nie je dosť prachu alebo už dnes bol */
+    fun useAlert(now: Long = System.currentTimeMillis()): Boolean {
+        val next = _state.value.useAlert(StarDustState.epochDay(now)) ?: return false
+        _state.value = next
+        return true
+    }
+
     fun restore(state: StarDustState) {
         _state.value = state
     }

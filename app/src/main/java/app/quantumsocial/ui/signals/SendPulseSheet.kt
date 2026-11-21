@@ -19,9 +19,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,9 +36,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.quantumsocial.core.data.StarDust
 import app.quantumsocial.core.model.Emotion
 import app.quantumsocial.core.model.PulseEffect
 import app.quantumsocial.core.model.SignalTarget
+import app.quantumsocial.core.model.StarDustState
 import app.quantumsocial.ui.screens.color
 import app.quantumsocial.ui.screens.label
 
@@ -47,12 +51,15 @@ import app.quantumsocial.ui.screens.label
 @Composable
 fun SendPulseSheet(
     target: SignalTarget,
-    onSend: (Emotion, String?, PulseEffect?) -> Unit,
+    onSend: (Emotion, String?, PulseEffect?, Boolean) -> Unit,
     onOpenProfile: ((String) -> Unit)? = null,
 ) {
     var selected by remember { mutableStateOf(Emotion.Joy) }
     var emoji by remember { mutableStateOf<String?>(null) }
     var effect by remember { mutableStateOf<PulseEffect?>(null) }
+    var urgent by remember { mutableStateOf(false) }
+    val dust by StarDust.state.collectAsState()
+    val canAlert = dust.canAlert(StarDustState.epochDay(System.currentTimeMillis()))
 
     Column(
         modifier =
@@ -113,10 +120,24 @@ fun SendPulseSheet(
             }
         }
 
+        // bod 27: naliehavý pulz – zvýraznený, stojí StarDust, najviac raz denne
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
+            Switch(checked = urgent && canAlert, onCheckedChange = { urgent = it }, enabled = canAlert)
+            Text(
+                text =
+                    if (canAlert) {
+                        "  ⚡ Naliehavý pulz (${StarDustState.ALERT_COST} ✨, 1× denne)"
+                    } else {
+                        "  ⚡ Naliehavý pulz – dnes už nie alebo málo ✨"
+                    },
+                fontSize = 13.sp,
+            )
+        }
+
         Spacer(Modifier.height(16.dp))
 
         Button(
-            onClick = { onSend(selected, emoji, effect) },
+            onClick = { onSend(selected, emoji, effect, urgent && canAlert) },
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text("Vypustiť pulz ✦")

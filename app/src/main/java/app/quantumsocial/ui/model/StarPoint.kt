@@ -4,6 +4,7 @@ import app.quantumsocial.core.model.Emotion
 import app.quantumsocial.core.model.MixSignal
 import app.quantumsocial.core.model.Signal
 import app.quantumsocial.core.model.SignalCategory
+import app.quantumsocial.core.model.WorldLanguages
 import kotlin.math.PI
 import kotlin.random.Random
 
@@ -52,7 +53,7 @@ fun Signal.toStarPoint(): StarPoint {
 }
 
 // Vlastnosti hviezdy len z jej id – rovnaké na mape aj v profile (bod 5)
-private val starLangs = listOf("SK", "EN", "CZ")
+private val starLangs = WorldLanguages.codes
 private val starTopics = listOf("Tech", "Life", "Art")
 
 fun starLangForId(id: String): String = starLangs[absMod(id.hashCode(), starLangs.size)]

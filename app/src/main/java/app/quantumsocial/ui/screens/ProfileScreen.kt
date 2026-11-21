@@ -66,15 +66,15 @@ fun ProfileScreen(onRebirth: () -> Unit) {
         ElevatedCard(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 // bod 16: svetelný level podľa nazbieraného prachu
-                val level = StarLevel.of(dust.balance)
+                val level = StarLevel.of(dust.lifetime)
                 Text("${level.emoji} ${level.label}", style = MaterialTheme.typography.titleLarge)
                 LinearProgressIndicator(
-                    progress = { StarLevel.progress(dust.balance) },
+                    progress = { StarLevel.progress(dust.lifetime) },
                     modifier = Modifier.fillMaxWidth(),
                 )
                 level.next?.let { next ->
                     Text(
-                        "Do levelu ${next.label} chýba ${next.minDust - dust.balance} StarDust",
+                        "Do levelu ${next.label} chýba ${next.minDust - dust.lifetime} StarDust",
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }

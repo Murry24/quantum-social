@@ -47,6 +47,7 @@ import app.quantumsocial.ui.screens.GalacticMomentOverlay
 import app.quantumsocial.ui.screens.GratitudeScreen
 import app.quantumsocial.ui.screens.MapRequest
 import app.quantumsocial.ui.screens.MapRequests
+import app.quantumsocial.ui.screens.MemoryScreen
 import app.quantumsocial.ui.screens.MoodWavesScreen
 import app.quantumsocial.ui.screens.ProfileScreen
 import app.quantumsocial.ui.screens.SeedsScreen
@@ -72,6 +73,7 @@ private object Routes {
     const val DREAM = "dream"
     const val SEEDS = "seeds"
     const val ECHO = "echo"
+    const val MEMORY = "memory"
 
     fun galaxyEncoded(galaxyId: String) = "galaxy/${Uri.encode(galaxyId)}"
 
@@ -230,6 +232,10 @@ fun MainScaffold() {
                         showActions = false
                         navController.navigate(Routes.ECHO)
                     },
+                    onMemory = {
+                        showActions = false
+                        navController.navigate(Routes.MEMORY)
+                    },
                 )
             }
         }
@@ -307,6 +313,7 @@ fun MainScaffold() {
                 composable(Routes.DREAM) { DreamScreen(onBack = { navController.popBackStack() }) }
                 composable(Routes.SEEDS) { SeedsScreen(onBack = { navController.popBackStack() }) }
                 composable(Routes.ECHO) { EchoScreen(onBack = { navController.popBackStack() }) }
+                composable(Routes.MEMORY) { MemoryScreen(onBack = { navController.popBackStack() }) }
 
                 // Profile (user)
                 composable(Routes.PROFILE) {

@@ -51,11 +51,11 @@ fun GalacticMomentOverlay() {
     var lastDust by remember { mutableStateOf<Int?>(null) }
     var moment by remember { mutableStateOf<StarLevel?>(null) }
 
-    LaunchedEffect(dust.balance) {
+    LaunchedEffect(dust.lifetime) {
         val before = lastDust
         // prvé načítanie (z disku) moment nespúšťa
-        if (before != null) GalacticMoments.levelUp(before, dust.balance)?.let { moment = it }
-        lastDust = dust.balance
+        if (before != null) GalacticMoments.levelUp(before, dust.lifetime)?.let { moment = it }
+        lastDust = dust.lifetime
     }
 
     val level = moment ?: return
