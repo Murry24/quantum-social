@@ -75,7 +75,9 @@ data class SoulLink(
     val starId: String,
     val status: LinkStatus,
     val sinceDay: Long,
-)
+) {
+    fun activated(today: Long): SoulLink = copy(status = LinkStatus.Active, sinceDay = today)
+}
 
 data class SoulLinks(
     val links: List<SoulLink> = emptyList(),
@@ -94,19 +96,11 @@ data class SoulLinks(
     fun accept(
         starId: String,
         today: Long,
-    ): SoulLinks =
-        copy(
-            links = links.map { if (it.starId == starId) it.copy(status = LinkStatus.Active, sinceDay = today) else it },
-        )
+    ): SoulLinks = copy(links = links.map { if (it.starId == starId) it.activated(today) else it })
 
     /** Ukážkové hviezdy súhlasia deň po žiadosti – server to neskôr nahradí skutočnou odpoveďou. */
     fun demoAcceptances(today: Long): SoulLinks =
-        copy(
-            links =
-                links.map {
-                    if (it.status == LinkStatus.Pending && today > it.sinceDay) it.copy(status = LinkStatus.Active) else it
-                },
-        )
+        copy(links = links.map { if (it.status == LinkStatus.Pending && today > it.sinceDay) it.activated(today) else it })
 
     fun remove(starId: String): SoulLinks = copy(links = links.filter { it.starId != starId })
 

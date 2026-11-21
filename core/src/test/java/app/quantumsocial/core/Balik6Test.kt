@@ -57,7 +57,8 @@ class Balik6Test {
         assertTrue(s.demoAcceptances(day).links.all { it.status == LinkStatus.Pending })
         s = s.demoAcceptances(day + 1)
         assertTrue(s.links.all { it.status == LinkStatus.Active })
-        assertNotNull(s.request("nová", day + 1)?.let { null } ?: s.remove(DemoStars.ids[1]).request("nová", day + 1))
+        assertNull(s.request("nová", day + 1))
+        assertNotNull(s.remove(DemoStars.ids[1]).request("nová", day + 1))
         assertEquals(s, SoulLinks.decode(s.encode()))
     }
 }
