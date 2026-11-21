@@ -24,7 +24,7 @@ data class StarChord(
                 h = (h xor ch.code.toLong()) * 0x01000193L and 0xFFFFFFFFL
             }
             val notes = List(5) { i -> SCALE[((h shr (i * 5)) and 0x1F).toInt() % SCALE.size] }
-            val durations = List(5) { i -> if ((h shr (25 + i)) and 1L == 1L) 380 else 240 }
+            val durations = List(5) { i -> if (((h shr (25 + i)) and 1L) == 1L) 380 else 240 }
             return StarChord(notes, durations)
         }
 
