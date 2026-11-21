@@ -30,7 +30,7 @@ fun SignalMix(
                         if (checked) picked.add(s.id) else picked.remove(s.id)
                     },
                 )
-                Text(text = s::class.simpleName ?: "Signal")
+                Text(text = s.typeLabel())
             }
         }
         Button(

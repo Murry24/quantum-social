@@ -62,6 +62,7 @@ import app.quantumsocial.ui.model.starLangForId
 import app.quantumsocial.ui.model.starTopicForId
 import app.quantumsocial.ui.signals.SendPulseSheet
 import app.quantumsocial.ui.signals.WishNetCard
+import app.quantumsocial.ui.signals.typeLabel
 import kotlinx.coroutines.delay
 import kotlin.math.abs
 import kotlin.random.Random
@@ -152,7 +153,7 @@ fun StarProfileScreen(
                     FilterChip(
                         selected = true,
                         onClick = {},
-                        label = { Text(e.name) },
+                        label = { Text(e.label()) },
                         modifier = Modifier.padding(end = 6.dp),
                         colors =
                             FilterChipDefaults.filterChipColors(
@@ -217,7 +218,7 @@ fun StarProfileScreen(
                                 is TextSignal -> Text(text = s.text)
                                 is MixSignal -> Text(text = "Mix (${s.parts.size})")
                                 is EmojiSignal -> Text(text = s.emoji)
-                                else -> Text(text = s::class.simpleName ?: "Signal")
+                                else -> Text(text = s.typeLabel())
                             }
                         }
                     }

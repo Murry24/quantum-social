@@ -5,11 +5,11 @@ import app.quantumsocial.core.model.Emotion
 
 fun Emotion.label(): String =
     when (this) {
-        Emotion.Joy -> "Joy"
-        Emotion.Calm -> "Calm"
-        Emotion.Energy -> "Energy"
-        Emotion.Love -> "Love"
-        Emotion.Mystery -> "Mystery"
+        Emotion.Joy -> "Radosť"
+        Emotion.Calm -> "Pokoj"
+        Emotion.Energy -> "Energia"
+        Emotion.Love -> "Láska"
+        Emotion.Mystery -> "Tajomno"
     }
 
 fun Emotion.color(): Color =
