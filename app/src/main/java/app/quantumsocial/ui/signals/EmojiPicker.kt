@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -72,8 +73,8 @@ fun EmojiStrip(
     modifier: Modifier = Modifier,
     onPick: (String?) -> Unit,
 ) {
-    val recent by RecentEmojis.recent.collectAsState()
-    val emojis = (recent + EmojiCatalog.all).distinct()
+    // poradie sa zafixuje pri otvorení – pri výbere sa riadok nepreskupí
+    val emojis = remember { (RecentEmojis.recent.value + EmojiCatalog.all).distinct() }
     LazyRow(modifier = modifier.fillMaxWidth(), contentPadding = PaddingValues(horizontal = 4.dp)) {
         items(emojis, key = { it }) { e ->
             EmojiCell(emoji = e, selected = e == selected) {
