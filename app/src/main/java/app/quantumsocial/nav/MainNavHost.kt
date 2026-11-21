@@ -38,6 +38,7 @@ import app.quantumsocial.ui.nav.ActionsSheet
 import app.quantumsocial.ui.onboarding.OnboardingPrefs
 import app.quantumsocial.ui.onboarding.OnboardingScreen
 import app.quantumsocial.ui.screens.ChallengeScreen
+import app.quantumsocial.ui.screens.ChordPrefs
 import app.quantumsocial.ui.screens.DailyPrefs
 import app.quantumsocial.ui.screens.DreamScreen
 import app.quantumsocial.ui.screens.GalacticMomentOverlay
@@ -46,6 +47,7 @@ import app.quantumsocial.ui.screens.MapRequest
 import app.quantumsocial.ui.screens.MapRequests
 import app.quantumsocial.ui.screens.MoodWavesScreen
 import app.quantumsocial.ui.screens.ProfileScreen
+import app.quantumsocial.ui.screens.SeedsScreen
 import app.quantumsocial.ui.screens.StarDustPrefs
 import app.quantumsocial.ui.screens.StarMapScreen
 import app.quantumsocial.ui.screens.StarProfileScreen
@@ -66,6 +68,7 @@ private object Routes {
     const val CHALLENGE = "challenge"
     const val MOOD = "mood"
     const val DREAM = "dream"
+    const val SEEDS = "seeds"
 
     fun galaxyEncoded(galaxyId: String) = "galaxy/${Uri.encode(galaxyId)}"
 
@@ -88,6 +91,7 @@ fun MainScaffold() {
     // bod 20: StarDust sa načíta pri štarte a ukladá pri každej zmene
     LaunchedEffect(Unit) { StarDustPrefs.keepSaved(context) }
     LaunchedEffect(Unit) { DailyPrefs.keepSaved(context) }
+    LaunchedEffect(Unit) { ChordPrefs.load(context) }
     val goHome = {
         navController.navigate(Routes.HOME) {
             popUpTo(navController.graph.findStartDestination().id) { saveState = true }
@@ -213,6 +217,10 @@ fun MainScaffold() {
                         showActions = false
                         navController.navigate(Routes.DREAM)
                     },
+                    onSeeds = {
+                        showActions = false
+                        navController.navigate(Routes.SEEDS)
+                    },
                 )
             }
         }
@@ -288,6 +296,7 @@ fun MainScaffold() {
                 composable(Routes.CHALLENGE) { ChallengeScreen(onBack = { navController.popBackStack() }) }
                 composable(Routes.MOOD) { MoodWavesScreen(onBack = { navController.popBackStack() }) }
                 composable(Routes.DREAM) { DreamScreen(onBack = { navController.popBackStack() }) }
+                composable(Routes.SEEDS) { SeedsScreen(onBack = { navController.popBackStack() }) }
 
                 // Profile (user)
                 composable(Routes.PROFILE) {

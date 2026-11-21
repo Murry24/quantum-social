@@ -60,6 +60,8 @@ class StarDustTest {
     fun sending_pulse_and_reply_earns_dust() {
         PulseOutbox.send(SignalTarget.Star("a"), Emotion.Joy, visibleStarIds = emptyList())
         ReplyStore.reply("s1", Reply.emotion(Emotion.Calm))
-        assertEquals(DustAction.Pulse.reward + DustAction.Reply.reward, StarDust.state.value.balance)
+        // prvá odpoveď prianiu má aj bonus za empatiu (bod 29)
+        val expected = DustAction.Pulse.reward + DustAction.Reply.reward + DustAction.Empathy.reward
+        assertEquals(expected, StarDust.state.value.balance)
     }
 }

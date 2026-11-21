@@ -68,6 +68,7 @@ fun ActionsSheet(
     onChallenge: () -> Unit,
     onMood: () -> Unit,
     onDream: () -> Unit,
+    onSeeds: () -> Unit,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -84,6 +85,7 @@ fun ActionsSheet(
         BigAction("🎯  Výzva dňa", onChallenge)
         BigAction("🌊  Vlny nálad galaxie", onMood)
         BigAction("🌙  DreamMirror – snový most", onDream)
+        BigAction("🌱  Semienka budúcnosti", onSeeds)
     }
 }
 
