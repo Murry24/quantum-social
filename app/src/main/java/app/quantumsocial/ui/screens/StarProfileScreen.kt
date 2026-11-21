@@ -22,6 +22,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
@@ -32,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,12 +47,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.quantumsocial.core.data.InMemorySignalRepository
+import app.quantumsocial.core.data.PulseOutbox
+import app.quantumsocial.core.data.WatchedStars
+import app.quantumsocial.core.model.EmojiSignal
 import app.quantumsocial.core.model.Emotion
 import app.quantumsocial.core.model.MixSignal
+import app.quantumsocial.core.model.QuantName
 import app.quantumsocial.core.model.Signal
 import app.quantumsocial.core.model.SignalCategory
+import app.quantumsocial.core.model.SignalTarget
 import app.quantumsocial.core.model.TextSignal
+import app.quantumsocial.ui.model.starEmotionForId
+import app.quantumsocial.ui.model.starLangForId
+import app.quantumsocial.ui.model.starTopicForId
+import app.quantumsocial.ui.signals.SendPulseSheet
 import app.quantumsocial.ui.signals.WishNetCard
+import kotlinx.coroutines.delay
 import kotlin.math.abs
 import kotlin.random.Random
 
@@ -64,12 +76,27 @@ fun StarProfileScreen(
     val starSignals = remember(allSignals, starId) { filterForStar(allSignals, starId) }
     val wishArchive = remember(starSignals) { starSignals.filter { it.category == SignalCategory.WishNet } }
 
-    val langs = remember(starId) { langsForStar(starId) }
-    val topics = remember(starId) { topicsForStar(starId) }
-    val domEmotions = remember(starId) { emotionsForStar(starId) }
+    // bod 5: prvá hodnota = tá istá, akú má hviezda na mape (farba, jazyk, téma)
+    val dominant = remember(starId) { starEmotionForId(starId) }
+    val langs = remember(starId) { (listOf(starLangForId(starId)) + langsForStar(starId)).distinct().take(3) }
+    val topics = remember(starId) { (listOf(starTopicForId(starId)) + topicsForStar(starId)).distinct().take(3) }
+    val domEmotions = remember(starId) { (listOf(dominant) + emotionsForStar(starId)).distinct().take(3) }
 
     var showReply by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    // bod 5: pošli pulz + sleduj žiarenie
+    val watchedIds by WatchedStars.watched.collectAsState()
+    val isWatched = starId in watchedIds
+    var showPulse by remember { mutableStateOf(false) }
+    val pulseSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var pulseSentAt by remember { mutableStateOf<Long?>(null) }
+    LaunchedEffect(pulseSentAt) {
+        if (pulseSentAt != null) {
+            delay(2500)
+            pulseSentAt = null
+        }
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
@@ -102,8 +129,8 @@ fun StarProfileScreen(
                                     Brush.radialGradient(
                                         colors =
                                             listOf(
-                                                Color(0xFF7B1FA2),
-                                                Color(0xFF3949AB),
+                                                Color.White,
+                                                dominant.color(),
                                                 Color(0x00000000),
                                             ),
                                     ),
@@ -111,8 +138,9 @@ fun StarProfileScreen(
                     )
                 }
                 Column(modifier = Modifier.padding(start = 12.dp)) {
-                    Text(text = quantNameFromId(starId), fontWeight = FontWeight.SemiBold)
+                    Text(text = QuantName.of(starId), fontWeight = FontWeight.SemiBold)
                     Text(text = "Jazyky: ${langs.joinToString()}")
+                    Text(text = "Prevláda: ${dominant.label()}", color = dominant.color())
                 }
             }
 
@@ -188,6 +216,7 @@ fun StarProfileScreen(
                             when (s) {
                                 is TextSignal -> Text(text = s.text)
                                 is MixSignal -> Text(text = "Mix (${s.parts.size})")
+                                is EmojiSignal -> Text(text = s.emoji)
                                 else -> Text(text = s::class.simpleName ?: "Signal")
                             }
                         }
@@ -197,6 +226,41 @@ fun StarProfileScreen(
         }
 
         Spacer(Modifier.weight(1f))
+
+        if (pulseSentAt != null) {
+            Text(
+                text = "✦ Pulz letí k hviezde",
+                color = dominant.color(),
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+            )
+        }
+
+        // bod 5: pošli pulz + sleduj žiarenie (nie follow)
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, top = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            FilledTonalButton(
+                onClick = { showPulse = true },
+                modifier = Modifier.weight(1f),
+            ) {
+                Text(text = "✦ Pošli pulz")
+            }
+            FilterChip(
+                selected = isWatched,
+                onClick = { WatchedStars.toggle(starId) },
+                label = { Text(text = if (isWatched) "◉ Sleduješ žiarenie" else "○ Sleduj žiarenie") },
+                modifier = Modifier.weight(1f),
+                colors =
+                    FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = dominant.color().copy(alpha = 0.25f),
+                    ),
+            )
+        }
 
         Row(
             modifier =
@@ -218,6 +282,26 @@ fun StarProfileScreen(
             ) {
                 Text(text = "Zobraziť na mape")
             }
+        }
+    }
+
+    if (showPulse) {
+        ModalBottomSheet(
+            onDismissRequest = { showPulse = false },
+            sheetState = pulseSheetState,
+        ) {
+            SendPulseSheet(
+                target = SignalTarget.Star(starId),
+                onSend = { emotion ->
+                    PulseOutbox.send(
+                        target = SignalTarget.Star(starId),
+                        emotion = emotion,
+                        visibleStarIds = emptyList(),
+                    )
+                    showPulse = false
+                    pulseSentAt = System.currentTimeMillis()
+                },
+            )
         }
     }
 
@@ -286,13 +370,6 @@ private fun filterForStar(
     val k = 7
     val key = abs(starId.hashCode() % k)
     return all.filter { abs(it.id.hashCode() % k) == key }
-}
-
-private fun quantNameFromId(starId: String): String {
-    val syl = listOf("qa", "ri", "xa", "tu", "lo", "mi", "ne", "zo", "va", "su", "ki", "or")
-    val rnd = Random(starId.hashCode())
-    return buildString { repeat(3) { append(syl[rnd.nextInt(syl.size)]) } }
-        .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
 }
 
 private fun langsForStar(starId: String): List<String> {
