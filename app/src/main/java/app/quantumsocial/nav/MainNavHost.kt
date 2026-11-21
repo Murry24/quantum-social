@@ -26,6 +26,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import app.quantumsocial.ui.galaxies.FriendGalaxyScreen
 import app.quantumsocial.ui.onboarding.OnboardingPrefs
 import app.quantumsocial.ui.onboarding.OnboardingScreen
 import app.quantumsocial.ui.screens.ProfileScreen
@@ -43,6 +44,9 @@ private object Routes {
     const val STAR = "star/{starId}"
     const val ZEN = "zen"
     const val ONBOARDING = "onboarding"
+    const val GALAXY = "galaxy/{galaxyId}"
+
+    fun galaxyEncoded(galaxyId: String) = "galaxy/${Uri.encode(galaxyId)}"
 
     fun homeFocusEncoded(starId: String) = "home_focus/${Uri.encode(starId)}"
 
@@ -57,6 +61,7 @@ fun MainScaffold() {
     // stav, nie len hodnota: graf sa môže postaviť nanovo (napr. pri zmene šetriča) a musí mať aktuálny štart
     var start by remember { mutableStateOf(if (OnboardingPrefs.isDone(context)) Routes.HOME else Routes.ONBOARDING) }
     val rootEntry by navController.currentBackStackEntryAsState()
+    val openGalaxy: (String) -> Unit = { id -> navController.navigate(Routes.galaxyEncoded(id)) }
 
     Scaffold(
         bottomBar = {
@@ -143,6 +148,7 @@ fun MainScaffold() {
                     onOpenStar = { id -> navController.navigate(Routes.starEncoded(id)) },
                     focusStarId = null,
                     onOpenZen = { navController.navigate(Routes.ZEN) },
+                    onOpenGalaxy = openGalaxy,
                 )
             }
 
@@ -153,6 +159,22 @@ fun MainScaffold() {
                     onOpenStar = { id -> navController.navigate(Routes.starEncoded(id)) },
                     focusStarId = null,
                     onOpenZen = { navController.navigate(Routes.ZEN) },
+                    onOpenGalaxy = openGalaxy,
+                )
+            }
+
+            // Galaxia priateľov (bod 31) – červia diera nahradí aktuálnu galaxiu, biela diera = späť na mapu
+            composable(
+                route = Routes.GALAXY,
+                arguments = listOf(navArgument("galaxyId") { type = NavType.StringType }),
+            ) { backStack ->
+                val galaxyId = backStack.arguments?.getString("galaxyId")?.let { Uri.decode(it) } ?: return@composable
+                FriendGalaxyScreen(
+                    galaxyId = galaxyId,
+                    onLeave = { navController.popBackStack() },
+                    onJump = { id ->
+                        navController.navigate(Routes.galaxyEncoded(id)) { popUpTo(Routes.GALAXY) { inclusive = true } }
+                    },
                 )
             }
 
@@ -169,6 +191,7 @@ fun MainScaffold() {
                     onOpenStar = { id -> navController.navigate(Routes.starEncoded(id)) },
                     focusStarId = starId,
                     onOpenZen = { navController.navigate(Routes.ZEN) },
+                    onOpenGalaxy = openGalaxy,
                 )
             }
 

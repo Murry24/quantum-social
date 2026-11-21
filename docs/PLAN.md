@@ -39,6 +39,7 @@ Dáta najprv lokálne (mock), server až od bodu 9.
 | 28 | StarChords | Osobná melódia hviezdy, zmena raz za kvartál | ⬜ |
 | 29 | Empatický StarDust | Bonus StarDust za pomoc iným + aurora efekt | ⬜ |
 | 30 | FutureSeeds → FutureBlooms | Semienka budúcnosti, ktoré rastú podporou komunity | ⬜ |
+| 31 | Galaxie priateľov | Vlastné malé galaxie, vstup čiernou dierou (pozvánka), odchod bielou dierou, červie diery medzi galaxiami, zhasnutie po 7 dňoch | 🟡 `feat/31-friend-galaxies` |
 
 ## Poznámky
 - Pri každom bode: úlohy rozdelené na Android / Backend / Design, výstup = funkčné demo

@@ -3,14 +3,24 @@ package app.quantumsocial.ui.onboarding
 import android.content.Context
 import app.quantumsocial.core.model.Emotion
 import app.quantumsocial.core.model.RecoveryKey
+import java.util.UUID
 
 /** Uložené voľby zo „Zrodenia hviezdy“ (bod 18) – zatiaľ len lokálne v SharedPreferences. */
 object OnboardingPrefs {
     private const val PREFS = "quantum_prefs"
     private const val KEY_DONE = "onboarding_done"
     private const val KEY_RECOVERY = "recovery_key"
+    private const val KEY_STAR = "my_star_id"
 
     fun isDone(context: Context) = prefs(context).getBoolean(KEY_DONE, false)
+
+    /** Id mojej hviezdy (z onboardingu); ak ešte nie je uložené, vytvorí sa nové. */
+    fun myStarId(context: Context): String {
+        val p = prefs(context)
+        return p.getString(KEY_STAR, null) ?: UUID.randomUUID().toString().also {
+            p.edit().putString(KEY_STAR, it).apply()
+        }
+    }
 
     /** Existujúci kľúč, alebo nový (vygeneruje a uloží). Nikdy ho nelogovať ani neposielať. */
     fun recoveryKey(context: Context): List<String> {
@@ -31,7 +41,7 @@ object OnboardingPrefs {
     ) = prefs(context).edit()
         .putString("language", language)
         .putString("first_emotion", emotion.name)
-        .putString("my_star_id", starId)
+        .putString(KEY_STAR, starId)
         .putBoolean("notifications", notifications)
         .putBoolean(KEY_DONE, true)
         .apply()
