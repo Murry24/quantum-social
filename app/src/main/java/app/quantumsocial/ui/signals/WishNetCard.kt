@@ -9,13 +9,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import app.quantumsocial.core.model.AudioSignal
 import app.quantumsocial.core.model.EmojiSignal
 import app.quantumsocial.core.model.FlashSignal
@@ -23,10 +26,14 @@ import app.quantumsocial.core.model.ImageSignal
 import app.quantumsocial.core.model.LifePhase
 import app.quantumsocial.core.model.MixSignal
 import app.quantumsocial.core.model.PulseSignal
+import app.quantumsocial.core.model.Reply
+import app.quantumsocial.core.model.ReplyThread
 import app.quantumsocial.core.model.Signal
 import app.quantumsocial.core.model.SignalCategory
 import app.quantumsocial.core.model.SignalLifecycle
 import app.quantumsocial.core.model.TextSignal
+import app.quantumsocial.ui.screens.color
+import app.quantumsocial.ui.screens.label
 import coil.compose.AsyncImage
 import kotlinx.coroutines.delay
 
@@ -40,6 +47,9 @@ import kotlinx.coroutines.delay
 fun WishNetCard(
     signal: Signal,
     fadingSince: Long? = null,
+    // bod 7: odpovede – iskry sú v karte, preto zhasínajú spolu so signálom
+    replies: List<Reply> = emptyList(),
+    onReply: (() -> Unit)? = null,
     onRead: (Signal) -> Unit,
 ) {
     val now by produceState(initialValue = System.currentTimeMillis(), signal.id) {
@@ -115,6 +125,18 @@ fun WishNetCard(
             val remaining = signal.remainingMillis(now)
             if (phase != LifePhase.FadingOut && remaining != null && remaining > 0) {
                 Text("Zostáva: ${(remaining + 999) / 1000}s", modifier = Modifier.padding(top = 6.dp))
+            }
+
+            replies.forEach { r ->
+                Text(
+                    text = "✦ " + (r.text ?: r.emotion?.label().orEmpty()),
+                    color = r.emotion?.color() ?: Color.Unspecified,
+                    fontSize = 13.sp,
+                    modifier = Modifier.padding(start = 12.dp, top = 4.dp),
+                )
+            }
+            if (onReply != null && phase != LifePhase.FadingOut && replies.size < ReplyThread.MAX_REPLIES) {
+                TextButton(onClick = onReply) { Text("Odpovedať svetlom") }
             }
         }
     }

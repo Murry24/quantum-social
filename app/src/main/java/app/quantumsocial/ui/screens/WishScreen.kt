@@ -1,19 +1,27 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package app.quantumsocial.ui.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import app.quantumsocial.core.data.InMemorySignalRepository
+import app.quantumsocial.core.data.ReplyStore
 import app.quantumsocial.core.model.Signal
+import app.quantumsocial.ui.signals.ReplySheet
 import app.quantumsocial.ui.signals.SignalAudioRecorder
 import app.quantumsocial.ui.signals.SignalEmoji
 import app.quantumsocial.ui.signals.SignalFlash
@@ -26,6 +34,8 @@ import app.quantumsocial.ui.signals.WishNetCard
 fun WishScreen() {
     val signals by InMemorySignalRepository.signals.collectAsState()
     val fadingSince by InMemorySignalRepository.fadingSince.collectAsState()
+    val threads by ReplyStore.threads.collectAsState()
+    var replyTo by remember { mutableStateOf<String?>(null) }
     var tabIndex by remember { mutableIntStateOf(0) }
     val tabs = listOf("Text", "Emoji", "Audio", "Záblesk", "Obrázok", "Mix")
 
@@ -47,9 +57,27 @@ fun WishScreen() {
 
         LazyColumn {
             items(signals, key = Signal::id) { s ->
-                WishNetCard(signal = s, fadingSince = fadingSince[s.id]) { read ->
+                WishNetCard(
+                    signal = s,
+                    fadingSince = fadingSince[s.id],
+                    replies = threads[s.id]?.replies.orEmpty(),
+                    onReply = { replyTo = s.id },
+                ) { read ->
                     InMemorySignalRepository.markRead(read.id)
                 }
+            }
+        }
+    }
+
+    // bod 7: odpovedať svetlom
+    replyTo?.let { id ->
+        ModalBottomSheet(
+            onDismissRequest = { replyTo = null },
+            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        ) {
+            ReplySheet { reply ->
+                ReplyStore.reply(id, reply)
+                replyTo = null
             }
         }
     }

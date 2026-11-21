@@ -70,6 +70,8 @@ object InMemorySignalRepository {
         val gone = fading.filterValues { now - it >= SignalLifecycle.FADE_OUT_MS }.keys
         if (gone.isNotEmpty()) {
             _signals.value = _signals.value.filterNot { it.id in gone }
+            // bod 7: odpovede zhasnú spolu s pôvodným signálom
+            ReplyStore.drop(gone)
         }
         val next = fading - gone
         if (next != _fadingSince.value) _fadingSince.value = next

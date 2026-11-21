@@ -15,7 +15,7 @@ Dáta najprv lokálne (mock), server až od bodu 9.
 | 4 | Zobrazenie a filtre | Mapa hviezd (náhodné rozmiestnenie, zoom/pan) + filtre: jazyk, emócia, téma, intenzita, vzdialenosť, WishNet | 🟡 takmer hotové |
 | 5 | Profil hviezdy | Anonymný detail: kvanti-meno, jazyk, emócie, témy, posledné signály, archív prianí; akcie odpovedať / sledovať žiarenie | 🟡 PR #7 |
 | 6 | Úvodná obrazovka | Finálny „veselý“ vizuál galaxie (gradienty, svetlušky), šetrič výkonu | 🟡 PR #8 |
-| 7 | Odpoveď a sledovanie žiarenia | Krátke vlákno odpovedí, ktoré zhasne; „stopy“ hviezdy (nie follow) | ⬜ |
+| 7 | Odpoveď a sledovanie žiarenia | Krátke vlákno odpovedí, ktoré zhasne; „stopy“ hviezdy (nie follow) | 🟡 `feat/7-replies` |
 | 8 | Posielanie správ + ZenNet | Klik na hviezdu → poslať hviezde / do chaosu; ZenNet = 1 min ticha s bublinami | 🟡 PR #6 |
 | 9 | Bezpečnosť a anonymita | API kontrakty, šifrovanie E2E (koncept), kľúče v Keystore, minimum dát | ⬜ |
 | 10 | Serendipity | Denné náhodné párovanie 1:1 na 24 h („svetelný most“) | ⬜ |
