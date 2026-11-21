@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat
 import app.quantumsocial.core.model.PerformanceChoice
 import app.quantumsocial.core.model.PerformanceMode
 import app.quantumsocial.core.model.PerformancePolicy
+import app.quantumsocial.core.ui.theme.GalaxyTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,6 +28,32 @@ import kotlinx.coroutines.flow.asStateFlow
 
 /** Aktuálny režim výkonu pre všetky obrazovky (bod 6). */
 val LocalPerformanceMode = staticCompositionLocalOf { PerformanceMode.Full }
+
+/** Farebná nálada oblohy (bod 32). */
+val LocalGalaxyTheme = staticCompositionLocalOf { GalaxyTheme.Dawn }
+
+/** Voľba farby galaxie z profilu – uložená v SharedPreferences. */
+object GalaxyThemeSettings {
+    private const val PREFS = "quantum_prefs"
+    private const val KEY = "galaxy_theme"
+
+    private val _theme = MutableStateFlow(GalaxyTheme.Dawn)
+    val theme: StateFlow<GalaxyTheme> = _theme.asStateFlow()
+
+    fun load(context: Context) {
+        _theme.value = GalaxyTheme.parse(prefs(context).getString(KEY, null))
+    }
+
+    fun set(
+        context: Context,
+        theme: GalaxyTheme,
+    ) {
+        _theme.value = theme
+        prefs(context).edit().putString(KEY, theme.name).apply()
+    }
+
+    private fun prefs(context: Context) = context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+}
 
 /** Voľba šetriča z profilu – uložená v SharedPreferences. */
 object PerformanceSettings {
@@ -59,11 +86,19 @@ object PerformanceSettings {
 @Composable
 fun PerformanceProvider(content: @Composable () -> Unit) {
     val context = LocalContext.current
-    remember { PerformanceSettings.load(context) }
+    remember {
+        PerformanceSettings.load(context)
+        GalaxyThemeSettings.load(context)
+    }
     val choice by PerformanceSettings.choice.collectAsState()
+    val theme by GalaxyThemeSettings.theme.collectAsState()
     val systemPowerSave by rememberSystemPowerSave(context)
     val mode = PerformancePolicy.resolve(choice, systemPowerSave)
-    CompositionLocalProvider(LocalPerformanceMode provides mode, content = content)
+    CompositionLocalProvider(
+        LocalPerformanceMode provides mode,
+        LocalGalaxyTheme provides theme,
+        content = content,
+    )
 }
 
 @Composable

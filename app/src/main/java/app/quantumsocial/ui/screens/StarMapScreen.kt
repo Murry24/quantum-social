@@ -64,7 +64,6 @@ import app.quantumsocial.core.model.Signal
 import app.quantumsocial.core.model.SignalLifecycle
 import app.quantumsocial.core.model.SignalTarget
 import app.quantumsocial.core.model.TextSignal
-import app.quantumsocial.core.ui.theme.GalaxyGradient
 import app.quantumsocial.ui.canvas.FireflyLayer
 import app.quantumsocial.ui.canvas.NebulaBackground
 import app.quantumsocial.ui.canvas.PulseFlight
@@ -81,6 +80,7 @@ import app.quantumsocial.ui.galaxies.warpMillis
 import app.quantumsocial.ui.model.StarPoint
 import app.quantumsocial.ui.model.toStarPoint
 import app.quantumsocial.ui.onboarding.OnboardingPrefs
+import app.quantumsocial.ui.perf.LocalGalaxyTheme
 import app.quantumsocial.ui.perf.LocalPerformanceMode
 import app.quantumsocial.ui.signals.SendPulseSheet
 import kotlinx.coroutines.delay
@@ -295,7 +295,7 @@ fun StarMapScreen(
             Modifier
                 .fillMaxSize()
                 .warp(warpOut.value, perf)
-                .background(GalaxyGradient),
+                .background(LocalGalaxyTheme.current.skyBrush),
     ) {
         Box(
             modifier =
