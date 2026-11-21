@@ -64,6 +64,7 @@ import app.quantumsocial.core.model.SignalLifecycle
 import app.quantumsocial.core.model.SignalTarget
 import app.quantumsocial.core.model.TextSignal
 import app.quantumsocial.core.ui.theme.GalaxyGradient
+import app.quantumsocial.ui.canvas.FireflyLayer
 import app.quantumsocial.ui.canvas.NebulaBackground
 import app.quantumsocial.ui.canvas.PulseFlight
 import app.quantumsocial.ui.canvas.PulseFlightLayer
@@ -73,6 +74,7 @@ import app.quantumsocial.ui.components.MiniKnobs
 import app.quantumsocial.ui.components.ZoomThinBar
 import app.quantumsocial.ui.model.StarPoint
 import app.quantumsocial.ui.model.toStarPoint
+import app.quantumsocial.ui.perf.LocalPerformanceMode
 import app.quantumsocial.ui.signals.SendPulseSheet
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -119,6 +121,10 @@ fun StarMapScreen(
     var maxDistance by remember { mutableFloatStateOf(1f) }
     var wishNetOnly by remember { mutableStateOf(false) }
     var reduceMotion by remember { mutableStateOf(false) }
+
+    // bod 6: v šetriči výkonu sa hviezdy netrblietajú (menej prekresľovania)
+    val perf = LocalPerformanceMode.current
+    val calmMotion = reduceMotion || !perf.twinkle
 
     // Viewport (perzistentný)
     var savedScale by rememberSaveable { mutableFloatStateOf(1f) }
@@ -191,7 +197,7 @@ fun StarMapScreen(
         launch { animOffsetY.animateTo(-targetScale * yw, tween(320, easing = LinearEasing)) }
 
         focusVisible = true
-        delay(if (reduceMotion) 1500 else 3000)
+        delay(if (calmMotion) 1500 else 3000)
         focusVisible = false
     }
 
@@ -297,12 +303,13 @@ fun StarMapScreen(
                 offsetY = animOffsetY.value,
                 scale = animScale.value,
             )
+            FireflyLayer()
             StarCanvas(
                 stars = filtered,
                 offsetX = animOffsetX.value,
                 offsetY = animOffsetY.value,
                 scale = animScale.value,
-                reduceMotion = reduceMotion,
+                reduceMotion = calmMotion,
                 focusStarId = focusStarId,
                 focusVisible = focusVisible,
                 watchedIds = watchedIds,

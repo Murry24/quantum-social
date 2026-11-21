@@ -1,11 +1,5 @@
 package app.quantumsocial.ui.screens
 
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -33,16 +27,17 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.quantumsocial.core.model.ZenSession
+import app.quantumsocial.core.ui.theme.GalaxyPalette
+import app.quantumsocial.ui.perf.LocalPerformanceMode
 import kotlinx.coroutines.delay
 import kotlin.math.PI
+import kotlin.math.cos
 import kotlin.math.min
 import kotlin.math.sin
 import kotlin.random.Random
 
-private val ZenTop = Color(0xFF1B3A5C)
-private val ZenBottom = Color(0xFF2E2A6B)
-private val BubbleColors =
-    listOf(Color(0xFF8FD3FF), Color(0xFFB9A7FF), Color(0xFF9EF0E0), Color(0xFFFFE3A3))
+// bod 6: farby z GalaxyPalette (nie napevno v obrazovke)
+private val BubbleColors = GalaxyPalette.zenBubbles.map { Color(it) }
 
 private data class Bubble(
     val x: Float,
@@ -60,18 +55,20 @@ private data class Bubble(
 fun ZenScreen(onClose: () -> Unit) {
     var session by remember { mutableStateOf<ZenSession?>(null) }
     val openedAt = remember { System.currentTimeMillis() }
+    // bod 6: šetrič výkonu = menej bublín a pomalší tick
+    val perf = LocalPerformanceMode.current
 
-    val now by produceState(initialValue = System.currentTimeMillis()) {
+    val now by produceState(initialValue = System.currentTimeMillis(), perf) {
         while (true) {
             value = System.currentTimeMillis()
-            delay(50)
+            delay(perf.frameIntervalMs)
         }
     }
 
     val bubbles =
-        remember {
+        remember(perf) {
             val rnd = Random(42)
-            List(28) {
+            List(perf.zenBubbles) {
                 Bubble(
                     x = rnd.nextFloat(),
                     radius = 8f + rnd.nextFloat() * 26f,
@@ -82,24 +79,19 @@ fun ZenScreen(onClose: () -> Unit) {
             }
         }
 
-    val breath by rememberInfiniteTransition(label = "zen-breath").animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(tween(4_000, easing = LinearEasing), RepeatMode.Reverse),
-        label = "breath",
-    )
-
     val active = session
     val progress = active?.progress(now) ?: 0f
     val finished = active?.isFinished(now) == true
     // relatívny čas (Float by pri absolútnych ms stratil presnosť)
     val seconds = (now - openedAt) / 1000f
+    // dych: 4 s nádych, 4 s výdych – z toho istého času, aby šetrič spomalil aj kruh
+    val breath = (1f - cos(seconds * PI.toFloat() / 4f)) / 2f
 
     Box(
         modifier =
             Modifier
                 .fillMaxSize()
-                .background(Brush.verticalGradient(listOf(ZenTop, ZenBottom))),
+                .background(GalaxyPalette.zenBrush),
         contentAlignment = Alignment.Center,
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
