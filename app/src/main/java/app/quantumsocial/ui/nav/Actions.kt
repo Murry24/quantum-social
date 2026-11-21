@@ -64,9 +64,12 @@ fun ActionsSheet(
     onChaos: () -> Unit,
     onZen: () -> Unit,
     onGalaxies: () -> Unit,
+    onGratitude: () -> Unit,
+    onChallenge: () -> Unit,
+    onMood: () -> Unit,
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(10.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier =
             Modifier
                 .fillMaxWidth()
@@ -76,6 +79,9 @@ fun ActionsSheet(
         BigAction("🌌  Do chaosu – pocit náhodnej hviezde", onChaos)
         BigAction("○  ZenNet – minúta ticha", onZen)
         BigAction("🕳  Moje galaxie", onGalaxies)
+        BigAction("🌟  Vďačnosť – zlatá iskra dňa", onGratitude)
+        BigAction("🎯  Výzva dňa", onChallenge)
+        BigAction("🌊  Vlny nálad galaxie", onMood)
     }
 }
 
