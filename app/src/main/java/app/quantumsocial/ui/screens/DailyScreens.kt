@@ -159,6 +159,8 @@ fun MoodWavesScreen(onBack: () -> Unit) {
             color = onSky,
             style = MaterialTheme.typography.titleMedium,
         )
+        // bod 17: emócia dňa je rovnaká pre celú galaxiu
+        Text("✨ " + emotionOfDayText(StarDustState.epochDay(System.currentTimeMillis())), color = onSky)
         Canvas(modifier = Modifier.fillMaxWidth().height(260.dp)) {
             val emotionsAll = Emotion.values()
             emotionsAll.forEachIndexed { i, e ->
