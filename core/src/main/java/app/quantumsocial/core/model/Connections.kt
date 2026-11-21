@@ -77,6 +77,8 @@ data class SoulLink(
     val sinceDay: Long,
 ) {
     fun activated(today: Long): SoulLink = copy(status = LinkStatus.Active, sinceDay = today)
+
+    fun isWaiting(today: Long): Boolean = status == LinkStatus.Pending && today > sinceDay
 }
 
 data class SoulLinks(
@@ -100,7 +102,7 @@ data class SoulLinks(
 
     /** Ukážkové hviezdy súhlasia deň po žiadosti – server to neskôr nahradí skutočnou odpoveďou. */
     fun demoAcceptances(today: Long): SoulLinks =
-        copy(links = links.map { if (it.status == LinkStatus.Pending && today > it.sinceDay) it.activated(today) else it })
+        copy(links = links.map { if (it.isWaiting(today)) it.activated(today) else it })
 
     fun remove(starId: String): SoulLinks = copy(links = links.filter { it.starId != starId })
 
