@@ -25,6 +25,7 @@ import app.quantumsocial.ui.signals.WishNetCard
 @Composable
 fun WishScreen() {
     val signals by InMemorySignalRepository.signals.collectAsState()
+    val fadingSince by InMemorySignalRepository.fadingSince.collectAsState()
     var tabIndex by remember { mutableIntStateOf(0) }
     val tabs = listOf("Text", "Emoji", "Audio", "Záblesk", "Obrázok", "Mix")
 
@@ -46,8 +47,8 @@ fun WishScreen() {
 
         LazyColumn {
             items(signals, key = Signal::id) { s ->
-                WishNetCard(signal = s) { read ->
-                    app.quantumsocial.core.data.InMemorySignalRepository.markRead(read.id)
+                WishNetCard(signal = s, fadingSince = fadingSince[s.id]) { read ->
+                    InMemorySignalRepository.markRead(read.id)
                 }
             }
         }

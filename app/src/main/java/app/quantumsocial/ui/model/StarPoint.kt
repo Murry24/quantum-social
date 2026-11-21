@@ -19,6 +19,8 @@ data class StarPoint(
     val isWishNet: Boolean,
     // 0..2π
     val angleRad: Float,
+    // 1f = plné svetlo, 0f = zhasnutá (bod 3 – životnosť signálu)
+    val brightness: Float = 1f,
 )
 
 fun Signal.toStarPoint(): StarPoint {
