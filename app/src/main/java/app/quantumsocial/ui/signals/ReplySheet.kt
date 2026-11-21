@@ -22,10 +22,12 @@ import app.quantumsocial.core.model.Emotion
 import app.quantumsocial.core.model.Reply
 import app.quantumsocial.core.model.ReplyThread
 
-/** Odpovedať svetlom (bod 7): ťuk na emóciu ju hneď pošle, alebo napíš krátky text. */
+/** Odpovedať svetlom (bod 7): vyber emóciu alebo napíš pár slov, potom „Poslať iskru“. */
 @Composable
 fun ReplySheet(onSend: (Reply) -> Unit) {
     var text by remember { mutableStateOf("") }
+    var emotion by remember { mutableStateOf<Emotion?>(null) }
+    val reply = Reply.text(text) ?: emotion?.let { Reply.emotion(it) }
 
     Column(
         modifier =
@@ -39,7 +41,7 @@ fun ReplySheet(onSend: (Reply) -> Unit) {
         Text("Odpovedať svetlom", style = MaterialTheme.typography.titleMedium)
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             Emotion.values().forEach { e ->
-                EmotionOrb(emotion = e, selected = false) { onSend(Reply.emotion(e)) }
+                EmotionOrb(emotion = e, selected = e == emotion) { emotion = e }
             }
         }
         OutlinedTextField(
@@ -48,6 +50,7 @@ fun ReplySheet(onSend: (Reply) -> Unit) {
             label = { Text("alebo pár slov (max ${ReplyThread.MAX_TEXT})") },
             modifier = Modifier.fillMaxWidth(),
         )
-        Button(onClick = { Reply.text(text)?.let(onSend) }, enabled = text.isNotBlank()) { Text("Poslať iskru ✦") }
+        // text má prednosť, inak vybraná emócia
+        Button(onClick = { reply?.let(onSend) }, enabled = reply != null) { Text("Poslať iskru ✦") }
     }
 }
