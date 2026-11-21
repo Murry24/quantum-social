@@ -248,12 +248,15 @@ fun MainScaffold() {
                     route = Routes.GALAXY,
                     arguments = listOf(navArgument("galaxyId") { type = NavType.StringType }),
                 ) { backStack ->
-                    val galaxyId = backStack.arguments?.getString("galaxyId")?.let { Uri.decode(it) } ?: return@composable
+                    val galaxyId =
+                        backStack.arguments?.getString("galaxyId")?.let { Uri.decode(it) } ?: return@composable
                     FriendGalaxyScreen(
                         galaxyId = galaxyId,
                         onLeave = { navController.popBackStack() },
                         onJump = { id ->
-                            navController.navigate(Routes.galaxyEncoded(id)) { popUpTo(Routes.GALAXY) { inclusive = true } }
+                            navController.navigate(Routes.galaxyEncoded(id)) {
+                                popUpTo(Routes.GALAXY) { inclusive = true }
+                            }
                         },
                     )
                 }
@@ -298,9 +301,12 @@ fun MainScaffold() {
                     OnboardingScreen(
                         onDone = {
                             // odteraz je domovom mapa a späť sa do onboardingu nevracia.
-                            // Prvé spustenie: zmena štartu prestaví graf a ten sám otvorí mapu (navigate by ju staval 2×).
+                            // Prvé spustenie: zmena štartu prestaví graf a ten sám otvorí mapu
+                            // (navigate by ju staval 2×).
                             if (start == Routes.HOME) {
-                                navController.navigate(Routes.HOME) { popUpTo(navController.graph.id) { inclusive = true } }
+                                navController.navigate(Routes.HOME) {
+                                    popUpTo(navController.graph.id) { inclusive = true }
+                                }
                             } else {
                                 start = Routes.HOME
                             }
