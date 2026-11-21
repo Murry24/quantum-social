@@ -3,6 +3,8 @@ package app.quantumsocial.ui.onboarding
 import android.content.Context
 import app.quantumsocial.core.model.Emotion
 import app.quantumsocial.core.model.RecoveryKey
+import app.quantumsocial.core.security.SealedText
+import app.quantumsocial.security.KeyVault
 import java.util.UUID
 
 /** Uložené voľby zo „Zrodenia hviezdy“ (bod 18) – zatiaľ len lokálne v SharedPreferences. */
@@ -11,6 +13,8 @@ object OnboardingPrefs {
     private const val KEY_DONE = "onboarding_done"
     private const val KEY_RECOVERY = "recovery_key"
     private const val KEY_STAR = "my_star_id"
+    private const val VAULT = "quantum_vault"
+    private const val KEY_SEALED = "recovery_sealed"
 
     fun isDone(context: Context) = prefs(context).getBoolean(KEY_DONE, false)
 
@@ -22,13 +26,24 @@ object OnboardingPrefs {
         }
     }
 
-    /** Existujúci kľúč, alebo nový (vygeneruje a uloží). Nikdy ho nelogovať ani neposielať. */
+    /**
+     * Existujúci kľúč, alebo nový (vygeneruje a uloží). Nikdy ho nelogovať ani neposielať.
+     * Bod 9: na disku je len zašifrovaný (Android Keystore) v samostatnom súbore, ktorý sa nezálohuje.
+     */
     fun recoveryKey(context: Context): List<String> {
-        val p = prefs(context)
-        p.getString(KEY_RECOVERY, null)?.let { return it.split(" ") }
-        val key = RecoveryKey.generate()
-        // TODO bod 9: Android Keystore – SharedPreferences nie sú bezpečné úložisko kľúča
-        p.edit().putString(KEY_RECOVERY, key.joinToString(" ")).apply()
+        val vault = vault(context)
+        vault.getString(KEY_SEALED, null)
+            ?.let(SealedText::decode)
+            ?.let(KeyVault::open)
+            ?.let { return it.split(" ") }
+
+        // starší nešifrovaný kľúč (pred bodom 9) prenesieme do trezoru a pôvodný zmažeme
+        val legacy = prefs(context).getString(KEY_RECOVERY, null)?.split(" ")
+        // shortcut: ak sa trezor nedá otvoriť (iné zariadenie / zmazaný Keystore), vznikne nový kľúč;
+        // so serverom (bod 19) treba namiesto toho obnovu cez kľúč
+        val key = legacy ?: RecoveryKey.generate()
+        vault.edit().putString(KEY_SEALED, KeyVault.seal(key.joinToString(" ")).encode()).apply()
+        if (legacy != null) prefs(context).edit().remove(KEY_RECOVERY).apply()
         return key
     }
 
@@ -47,4 +62,6 @@ object OnboardingPrefs {
         .apply()
 
     private fun prefs(context: Context) = context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+
+    private fun vault(context: Context) = context.applicationContext.getSharedPreferences(VAULT, Context.MODE_PRIVATE)
 }
