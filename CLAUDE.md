@@ -85,6 +85,11 @@ core/src/main/java/app/quantumsocial/core/
   (`PerformancePolicy` v core, `ui/perf`), prepínač v Profile.
 - **PR #9 (`feat/18-onboarding`, nadväzuje na PR #8)**: bod 18 – „Zrodenie hviezdy“ (`ui/onboarding`), `OnboardingState` + `RecoveryKey`
   v core. Kľúč zatiaľ v SharedPreferences (TODO bod 9: Keystore). Profil → „Znova prejsť zrodením“.
+- **`feat/31-friend-galaxies`** (nadväzuje na PR #9): bod 31 – galaxie priateľov. `FriendGalaxy`, `GalaxyRules`,
+  `GalaxyStore` (shared s demo „Kamaráti“, kód `KVANT7`) + testy; UI v `ui/galaxies` (čierna diera na mape,
+  `MyGalaxiesSheet`, `FriendGalaxyScreen`, `warp` animácia). Id mojej hviezdy: `OnboardingPrefs.myStarId`.
+- **`feat/7-replies`** (nadväzuje na bod 31): bod 7 – `Reply`, `ReplyThread`, `ReplyStore` (vlákno zmizne v
+  `InMemorySignalRepository.sweep`) + testy; vo WishNet „Odpovedať svetlom“ (`ReplySheet`), iskry v `WishNetCard`.
 - Ďalej: dokončiť 4, potom 9 (server, bezpečnosť).
 
 ## Dohodnuté smerovanie
