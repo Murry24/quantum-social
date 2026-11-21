@@ -1,6 +1,8 @@
 package app.quantumsocial.core.data
 
 import app.quantumsocial.core.model.DustAction
+import app.quantumsocial.core.model.Echo
+import app.quantumsocial.core.model.EchoDay
 import app.quantumsocial.core.model.GratitudeJournal
 import app.quantumsocial.core.model.SeedGarden
 import app.quantumsocial.core.model.StarDustState
@@ -77,5 +79,22 @@ object SeedStore {
 
     fun restore(garden: SeedGarden) {
         _garden.value = garden
+    }
+}
+
+/** Moje dnešné ozveny (bod 11). Súbory a ukladanie rieši app. */
+object EchoStore {
+    private val _day = MutableStateFlow(EchoDay())
+    val day: StateFlow<EchoDay> = _day.asStateFlow()
+
+    fun add(echo: Echo): Boolean {
+        val next = _day.value.add(echo) ?: return false
+        _day.value = next
+        StarDust.earn(DustAction.Echo)
+        return true
+    }
+
+    fun restore(day: EchoDay) {
+        _day.value = day
     }
 }

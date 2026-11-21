@@ -20,6 +20,7 @@ enum class DustAction(
     Challenge(reward = 3, dailyCap = 1),
     Empathy(reward = 2, dailyCap = 5),
     Seed(reward = 1, dailyCap = 3),
+    Echo(reward = 1, dailyCap = 3),
 }
 
 data class StarDustState(
