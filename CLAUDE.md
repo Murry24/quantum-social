@@ -69,7 +69,7 @@ core/src/main/java/app/quantumsocial/core/
 - **Emulátor spúšťa Maroš v Android Studiu** (panel Running Devices), nie Claude cez `emulator.exe`.
   Ak už beží (`adb devices`), nový nespúšťaj. Aplikácia sa spúšťa ▶ Run v Android Studiu.
 
-## Aktuálny stav (19. 11. 2026)
+## Aktuálny stav (21. 11. 2026)
 - Hotové v `main`: body 1, 2, väčšina 4, rozpracovaný 5 (profil hviezdy).
 - **PR #4 (`feat/3-signal-lifecycle`)**: bod 3 – životnosť signálov (stav „končí“,
   animácia zhasnutia, `SignalLifecycle` + testy). CI zelené, čaká na Marošovo vyskúšanie
@@ -78,9 +78,24 @@ core/src/main/java/app/quantumsocial/core/
   → pulz letí k hviezde; tlačidlo „🌌 Do chaosu“ (náhodná hviezda); „○ ZenNet“ = minúta ticha
   (`ZenScreen`). Logika v `core`: `PulseSignal`, `SignalTarget`, `ChaosPicker`, `PulseOutbox`,
   `ZenSession` + testy. Dlhé podržanie hviezdy = profil.
-- Ďalej: dokončiť 4 a 5, potom 6 (úvodná obrazovka) a 18 (onboarding).
+- **`feat/5-star-profile`** (z PR #6): bod 5 – kvanti-meno (`QuantName`), sledovanie žiarenia (`WatchedStars`, prstenec na mape),
+  Pošli pulz z profilu.
+- **`feat/6-happy-galaxy`** (z bodu 5): bod 6 – `GalaxyPalette`, svetlušky (`FireflyLayer`), šetrič výkonu
+  (`PerformancePolicy` v core, `ui/perf`), prepínač v Profile.
+- Ďalej: bod 18 (onboarding, `feat/18-onboarding`), potom dokončiť 4.
 
 ## Dohodnuté smerovanie
 - Prvá verzia bez servera – všetko lokálne, server (bod 9, 19) až keď bude jadro príjemné.
 - Pri bode 2 sú text/audio/obrázok pripravené, ale dôraz je na **pocitoch, svetle a emóciách**.
 - Jadro MVP podľa plánu: 1 → 4 → 5 → 8 → 9 → 18 → 19 → 20.
+
+## graphify
+
+This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
+
+Rules:
+- When graphify-out/graph.json exists, run `graphify query "<question>"` before your first grep, search or source-file read for a codebase question, and put this rule in every subagent prompt that explores code. Read raw files only for lines the graph or an earlier read already located. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. When the answer is under a Markdown heading, `graphify section "<heading>"` prints that section's text, so the .md need not be opened. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
+- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
+- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
+- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
+- A committed graphify-out/graph.json is rewritten whole on every build, so a large diff to it in a pull request is expected. Do not flag it as churn or suggest skipping the graph rebuild or its hooks.
