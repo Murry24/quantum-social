@@ -43,7 +43,6 @@ import app.quantumsocial.core.model.SeedHelpKind
 import app.quantumsocial.core.model.SeedHelpers
 import app.quantumsocial.core.model.SeedOutcome
 import app.quantumsocial.core.model.SeedSize
-import app.quantumsocial.core.model.SeedStage
 import app.quantumsocial.core.model.StarDustState
 import app.quantumsocial.core.ui.theme.GalaxyPalette
 import app.quantumsocial.ui.signals.EmotionOrb
