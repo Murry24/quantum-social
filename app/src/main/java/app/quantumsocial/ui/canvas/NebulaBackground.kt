@@ -9,6 +9,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.withTransform
 import app.quantumsocial.core.ui.theme.GalaxyPalette
+import app.quantumsocial.ui.perf.LocalGalaxyTheme
 import app.quantumsocial.ui.perf.LocalPerformanceMode
 import app.quantumsocial.ui.perf.rememberGalaxySeconds
 import kotlin.math.cos
@@ -37,7 +38,8 @@ fun NebulaBackground(
 ) {
     val mode = LocalPerformanceMode.current
     val seconds = rememberGalaxySeconds()
-    val sky = remember { GalaxyPalette.skyBrush }
+    val theme = LocalGalaxyTheme.current
+    val sky = remember(theme) { theme.skyBrush }
     val hazes = remember { GalaxyPalette.hazes.map { it.color } }
 
     // hviezdny prach: x, y, polomer, priehľadnosť – vypočítané raz, nie v každom snímku

@@ -40,6 +40,9 @@ Dáta najprv lokálne (mock), server až od bodu 9.
 | 29 | Empatický StarDust | Bonus StarDust za pomoc iným + aurora efekt | ⬜ |
 | 30 | FutureSeeds → FutureBlooms | Semienka budúcnosti, ktoré rastú podporou komunity | ⬜ |
 | 31 | Galaxie priateľov | Vlastné malé galaxie, vstup čiernou dierou (pozvánka), odchod bielou dierou, červie diery medzi galaxiami, zhasnutie po 7 dňoch | ✅ |
+| 32 | Farby galaxie | Výber farebnej nálady oblohy hlavnej galaxie v profile (Úsvit, Polárna žiara, Ruža, Oceán, Zlatá hodina) | 🟡 |
+| 33 | Živá tapeta | Moja galaxia ako pohyblivá tapeta Androidu (svetlušky, hmloviny, šetrič batérie) | ⬜ |
+| 34 | Luxusný vzhľad | Doladenie animácií, typografie, sklenených panelov a prechodov, aby aplikácia pôsobila prémiovo | ⬜ |
 
 ## Poznámky
 - Pri každom bode: úlohy rozdelené na Android / Backend / Design, výstup = funkčné demo

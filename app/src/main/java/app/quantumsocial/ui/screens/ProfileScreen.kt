@@ -1,10 +1,16 @@
 package app.quantumsocial.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
@@ -14,18 +20,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import app.quantumsocial.core.data.StarDust
 import app.quantumsocial.core.model.DustAction
 import app.quantumsocial.core.model.PerformanceChoice
 import app.quantumsocial.core.model.StarDustState
+import app.quantumsocial.core.ui.theme.GalaxyTheme
+import app.quantumsocial.ui.perf.GalaxyThemeSettings
 import app.quantumsocial.ui.perf.PerformanceSettings
 
 @Composable
 fun ProfileScreen(onRebirth: () -> Unit) {
     val context = LocalContext.current
     val choice by PerformanceSettings.choice.collectAsState()
+    val theme by GalaxyThemeSettings.theme.collectAsState()
     val dust by StarDust.state.collectAsState()
 
     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -48,6 +58,21 @@ fun ProfileScreen(onRebirth: () -> Unit) {
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }
+            }
+        }
+
+        // bod 32: farebná nálada oblohy hlavnej galaxie
+        Text("Farba galaxie", style = MaterialTheme.typography.titleMedium)
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            items(GalaxyTheme.values()) { t ->
+                FilterChip(
+                    selected = t == theme,
+                    onClick = { GalaxyThemeSettings.set(context, t) },
+                    label = { Text(t.label) },
+                    leadingIcon = {
+                        Box(Modifier.size(16.dp).clip(CircleShape).background(t.skyBrush))
+                    },
+                )
             }
         }
 
