@@ -2,7 +2,7 @@ package app.quantumsocial.core.model
 
 /**
  * Uloženie prianí z WishNetu do telefónu, aby prežili reštart (žijú 24 h).
- * Ukladá sa text, emoji, záblesk a zvuk; obrázok a mix nie (odkaz na obrázok po reštarte neplatí).
+ * Ukladá sa text, emoji, záblesk, zvuk a obrázok, ak je to kópia v aplikácii (file:); mix nie.
  */
 object WishNetVault {
     private fun esc(s: String) = s.replace("\\", "\\\\").replace("\t", "\\t").replace("\n", "\\n")
@@ -37,6 +37,8 @@ object WishNetVault {
                 is EmojiSignal -> "E\t$head\t${esc(s.emoji)}"
                 is FlashSignal -> "F\t$head\t${s.intensity}\t${s.durationMs}"
                 is AudioSignal -> "A\t$head\t${esc(s.filePath)}\t${s.durationMs}"
+                // odkaz z galérie (content:) by po reštarte neplatil
+                is ImageSignal -> if (s.imageUri.startsWith("file:")) "I\t$head\t${esc(s.imageUri)}" else null
                 else -> null
             }
         }.joinToString("\n")
@@ -56,6 +58,7 @@ object WishNetVault {
                     "E" -> EmojiSignal(unesc(p[3]), id = id, createdAt = at).asWishNet()
                     "F" -> FlashSignal(p[3].toFloat(), p[4].toInt(), id = id, createdAt = at).asWishNet()
                     "A" -> AudioSignal(unesc(p[3]), p[4].toInt(), id = id, createdAt = at).asWishNet()
+                    "I" -> ImageSignal(unesc(p[3]), id = id, createdAt = at).asWishNet()
                     else -> null
                 }
             }.getOrNull()

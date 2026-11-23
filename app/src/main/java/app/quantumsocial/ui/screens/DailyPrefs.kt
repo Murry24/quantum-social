@@ -14,12 +14,14 @@ import app.quantumsocial.core.data.WishBoardStore
 import app.quantumsocial.core.model.DailyAura
 import app.quantumsocial.core.model.EchoDay
 import app.quantumsocial.core.model.GratitudeJournal
+import app.quantumsocial.core.model.ImageSignal
 import app.quantumsocial.core.model.Moderation
 import app.quantumsocial.core.model.SeedGarden
 import app.quantumsocial.core.model.SoulLinks
 import app.quantumsocial.core.model.StarDustState
 import app.quantumsocial.core.model.WishBoard
 import app.quantumsocial.core.model.WishNetVault
+import app.quantumsocial.ui.signals.WishImages
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
@@ -58,6 +60,7 @@ object DailyPrefs {
         // priania z WishNetu žijú 24 h aj cez reštart
         val wishes = WishNetVault.decode(prefs.getString(KEY_WISHES, null), System.currentTimeMillis())
         InMemorySignalRepository.restore(wishes)
+        WishImages.cleanup(context, wishes.filterIsInstance<ImageSignal>().map { it.imageUri }.toSet())
         val board = WishBoard.decode(prefs.getString(KEY_WISH_BOARD, null))
         WishBoardStore.restore(board.keepOnly(wishes.map { it.id }.toSet()))
         val galaxies = GalaxyStore.shared
