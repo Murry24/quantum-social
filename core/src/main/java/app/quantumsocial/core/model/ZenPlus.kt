@@ -24,7 +24,12 @@ enum class BreathPattern(val label: String, val steps: List<Pair<BreathStep, Int
                         BreathStep.Hold -> size
                     }
             }
-            size = if (step == BreathStep.In) 1f else if (step == BreathStep.Out) 0f else size
+            size =
+                when (step) {
+                    BreathStep.In -> 1f
+                    BreathStep.Out -> 0f
+                    BreathStep.Hold -> size
+                }
             t -= len
         }
         return steps.last().first to size
