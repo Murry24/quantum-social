@@ -1,6 +1,5 @@
 package app.quantumsocial.ui.model
 
-import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.Emotion
 import app.quantumsocial.core.model.MixSignal
 import app.quantumsocial.core.model.Signal

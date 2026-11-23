@@ -201,7 +201,10 @@ fun EchoScreen(onBack: () -> Unit) {
             items(echoes.today(today), key = { it.id }) { e ->
                 ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(12.dp)) {
-                        Text(tr("🎧 %s · %s s", tr(e.mood.label()), e.durationMs / 1000), modifier = Modifier.weight(1f))
+                        Text(
+                            tr("🎧 %s · %s s", tr(e.mood.label()), e.durationMs / 1000),
+                            modifier = Modifier.weight(1f),
+                        )
                         TextButton(onClick = { playFile(e.filePath) }) { Text("▶") }
                         TextButton(
                             onClick = {

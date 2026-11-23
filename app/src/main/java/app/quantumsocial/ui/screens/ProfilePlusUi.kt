@@ -100,7 +100,10 @@ fun BadgesCard(myStarId: String) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(tr("Odznaky %s/%s", earned.size, Badge.values().size), style = MaterialTheme.typography.titleMedium)
             if (stats.gratitudeStreak > 0) {
-                Text(tr("🔥 %s dní vďačnosti v rade", stats.gratitudeStreak), style = MaterialTheme.typography.bodySmall)
+                Text(
+                    tr("🔥 %s dní vďačnosti v rade", stats.gratitudeStreak),
+                    style = MaterialTheme.typography.bodySmall,
+                )
             }
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),

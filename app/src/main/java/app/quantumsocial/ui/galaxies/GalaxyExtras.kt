@@ -44,7 +44,10 @@ fun GalaxyHeaderExtras(
         if (galaxy.coreStarId == me) TextButton(onClick = { editing = true }) { Text(tr("✎ Upraviť")) }
     }
     val today = StarDustState.epochDay(System.currentTimeMillis())
-    Text(tr("🔥 Táborák: %s", GalaxyCampfire.questionFor(galaxy.id, today)), style = MaterialTheme.typography.bodyMedium)
+    Text(
+        tr("🔥 Táborák: %s", GalaxyCampfire.questionFor(galaxy.id, today)),
+        style = MaterialTheme.typography.bodyMedium,
+    )
 
     if (editing) {
         var name by remember { mutableStateOf(galaxy.name) }
