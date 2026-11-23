@@ -52,6 +52,8 @@ fun WishNetCard(
     // bod 7: odpovede – iskry sú v karte, preto zhasínajú spolu so signálom
     replies: List<Reply> = emptyList(),
     onReply: (() -> Unit)? = null,
+    // WishNet+: téma, palce, splnené
+    extras: (@Composable () -> Unit)? = null,
     onRead: (Signal) -> Unit,
 ) {
     val now by produceState(initialValue = System.currentTimeMillis(), signal.id) {
@@ -129,6 +131,8 @@ fun WishNetCard(
             if (phase != LifePhase.FadingOut && remaining != null && remaining > 0) {
                 Text("Zostáva: ${remainingText(remaining)}", modifier = Modifier.padding(top = 6.dp))
             }
+
+            if (phase != LifePhase.FadingOut) extras?.invoke()
 
             replies.forEach { r ->
                 Row(modifier = Modifier.padding(start = 12.dp, top = 4.dp)) {
