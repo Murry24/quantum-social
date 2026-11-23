@@ -1,5 +1,7 @@
 package app.quantumsocial.ui.screens
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,17 +21,24 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import app.quantumsocial.audio.CustomSoundStore
+import app.quantumsocial.audio.ToneSynth
 import app.quantumsocial.core.data.StarDust
 import app.quantumsocial.core.model.DustAction
 import app.quantumsocial.core.model.PerformanceChoice
+import app.quantumsocial.core.model.StarChord
 import app.quantumsocial.core.model.StarDustState
 import app.quantumsocial.core.model.StarLevel
 import app.quantumsocial.core.ui.theme.GalaxyTheme
@@ -93,6 +102,51 @@ fun ProfileScreen(onRebirth: () -> Unit) {
             }
         }
 
+        // bod 28: moja melódia hviezdy (zmena najviac raz za štvrťrok) alebo vlastný zvuk
+        val chordState by ChordPrefs.state.collectAsState()
+        val myStar = OnboardingPrefs.myStarId(context)
+        var hasCustom by remember { mutableStateOf(CustomSoundStore.has(context)) }
+        var soundMessage by remember { mutableStateOf<String?>(null) }
+        val pickSound =
+            rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+                if (uri != null) {
+                    val problem = CustomSoundStore.import(context, uri)
+                    hasCustom = CustomSoundStore.has(context)
+                    soundMessage = problem ?: "Vlastný zvuk je uložený ✓"
+                }
+            }
+        Text("Môj zvuk", style = MaterialTheme.typography.titleMedium)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            OutlinedButton(
+                onClick = {
+                    if (hasCustom) {
+                        CustomSoundStore.play(context)
+                    } else {
+                        ToneSynth.play(StarChord.of(myStar, chordState.first))
+                    }
+                },
+            ) { Text(if (hasCustom) "🎵 Môj vlastný zvuk" else "🎵 Moja melódia") }
+            if (!hasCustom) {
+                TextButton(
+                    onClick = { ChordPrefs.change(context) },
+                    enabled = ChordPrefs.canChange(),
+                ) { Text(if (ChordPrefs.canChange()) "Zmeniť melódiu" else "Zmena až o štvrťrok") }
+            }
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            TextButton(onClick = { pickSound.launch(arrayOf("audio/*")) }) { Text("📁 Vložiť vlastný zvuk (max 15 s)") }
+            if (hasCustom) {
+                TextButton(
+                    onClick = {
+                        CustomSoundStore.remove(context)
+                        hasCustom = false
+                        soundMessage = "Späť na melódiu hviezdy"
+                    },
+                ) { Text("Zrušiť") }
+            }
+        }
+        soundMessage?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
+
         // bod 32: farebná nálada oblohy hlavnej galaxie
         Text("Farba galaxie", style = MaterialTheme.typography.titleMedium)
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -144,4 +198,6 @@ private fun DustAction.label() =
         DustAction.Galaxy -> "Nová galaxia"
         DustAction.Gratitude -> "Vďačnosť"
         DustAction.Challenge -> "Výzva dňa"
+        DustAction.Empathy -> "Prvá pomoc prianiu"
+        DustAction.Seed -> "Zaliate semienko"
     }

@@ -36,9 +36,9 @@ Dáta najprv lokálne (mock), server až od bodu 9.
 | 25 | Lingua Bridges | Voliteľné AI preklady (originál ↔ preklad) | ⬜ |
 | 26 | Mood Waves | Živé globálne vlny nálad „tu a teraz“ | 🟡 lokálne (z mapy) |
 | 27 | Pulse Alerts | Zvýraznený naliehavý signál, stojí StarDust, max 1/deň | ⬜ |
-| 28 | StarChords | Osobná melódia hviezdy, zmena raz za kvartál | ⬜ |
-| 29 | Empatický StarDust | Bonus StarDust za pomoc iným + aurora efekt | ⬜ |
-| 30 | FutureSeeds → FutureBlooms | Semienka budúcnosti, ktoré rastú podporou komunity | ⬜ |
+| 28 | StarChords | Osobná melódia hviezdy, zmena raz za kvartál | 🟡 melódia z pentatoniky, zmena raz za štvrťrok |
+| 29 | Empatický StarDust | Bonus StarDust za pomoc iným + aurora efekt | 🟡 bonus za prvú odpoveď prianiu |
+| 30 | FutureSeeds → FutureBlooms | Semienka budúcnosti, ktoré rastú podporou komunity | 🟡 lokálne (zalievanie raz denne) |
 | 31 | Galaxie priateľov | Vlastné malé galaxie, vstup čiernou dierou (pozvánka), odchod bielou dierou, červie diery medzi galaxiami, zhasnutie po 7 dňoch | ✅ |
 | 32 | Farby galaxie | Výber farebnej nálady oblohy hlavnej galaxie v profile (Úsvit, Polárna žiara, Ruža, Oceán, Zlatá hodina) | 🟡 |
 | 33 | Živá tapeta | Moja galaxia ako pohyblivá tapeta Androidu (svetlušky, hmloviny, šetrič batérie) | 🟡 |

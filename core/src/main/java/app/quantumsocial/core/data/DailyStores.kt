@@ -2,10 +2,12 @@ package app.quantumsocial.core.data
 
 import app.quantumsocial.core.model.DustAction
 import app.quantumsocial.core.model.GratitudeJournal
+import app.quantumsocial.core.model.SeedGarden
 import app.quantumsocial.core.model.StarDustState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.util.UUID
 
 /** Môj denník vďačnosti (bod 14). Ukladanie rieši app. */
 object GratitudeStore {
@@ -44,5 +46,36 @@ object ChallengeStore {
 
     fun restore(day: Long?) {
         _doneDay.value = day
+    }
+}
+
+/** Moja záhrada semienok budúcnosti (bod 30). Ukladanie rieši app. */
+object SeedStore {
+    private val _garden = MutableStateFlow(SeedGarden())
+    val garden: StateFlow<SeedGarden> = _garden.asStateFlow()
+
+    fun plant(
+        text: String,
+        now: Long = System.currentTimeMillis(),
+    ): Boolean {
+        val id = UUID.randomUUID().toString()
+        val next = _garden.value.plant(id, text, StarDustState.epochDay(now)) ?: return false
+        _garden.value = next
+        return true
+    }
+
+    /** Zaliatie – raz denne na semienko, každé prinesie trochu StarDust. */
+    fun water(
+        id: String,
+        now: Long = System.currentTimeMillis(),
+    ): Boolean {
+        val next = _garden.value.water(id, StarDustState.epochDay(now)) ?: return false
+        _garden.value = next
+        StarDust.earn(DustAction.Seed, now)
+        return true
+    }
+
+    fun restore(garden: SeedGarden) {
+        _garden.value = garden
     }
 }
