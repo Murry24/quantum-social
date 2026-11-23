@@ -26,14 +26,15 @@ Tento súbor je „odovzdávka“ medzi sedeniami. Prečítaj ho ako prvý.
 | #25 | WishNet+ (témy, palce, splnené) | feat/wishnet-plus |
 | #26 | Galaxie+ (motto, úprava, obľúbené, táborák) | feat/galaxie-plus |
 | #27 | Profil+ (aura, odznaky, séria vďačnosti) | feat/profil-plus |
+| #28 | Preklad 1: systém slovníkov + angličtina | feat/i18n-1 |
 
-**Na test stačí vetva `feat/profil-plus`** (obsahuje všetko). Po OK zlúčiť v poradí #16 → #27
+**Na test stačí vetva `feat/i18n-1`** (obsahuje všetko). Po OK zlúčiť v poradí #16 → #28
 (každý PR pred zlúčením prepnúť na base `main`, merge commit, vetvy nemazať).
 Pri teste v Android Studiu: po prepnutí vetvy **Sync**, pri čudných chybách **Build → Clean Project**.
 Netestované zatiaľ: KVANT7 (vstup do galaxie priateľov), melódia/zvuk, tapeta, notifikácie.
 
 ## Ďalšie kroky (v tomto poradí)
-1. Spoločný test + zlúčenie #16–#27.
+1. Spoločný test + zlúčenie #16–#28.
 2. Balík C: **19** lokálne (nahlásiť / zablokovať hviezdu), **25** preklady správ (prekladač v telefóne).
 3. **Detailné vylepšenie každej časti** (Marošovo želanie: „nabité všetkým, na čo si používateľ spomenie“):
    WishNet → galaxie priateľov → profil → ZenNet → … každú časť do hĺbky.
@@ -53,3 +54,9 @@ Netestované zatiaľ: KVANT7 (vstup do galaxie priateľov), melódia/zvuk, tapet
 
 ## Mimo Quantum Social
 - Eurojackpot feed funguje sám (robot zapisuje ťahy). Skontrolovať okolo 2. 1. 2027, či vznikne history_2027.csv.
+
+## Preklad aplikácie (i18n)
+- Texty v kóde: `tr("slovenský text")` alebo `tr("text %s", x)` (import `app.quantumsocial.core.i18n.tr`).
+- Slovníky: `app/src/main/assets/i18n/<iso>.tsv` (slovensky TAB preklad), nový jazyk pridať aj do `I18n.available`.
+- `I18nTest` stráži počet `%s`. Ešte nepreložené: texty z `core` (otázky táboráka, výzvy, sny, pripomienky, názvy levelov/odznakov).
+- Pri kontrole dĺžky riadku počítať emoji ako 2 znaky (ktlint počíta UTF-16).
