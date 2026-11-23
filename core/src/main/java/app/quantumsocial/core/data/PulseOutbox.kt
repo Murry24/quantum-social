@@ -41,12 +41,15 @@ object PulseOutbox {
         random: Random = Random.Default,
         emoji: String? = null,
         effect: PulseEffect? = null,
+        urgent: Boolean = false,
     ): Sent? {
         val starId =
             when (target) {
                 is SignalTarget.Star -> target.starId
                 SignalTarget.Chaos -> ChaosPicker.pick(visibleStarIds, random = random) ?: return null
             }
+        // naliehavý pulz sa zaplatí až keď je jasné, kam letí; keď sa nedá, neodíde nič
+        if (urgent && !StarDust.useAlert(now)) return null
         val sent =
             Sent(
                 signal =
@@ -55,6 +58,7 @@ object PulseOutbox {
                         target = target,
                         emoji = emoji,
                         effect = effect,
+                        urgent = urgent,
                         createdAt = now,
                     ),
                 resolvedStarId = starId,

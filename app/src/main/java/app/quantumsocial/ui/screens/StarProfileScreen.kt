@@ -57,6 +57,7 @@ import app.quantumsocial.core.model.Signal
 import app.quantumsocial.core.model.SignalCategory
 import app.quantumsocial.core.model.SignalTarget
 import app.quantumsocial.core.model.TextSignal
+import app.quantumsocial.core.model.WorldLanguages
 import app.quantumsocial.ui.model.starEmotionForId
 import app.quantumsocial.ui.model.starLangForId
 import app.quantumsocial.ui.model.starTopicForId
@@ -293,13 +294,14 @@ fun StarProfileScreen(
         ) {
             SendPulseSheet(
                 target = SignalTarget.Star(starId),
-                onSend = { emotion, emoji, effect ->
+                onSend = { emotion, emoji, effect, urgent ->
                     PulseOutbox.send(
                         target = SignalTarget.Star(starId),
                         emotion = emotion,
                         visibleStarIds = emptyList(),
                         emoji = emoji,
                         effect = effect,
+                        urgent = urgent,
                     )
                     showPulse = false
                     pulseSentAt = System.currentTimeMillis()
@@ -376,7 +378,7 @@ private fun filterForStar(
 }
 
 private fun langsForStar(starId: String): List<String> {
-    val langs = listOf("SK", "EN", "CZ", "DE", "ES")
+    val langs = WorldLanguages.codes
     val rnd = Random(starId.hashCode())
     return langs.shuffled(rnd).take(1 + rnd.nextInt(3))
 }

@@ -209,13 +209,14 @@ fun FriendGalaxyScreen(
         ) {
             SendPulseSheet(
                 target = SignalTarget.Star(target),
-                onSend = { emotion, emoji, effect ->
+                onSend = { emotion, emoji, effect, urgent ->
                     PulseOutbox.send(
                         target = SignalTarget.Star(target),
                         emotion = emotion,
                         visibleStarIds = galaxy.members.toList(),
                         emoji = emoji,
                         effect = effect,
+                        urgent = urgent,
                     )?.let { sent ->
                         flights.add(PulseFlight.of(sent, emotion.color()))
                     }
