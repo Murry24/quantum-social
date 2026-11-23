@@ -21,6 +21,10 @@ class GalaxyStore {
 
     private val invites = mutableMapOf<String, BlackHoleInvite>()
 
+    // zvýši sa pri novej pozvánke (tá nemení zoznam galaxií), aby sa uložila
+    private val _invitesRevision = MutableStateFlow(0)
+    val invitesRevision: StateFlow<Int> = _invitesRevision.asStateFlow()
+
     private val _favorites = MutableStateFlow<Set<String>>(emptySet())
     val favorites: StateFlow<Set<String>> = _favorites.asStateFlow()
 
@@ -103,7 +107,10 @@ class GalaxyStore {
         if (g.coreStarId != byStarId || !g.open) return null
         var code = GalaxyRules.newCode(random)
         while (code in invites) code = GalaxyRules.newCode(random)
-        return BlackHoleInvite(code = code, galaxyId = galaxyId, createdAt = now).also { invites[code] = it }
+        return BlackHoleInvite(code = code, galaxyId = galaxyId, createdAt = now).also {
+            invites[code] = it
+            _invitesRevision.value++
+        }
     }
 
     fun enter(
@@ -178,6 +185,55 @@ class GalaxyStore {
     ) {
         _galaxies.value = _galaxies.value.filter { it.id != galaxy.id } + galaxy
         invite?.let { invites[it.code] = it }
+    }
+
+    /** Uloženie do telefónu: riadky G (galaxia), I (pozvánka), F (obľúbená), oddelené tabulátorom. */
+    fun encode(): String {
+        fun clean(s: String) = s.replace('\t', ' ').replace('\n', ' ')
+        val g =
+            _galaxies.value.map {
+                listOf(
+                    "G", it.id, clean(it.name), it.emotion.name, it.coreStarId, it.members.joinToString(","),
+                    it.createdAt, it.lastActivityAt, it.open, clean(it.motto),
+                ).joinToString("\t")
+            }
+        val i =
+            invites.values.map {
+                listOf("I", it.code, it.galaxyId, it.createdAt, it.maxUses, it.usedCount).joinToString("\t")
+            }
+        val f = _favorites.value.map { "F\t$it" }
+        return (g + i + f).joinToString("\n")
+    }
+
+    /** Načíta uložené galaxie (pokazené riadky preskočí). Ukážková galaxia ostane, ak ju uložené nenahradia. */
+    fun restore(stored: String?) {
+        if (stored.isNullOrBlank()) return
+        val favorites = mutableSetOf<String>()
+        stored.lineSequence().forEach { line ->
+            val p = line.split('\t')
+            runCatching {
+                when (p[0]) {
+                    "G" ->
+                        put(
+                            FriendGalaxy(
+                                id = p[1],
+                                name = p[2],
+                                emotion = Emotion.valueOf(p[3]),
+                                coreStarId = p[4],
+                                members = p[5].split(',').filter { it.isNotEmpty() }.toSet(),
+                                createdAt = p[6].toLong(),
+                                lastActivityAt = p[7].toLong(),
+                                open = p[8].toBoolean(),
+                                motto = p.getOrElse(9) { "" },
+                            ),
+                        )
+                    "I" -> invites[p[1]] = BlackHoleInvite(p[1], p[2], p[3].toLong(), p[4].toInt(), p[5].toInt())
+                    "F" -> favorites += p[1]
+                }
+            }
+        }
+        _favorites.value = favorites
+        sweep()
     }
 
     private fun update(g: FriendGalaxy) {
