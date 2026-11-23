@@ -2,15 +2,21 @@ package app.quantumsocial.ui.screens
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
@@ -28,14 +34,17 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.quantumsocial.core.data.StarDust
+import app.quantumsocial.core.data.ZenStore
 import app.quantumsocial.core.i18n.tr
+import app.quantumsocial.core.model.BreathPattern
 import app.quantumsocial.core.model.DustAction
+import app.quantumsocial.core.model.StarDustState
+import app.quantumsocial.core.model.ZenDays
 import app.quantumsocial.core.model.ZenSession
 import app.quantumsocial.core.ui.theme.GalaxyPalette
 import app.quantumsocial.ui.perf.LocalPerformanceMode
 import kotlinx.coroutines.delay
 import kotlin.math.PI
-import kotlin.math.cos
 import kotlin.math.min
 import kotlin.math.sin
 import kotlin.random.Random
@@ -58,6 +67,10 @@ private data class Bubble(
 @Composable
 fun ZenScreen(onClose: () -> Unit) {
     var session by remember { mutableStateOf<ZenSession?>(null) }
+    // zen+: dĺžka ticha a dýchací rytmus
+    var minutes by remember { mutableStateOf(1) }
+    var pattern by remember { mutableStateOf(BreathPattern.Calm) }
+    val zenDays by ZenStore.days.collectAsState()
     val openedAt = remember { System.currentTimeMillis() }
     // bod 6: šetrič výkonu = menej bublín a pomalší tick
     val perf = LocalPerformanceMode.current
@@ -87,11 +100,16 @@ fun ZenScreen(onClose: () -> Unit) {
     val progress = active?.progress(now) ?: 0f
     val finished = active?.isFinished(now) == true
     // bod 20: dokončená minúta ticha je pozitívny čin
-    LaunchedEffect(finished) { if (finished) StarDust.earn(DustAction.Zen) }
+    LaunchedEffect(finished) {
+        if (finished) {
+            StarDust.earn(DustAction.Zen)
+            ZenStore.complete()
+        }
+    }
     // relatívny čas (Float by pri absolútnych ms stratil presnosť)
     val seconds = (now - openedAt) / 1000f
-    // dych: 4 s nádych, 4 s výdych – z toho istého času, aby šetrič spomalil aj kruh
-    val breath = (1f - cos(seconds * PI.toFloat() / 4f)) / 2f
+    // dych podľa zvoleného rytmu – z toho istého času, aby šetrič spomalil aj kruh
+    val (step, breath) = pattern.at(seconds)
 
     Box(
         modifier =
@@ -154,17 +172,62 @@ fun ZenScreen(onClose: () -> Unit) {
             modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 48.dp),
         ) {
             when {
-                active == null ->
-                    Button(onClick = { session = ZenSession(startedAt = System.currentTimeMillis()) }) {
+                active == null -> {
+                    ZenChoices(minutes, pattern, onMinutes = { minutes = it }, onPattern = { pattern = it })
+                    Button(onClick = {
+                        session = ZenSession(startedAt = System.currentTimeMillis(), durationMs = minutes * 60_000L)
+                    }) {
                         Text(tr("Vstúpiť do ticha"))
                     }
-                finished ->
+                }
+                finished -> {
                     Text(text = "✓", fontSize = 32.sp, color = Color.White)
-                else -> Unit
+                    val today = StarDustState.epochDay(now)
+                    Text(tr("🧘 %s dní ticha v rade", zenDays.streak(today)), color = Color.White)
+                }
+                else -> {
+                    Text(tr(step.label), fontSize = 24.sp, color = Color.White)
+                    val left = ((active?.remainingMs(now) ?: 0L) + 999) / 1000
+                    Text("%d:%02d".format(left / 60, left % 60), color = Color.White.copy(alpha = 0.7f))
+                }
             }
             TextButton(onClick = onClose, modifier = Modifier.alpha(0.7f)) {
                 Text(if (finished) tr("Späť do galaxie") else tr("Odísť"), color = Color.White)
             }
+        }
+    }
+}
+
+/** Pred tichom: dĺžka (1/3/5 min) a dýchací rytmus. */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun ZenChoices(
+    minutes: Int,
+    pattern: BreathPattern,
+    onMinutes: (Int) -> Unit,
+    onPattern: (BreathPattern) -> Unit,
+) {
+    val chip = FilterChipDefaults.filterChipColors(labelColor = Color.White, selectedLabelColor = Color.White)
+    Text(tr("Dĺžka ticha"), color = Color.White)
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        ZenDays.durationsMin.forEach { m ->
+            FilterChip(
+                selected = m == minutes,
+                onClick = { onMinutes(m) },
+                label = { Text(tr("%s min", m)) },
+                colors = chip,
+            )
+        }
+    }
+    Text(tr("Dych"), color = Color.White)
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        BreathPattern.values().forEach { p ->
+            FilterChip(
+                selected = p == pattern,
+                onClick = { onPattern(p) },
+                label = { Text(tr(p.label)) },
+                colors = chip,
+            )
         }
     }
 }

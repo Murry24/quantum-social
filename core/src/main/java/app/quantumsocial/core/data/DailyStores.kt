@@ -13,6 +13,7 @@ import app.quantumsocial.core.model.SoulLinks
 import app.quantumsocial.core.model.StarDustState
 import app.quantumsocial.core.model.WishBoard
 import app.quantumsocial.core.model.WishTheme
+import app.quantumsocial.core.model.ZenDays
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -218,5 +219,19 @@ object AuraStore {
 
     fun restore(aura: DailyAura?) {
         _aura.value = aura
+    }
+}
+
+/** ZenNet: dni dokončeného ticha (séria). Ukladanie rieši app. */
+object ZenStore {
+    private val _days = MutableStateFlow(ZenDays())
+    val days: StateFlow<ZenDays> = _days.asStateFlow()
+
+    fun complete(now: Long = System.currentTimeMillis()) {
+        _days.value = _days.value.add(StarDustState.epochDay(now))
+    }
+
+    fun restore(days: ZenDays) {
+        _days.value = days
     }
 }
