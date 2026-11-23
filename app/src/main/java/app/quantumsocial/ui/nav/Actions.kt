@@ -67,6 +67,7 @@ fun ActionsSheet(
     onGratitude: () -> Unit,
     onChallenge: () -> Unit,
     onMood: () -> Unit,
+    onDream: () -> Unit,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -82,6 +83,7 @@ fun ActionsSheet(
         BigAction("🌟  Vďačnosť – zlatá iskra dňa", onGratitude)
         BigAction("🎯  Výzva dňa", onChallenge)
         BigAction("🌊  Vlny nálad galaxie", onMood)
+        BigAction("🌙  DreamMirror – snový most", onDream)
     }
 }
 

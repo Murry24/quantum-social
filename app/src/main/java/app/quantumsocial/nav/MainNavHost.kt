@@ -1,6 +1,8 @@
 package app.quantumsocial.nav
 
 import android.net.Uri
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -37,6 +39,8 @@ import app.quantumsocial.ui.onboarding.OnboardingPrefs
 import app.quantumsocial.ui.onboarding.OnboardingScreen
 import app.quantumsocial.ui.screens.ChallengeScreen
 import app.quantumsocial.ui.screens.DailyPrefs
+import app.quantumsocial.ui.screens.DreamScreen
+import app.quantumsocial.ui.screens.GalacticMomentOverlay
 import app.quantumsocial.ui.screens.GratitudeScreen
 import app.quantumsocial.ui.screens.MapRequest
 import app.quantumsocial.ui.screens.MapRequests
@@ -61,6 +65,7 @@ private object Routes {
     const val GRATITUDE = "gratitude"
     const val CHALLENGE = "challenge"
     const val MOOD = "mood"
+    const val DREAM = "dream"
 
     fun galaxyEncoded(galaxyId: String) = "galaxy/${Uri.encode(galaxyId)}"
 
@@ -204,122 +209,138 @@ fun MainScaffold() {
                         showActions = false
                         navController.navigate(Routes.MOOD)
                     },
+                    onDream = {
+                        showActions = false
+                        navController.navigate(Routes.DREAM)
+                    },
                 )
             }
         }
 
-        NavHost(
-            navController = navController,
-            startDestination = start,
-            modifier = Modifier.padding(inner),
-        ) {
-            // Mapa (bežná)
-            composable(Routes.HOME) {
-                StarMapScreen(
-                    openFilters = false,
-                    onOpenStar = { id -> navController.navigate(Routes.starEncoded(id)) },
-                    focusStarId = null,
-                    onOpenGalaxy = openGalaxy,
-                )
-            }
+        Box(modifier = Modifier.fillMaxSize()) {
+            NavHost(
+                navController = navController,
+                startDestination = start,
+                modifier = Modifier.padding(inner),
+            ) {
+                // Mapa (bežná)
+                composable(Routes.HOME) {
+                    StarMapScreen(
+                        openFilters = false,
+                        onOpenStar = { id -> navController.navigate(Routes.starEncoded(id)) },
+                        focusStarId = null,
+                        onOpenGalaxy = openGalaxy,
+                    )
+                }
 
-            // Mapa s otvoreným filtrom
-            composable(Routes.HOME_FILTERS) {
-                StarMapScreen(
-                    openFilters = true,
-                    onOpenStar = { id -> navController.navigate(Routes.starEncoded(id)) },
-                    focusStarId = null,
-                    onOpenGalaxy = openGalaxy,
-                )
-            }
+                // Mapa s otvoreným filtrom
+                composable(Routes.HOME_FILTERS) {
+                    StarMapScreen(
+                        openFilters = true,
+                        onOpenStar = { id -> navController.navigate(Routes.starEncoded(id)) },
+                        focusStarId = null,
+                        onOpenGalaxy = openGalaxy,
+                    )
+                }
 
-            // Galaxia priateľov (bod 31) – červia diera nahradí aktuálnu galaxiu, biela diera = späť na mapu
-            composable(
-                route = Routes.GALAXY,
-                arguments = listOf(navArgument("galaxyId") { type = NavType.StringType }),
-            ) { backStack ->
-                val galaxyId = backStack.arguments?.getString("galaxyId")?.let { Uri.decode(it) } ?: return@composable
-                FriendGalaxyScreen(
-                    galaxyId = galaxyId,
-                    onLeave = { navController.popBackStack() },
-                    onJump = { id ->
-                        navController.navigate(Routes.galaxyEncoded(id)) { popUpTo(Routes.GALAXY) { inclusive = true } }
-                    },
-                )
-            }
-
-            // Mapa so soft-focusom na hviezdu
-            composable(
-                route = Routes.HOME_FOCUS,
-                arguments = listOf(navArgument("starId") { type = NavType.StringType }),
-            ) { backStack ->
-                val starId =
-                    backStack.arguments?.getString("starId")?.let { Uri.decode(it) }
-                        ?: return@composable
-                StarMapScreen(
-                    openFilters = false,
-                    onOpenStar = { id -> navController.navigate(Routes.starEncoded(id)) },
-                    focusStarId = starId,
-                    onOpenGalaxy = openGalaxy,
-                )
-            }
-
-            // Wish
-            composable(Routes.WISH) { WishScreen() }
-
-            // ZenNet – minúta ticha (bod 8)
-            composable(Routes.ZEN) { ZenScreen(onClose = { navController.popBackStack() }) }
-
-            // body 14, 13, 26: vďačnosť, výzva dňa, vlny nálad
-            composable(Routes.GRATITUDE) { GratitudeScreen(onBack = { navController.popBackStack() }) }
-            composable(Routes.CHALLENGE) { ChallengeScreen(onBack = { navController.popBackStack() }) }
-            composable(Routes.MOOD) { MoodWavesScreen(onBack = { navController.popBackStack() }) }
-
-            // Profile (user)
-            composable(Routes.PROFILE) {
-                ProfileScreen(
-                    onRebirth = { navController.navigate(Routes.ONBOARDING) },
-                )
-            }
-
-            // Zrodenie hviezdy (bod 18)
-            composable(Routes.ONBOARDING) {
-                OnboardingScreen(
-                    onDone = {
-                        // odteraz je domovom mapa a späť sa do onboardingu nevracia.
-                        // Prvé spustenie: zmena štartu prestaví graf a ten sám otvorí mapu (navigate by ju staval 2×).
-                        if (start == Routes.HOME) {
-                            navController.navigate(Routes.HOME) { popUpTo(navController.graph.id) { inclusive = true } }
-                        } else {
-                            start = Routes.HOME
-                        }
-                    },
-                )
-            }
-
-            // Profil hviezdy
-            composable(
-                route = Routes.STAR,
-                arguments = listOf(navArgument("starId") { type = NavType.StringType }),
-            ) { backStackEntry ->
-                val starId =
-                    backStackEntry.arguments?.getString("starId")?.let { Uri.decode(it) }
-                        ?: return@composable
-
-                StarProfileScreen(
-                    starId = starId,
-                    onBack = { navController.popBackStack() },
-                    onViewOnMap = { id ->
-                        navController.navigate(Routes.homeFocusEncoded(id)) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
+                // Galaxia priateľov (bod 31) – červia diera nahradí aktuálnu galaxiu, biela diera = späť na mapu
+                composable(
+                    route = Routes.GALAXY,
+                    arguments = listOf(navArgument("galaxyId") { type = NavType.StringType }),
+                ) { backStack ->
+                    val galaxyId =
+                        backStack.arguments?.getString("galaxyId")?.let { Uri.decode(it) } ?: return@composable
+                    FriendGalaxyScreen(
+                        galaxyId = galaxyId,
+                        onLeave = { navController.popBackStack() },
+                        onJump = { id ->
+                            navController.navigate(Routes.galaxyEncoded(id)) {
+                                popUpTo(Routes.GALAXY) { inclusive = true }
                             }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    },
-                )
+                        },
+                    )
+                }
+
+                // Mapa so soft-focusom na hviezdu
+                composable(
+                    route = Routes.HOME_FOCUS,
+                    arguments = listOf(navArgument("starId") { type = NavType.StringType }),
+                ) { backStack ->
+                    val starId =
+                        backStack.arguments?.getString("starId")?.let { Uri.decode(it) }
+                            ?: return@composable
+                    StarMapScreen(
+                        openFilters = false,
+                        onOpenStar = { id -> navController.navigate(Routes.starEncoded(id)) },
+                        focusStarId = starId,
+                        onOpenGalaxy = openGalaxy,
+                    )
+                }
+
+                // Wish
+                composable(Routes.WISH) { WishScreen() }
+
+                // ZenNet – minúta ticha (bod 8)
+                composable(Routes.ZEN) { ZenScreen(onClose = { navController.popBackStack() }) }
+
+                // body 14, 13, 26: vďačnosť, výzva dňa, vlny nálad
+                composable(Routes.GRATITUDE) { GratitudeScreen(onBack = { navController.popBackStack() }) }
+                composable(Routes.CHALLENGE) { ChallengeScreen(onBack = { navController.popBackStack() }) }
+                composable(Routes.MOOD) { MoodWavesScreen(onBack = { navController.popBackStack() }) }
+                composable(Routes.DREAM) { DreamScreen(onBack = { navController.popBackStack() }) }
+
+                // Profile (user)
+                composable(Routes.PROFILE) {
+                    ProfileScreen(
+                        onRebirth = { navController.navigate(Routes.ONBOARDING) },
+                    )
+                }
+
+                // Zrodenie hviezdy (bod 18)
+                composable(Routes.ONBOARDING) {
+                    OnboardingScreen(
+                        onDone = {
+                            // odteraz je domovom mapa a späť sa do onboardingu nevracia.
+                            // Prvé spustenie: zmena štartu prestaví graf a ten sám otvorí mapu
+                            // (navigate by ju staval 2×).
+                            if (start == Routes.HOME) {
+                                navController.navigate(Routes.HOME) {
+                                    popUpTo(navController.graph.id) { inclusive = true }
+                                }
+                            } else {
+                                start = Routes.HOME
+                            }
+                        },
+                    )
+                }
+
+                // Profil hviezdy
+                composable(
+                    route = Routes.STAR,
+                    arguments = listOf(navArgument("starId") { type = NavType.StringType }),
+                ) { backStackEntry ->
+                    val starId =
+                        backStackEntry.arguments?.getString("starId")?.let { Uri.decode(it) }
+                            ?: return@composable
+
+                    StarProfileScreen(
+                        starId = starId,
+                        onBack = { navController.popBackStack() },
+                        onViewOnMap = { id ->
+                            navController.navigate(Routes.homeFocusEncoded(id)) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
+                    )
+                }
             }
+
+            // bod 17: galaktický moment pri novom leveli
+            GalacticMomentOverlay()
         }
     }
 }
