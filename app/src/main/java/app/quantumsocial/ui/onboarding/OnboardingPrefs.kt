@@ -18,6 +18,14 @@ object OnboardingPrefs {
 
     fun isDone(context: Context) = prefs(context).getBoolean(KEY_DONE, false)
 
+    /** Sprievodca prvými krokmi (po zrodení) sa ukáže raz; v Profile sa dá pustiť znova. */
+    fun tourDone(context: Context) = prefs(context).getBoolean("tour_done", false)
+
+    fun setTourDone(
+        context: Context,
+        done: Boolean,
+    ) = prefs(context).edit().putBoolean("tour_done", done).apply()
+
     /** Jazyk, ktorým hviezda žiari (z onboardingu). */
     fun language(context: Context): String = prefs(context).getString("language", null) ?: "SK"
 

@@ -39,6 +39,7 @@ import app.quantumsocial.ui.nav.ActionOrb
 import app.quantumsocial.ui.nav.ActionsSheet
 import app.quantumsocial.ui.onboarding.OnboardingPrefs
 import app.quantumsocial.ui.onboarding.OnboardingScreen
+import app.quantumsocial.ui.onboarding.WelcomeTour
 import app.quantumsocial.ui.screens.ChallengeScreen
 import app.quantumsocial.ui.screens.ChordPrefs
 import app.quantumsocial.ui.screens.ConstellationsScreen
@@ -97,6 +98,8 @@ fun MainScaffold() {
     // bod 18: pri prvom spustení začína „Zrodenie hviezdy“
     // stav, nie len hodnota: graf sa môže postaviť nanovo (napr. pri zmene šetriča) a musí mať aktuálny štart
     var start by remember { mutableStateOf(if (OnboardingPrefs.isDone(context)) Routes.HOME else Routes.ONBOARDING) }
+    // sprievodca prvými krokmi – po zrodení raz, alebo znova z Profilu
+    var showTour by remember { mutableStateOf(OnboardingPrefs.isDone(context) && !OnboardingPrefs.tourDone(context)) }
     val rootEntry by navController.currentBackStackEntryAsState()
     val openGalaxy: (String) -> Unit = { id -> navController.navigate(Routes.galaxyEncoded(id)) }
     var showActions by remember { mutableStateOf(false) }
@@ -351,6 +354,7 @@ fun MainScaffold() {
                 composable(Routes.PROFILE) {
                     ProfileScreen(
                         onRebirth = { navController.navigate(Routes.ONBOARDING) },
+                        onTour = { showTour = true },
                     )
                 }
 
@@ -358,6 +362,7 @@ fun MainScaffold() {
                 composable(Routes.ONBOARDING) {
                     OnboardingScreen(
                         onDone = {
+                            if (!OnboardingPrefs.tourDone(context)) showTour = true
                             // odteraz je domovom mapa a späť sa do onboardingu nevracia.
                             // Prvé spustenie: zmena štartu prestaví graf a ten sám otvorí mapu
                             // (navigate by ju staval 2×).
@@ -399,6 +404,12 @@ fun MainScaffold() {
 
             // bod 17: galaktický moment pri novom leveli
             GalacticMomentOverlay()
+            if (showTour) {
+                WelcomeTour(onDone = {
+                    OnboardingPrefs.setTourDone(context, true)
+                    showTour = false
+                })
+            }
         }
     }
 }

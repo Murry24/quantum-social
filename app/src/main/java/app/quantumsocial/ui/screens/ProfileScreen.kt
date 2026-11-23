@@ -52,7 +52,10 @@ import app.quantumsocial.ui.perf.PerformanceSettings
 import app.quantumsocial.wallpaper.WallpaperLauncher
 
 @Composable
-fun ProfileScreen(onRebirth: () -> Unit) {
+fun ProfileScreen(
+    onRebirth: () -> Unit,
+    onTour: () -> Unit = {},
+) {
     val context = LocalContext.current
     val choice by PerformanceSettings.choice.collectAsState()
     val theme by GalaxyThemeSettings.theme.collectAsState()
@@ -205,6 +208,7 @@ fun ProfileScreen(onRebirth: () -> Unit) {
         AppLanguagePicker()
 
         // bod 18: na testovanie – otvorí onboarding znova, obnovovací kľúč ostáva
+        OutlinedButton(onClick = onTour) { Text(tr("🧭 Ukázať sprievodcu")) }
         OutlinedButton(onClick = onRebirth) { Text(tr("Znova prejsť zrodením")) }
     }
 }
