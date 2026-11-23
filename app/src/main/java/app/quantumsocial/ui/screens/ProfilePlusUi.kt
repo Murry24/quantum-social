@@ -101,7 +101,7 @@ fun BadgesCard(myStarId: String) {
             Text(tr("Odznaky %s/%s", earned.size, Badge.values().size), style = MaterialTheme.typography.titleMedium)
             if (stats.gratitudeStreak > 0) {
                 Text(
-                    tr("🔥 %s dní vďačnosti v rade", stats.gratitudeStreak),
+                    tr("🔥 Dni vďačnosti v rade: %s", stats.gratitudeStreak),
                     style = MaterialTheme.typography.bodySmall,
                 )
             }

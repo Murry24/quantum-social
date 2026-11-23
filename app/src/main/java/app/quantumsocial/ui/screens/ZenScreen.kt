@@ -109,7 +109,9 @@ fun ZenScreen(onClose: () -> Unit) {
     // relatívny čas (Float by pri absolútnych ms stratil presnosť)
     val seconds = (now - openedAt) / 1000f
     // dych podľa zvoleného rytmu – z toho istého času, aby šetrič spomalil aj kruh
-    val (step, breath) = pattern.at(seconds)
+    // počas ticha rytmus začína nádychom od štartu, pred ním len pomaly dýcha kruh
+    val breathSeconds = active?.let { (now - it.startedAt) / 1000f } ?: seconds
+    val (step, breath) = pattern.at(breathSeconds)
 
     Box(
         modifier =
@@ -183,7 +185,7 @@ fun ZenScreen(onClose: () -> Unit) {
                 finished -> {
                     Text(text = "✓", fontSize = 32.sp, color = Color.White)
                     val today = StarDustState.epochDay(now)
-                    Text(tr("🧘 %s dní ticha v rade", zenDays.streak(today)), color = Color.White)
+                    Text(tr("🧘 Dni ticha v rade: %s", zenDays.streak(today)), color = Color.White)
                 }
                 else -> {
                     Text(tr(step.label), fontSize = 24.sp, color = Color.White)
@@ -207,7 +209,13 @@ private fun ZenChoices(
     onMinutes: (Int) -> Unit,
     onPattern: (BreathPattern) -> Unit,
 ) {
-    val chip = FilterChipDefaults.filterChipColors(labelColor = Color.White, selectedLabelColor = Color.White)
+    // zvolený čip: tmavší podklad, biely text ostane čitateľný
+    val chip =
+        FilterChipDefaults.filterChipColors(
+            labelColor = Color.White,
+            selectedLabelColor = Color.White,
+            selectedContainerColor = Color.White.copy(alpha = 0.3f),
+        )
     Text(tr("Dĺžka ticha"), color = Color.White)
     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         ZenDays.durationsMin.forEach { m ->
