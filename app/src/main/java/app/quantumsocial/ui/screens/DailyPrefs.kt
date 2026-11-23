@@ -4,6 +4,7 @@ import android.content.Context
 import app.quantumsocial.core.data.AuraStore
 import app.quantumsocial.core.data.ChallengeStore
 import app.quantumsocial.core.data.ConnectionStore
+import app.quantumsocial.core.data.DreamCircleStore
 import app.quantumsocial.core.data.EchoStore
 import app.quantumsocial.core.data.GalaxyStore
 import app.quantumsocial.core.data.GratitudeStore
@@ -13,6 +14,7 @@ import app.quantumsocial.core.data.SeedStore
 import app.quantumsocial.core.data.WishBoardStore
 import app.quantumsocial.core.data.ZenStore
 import app.quantumsocial.core.model.DailyAura
+import app.quantumsocial.core.model.DreamCirclesState
 import app.quantumsocial.core.model.EchoDay
 import app.quantumsocial.core.model.FutureSeed
 import app.quantumsocial.core.model.GratitudeJournal
@@ -44,6 +46,7 @@ object DailyPrefs {
     private const val KEY_GALAXIES = "friend_galaxies"
     private const val KEY_WISHES = "wishnet_wishes"
     private const val KEY_ZEN = "zen_days"
+    private const val KEY_DREAM_CIRCLES = "dream_circles"
     private const val KEY_WISH_BOARD = "wishnet_board"
 
     /** Pre večernú pripomienku: prvé smädné semienko (číta priamo z telefónu, appka nemusí bežať). */
@@ -74,6 +77,7 @@ object DailyPrefs {
         WishImages.cleanup(context, wishes.filterIsInstance<ImageSignal>().map { it.imageUri }.toSet())
         val board = WishBoard.decode(prefs.getString(KEY_WISH_BOARD, null))
         WishBoardStore.restore(board.keepOnly(wishes.map { it.id }.toSet()))
+        DreamCircleStore.restore(DreamCirclesState.decode(prefs.getString(KEY_DREAM_CIRCLES, null)))
         ZenStore.restore(ZenDays.decode(prefs.getString(KEY_ZEN, null)))
         val galaxies = GalaxyStore.shared
         galaxies.restore(prefs.getString(KEY_GALAXIES, null))
@@ -94,6 +98,7 @@ object DailyPrefs {
                     prefs.edit().putString(KEY_WISHES, WishNetVault.encode(it)).apply()
                 }
             }
+            launch { DreamCircleStore.state.collect { prefs.edit().putString(KEY_DREAM_CIRCLES, it.encode()).apply() } }
             launch { ZenStore.days.collect { prefs.edit().putString(KEY_ZEN, it.encode()).apply() } }
             launch { WishBoardStore.board.collect { prefs.edit().putString(KEY_WISH_BOARD, it.encode()).apply() } }
             launch {

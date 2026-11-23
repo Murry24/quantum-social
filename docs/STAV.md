@@ -39,14 +39,15 @@ Tento súbor je „odovzdávka“ medzi sedeniami. Prečítaj ho ako prvý.
 | #38 | Vďačnosť+ (týždeň iskier, pomôcky) | feat/vdacnost-plus |
 | #39 | Semienka ako ciele (kroky, pomoc galaxie, záhrada kvetov) | feat/semienka-ciele |
 | #40 | DreamMirror+ (symboly snov) | feat/sny-plus |
+| #41 | Snové kruhy (anonymné galaxie rovnakého sna) | feat/snove-kruhy |
 
-**Na test stačí vetva `feat/sny-plus`** (obsahuje všetko). Po OK zlúčiť v poradí #16 → #40
+**Na test stačí vetva `feat/snove-kruhy`** (obsahuje všetko). Po OK zlúčiť v poradí #16 → #41
 (každý PR pred zlúčením prepnúť na base `main`, merge commit, vetvy nemazať).
 Pri teste v Android Studiu: po prepnutí vetvy **Sync**, pri čudných chybách **Build → Clean Project**.
 Netestované zatiaľ: KVANT7 (vstup do galaxie priateľov), melódia/zvuk, tapeta, notifikácie.
 
 ## Ďalšie kroky (v tomto poradí)
-1. Spoločný test + zlúčenie #16–#40.
+1. Spoločný test + zlúčenie #16–#41.
 2. Balík C: **19** lokálne (nahlásiť / zablokovať hviezdu), **25** preklady správ (prekladač v telefóne).
 3. **Detailné vylepšenie každej časti** (Marošovo želanie: „nabité všetkým, na čo si používateľ spomenie“):
    WishNet → galaxie priateľov → profil → ZenNet → … každú časť do hĺbky.
