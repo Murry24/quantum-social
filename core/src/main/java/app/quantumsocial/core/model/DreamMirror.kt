@@ -1,5 +1,6 @@
 package app.quantumsocial.core.model
 
+import app.quantumsocial.core.i18n.tr
 import java.text.Normalizer
 
 /**
@@ -52,4 +53,5 @@ object DreamMirror {
             .map { it to similarity(dream, it) }
             .filter { it.second > 0f }
             .maxByOrNull { it.second }
+            ?.let { tr(it.first) to it.second }
 }

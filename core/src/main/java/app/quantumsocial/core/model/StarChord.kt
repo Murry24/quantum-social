@@ -1,5 +1,7 @@
 package app.quantumsocial.core.model
 
+import app.quantumsocial.core.i18n.tr
+
 /**
  * StarChords (bod 28): osobná melódia hviezdy – 5 tónov z pentatoniky (vždy znie príjemne).
  * Odvodená z id hviezdy a „variantu“; variant sa smie zmeniť najviac raz za štvrťrok.
@@ -52,9 +54,9 @@ object CustomSound {
         bytes: Long,
     ): String? =
         when {
-            durationMs == null || durationMs <= 0 -> "Toto nie je zvuk, ktorý sa dá prehrať."
-            durationMs > MAX_DURATION_MS -> "Zvuk je dlhší ako 15 sekúnd – vyber kratší."
-            bytes > MAX_BYTES -> "Súbor je väčší ako 2 MB – vyber menší."
+            durationMs == null || durationMs <= 0 -> tr("Toto nie je zvuk, ktorý sa dá prehrať.")
+            durationMs > MAX_DURATION_MS -> tr("Zvuk je dlhší ako 15 sekúnd – vyber kratší.")
+            bytes > MAX_BYTES -> tr("Súbor je väčší ako 2 MB – vyber menší.")
             else -> null
         }
 }

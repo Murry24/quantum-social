@@ -33,7 +33,7 @@ fun WishThemeRow(
             FilterChip(
                 selected = selected == t,
                 onClick = { onSelect(t) },
-                label = { Text("${t.emoji} ${t.label}") },
+                label = { Text("${t.emoji} ${tr(t.label)}") },
             )
         }
     }
@@ -51,7 +51,7 @@ fun WishCardExtras(
     val fulfilled = wishId in board.fulfilled
     if (fulfilled) Text(tr("🌟 Splnilo sa!"), color = Color(0xFFB8860B), fontWeight = FontWeight.Bold)
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-        if (theme != null) Text("${theme.emoji} ${theme.label}")
+        if (theme != null) Text("${theme.emoji} ${tr(theme.label)}")
         val cheers = board.cheersFor(wishId)
         if (wishId in board.mine) {
             Text(tr("🤞 %s", cheers))

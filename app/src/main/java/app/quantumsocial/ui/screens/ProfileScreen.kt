@@ -69,7 +69,7 @@ fun ProfileScreen(onRebirth: () -> Unit) {
             Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 // bod 16: svetelný level podľa nazbieraného prachu
                 val level = StarLevel.of(dust.lifetime)
-                Text("${level.emoji} ${level.label}", style = MaterialTheme.typography.titleLarge)
+                Text("${level.emoji} ${tr(level.label)}", style = MaterialTheme.typography.titleLarge)
                 LinearProgressIndicator(
                     progress = { StarLevel.progress(dust.lifetime) },
                     modifier = Modifier.fillMaxWidth(),

@@ -1,5 +1,7 @@
 package app.quantumsocial.core.model
 
+import app.quantumsocial.core.i18n.tr
+
 /** Jemné notifikácie (bod 15): poetické pripomienky namiesto červených odznakov a čísel. */
 object GentleNotes {
     // hodina, kedy príde jemná pripomienka (večer, nie ráno)
@@ -16,5 +18,6 @@ object GentleNotes {
             "🎧 Ozvena dňa" to "Aký zvuk mal tvoj dnešok?",
         )
 
-    fun forDay(epochDay: Long): Pair<String, String> = all[Math.floorMod(epochDay, all.size.toLong()).toInt()]
+    fun forDay(epochDay: Long): Pair<String, String> =
+        all[Math.floorMod(epochDay, all.size.toLong()).toInt()].let { (title, body) -> tr(title) to tr(body) }
 }

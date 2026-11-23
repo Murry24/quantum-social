@@ -1,5 +1,7 @@
 package app.quantumsocial.core.model
 
+import app.quantumsocial.core.i18n.tr
+
 /** ChallengeNet (bod 13): jedna jemná výzva dňa – rovnaká pre všetkých v ten istý deň. */
 object DailyChallenge {
     val all: List<String> =
@@ -20,5 +22,5 @@ object DailyChallenge {
             "Usmej sa na seba do zrkadla. Naozaj.",
         )
 
-    fun forDay(epochDay: Long): String = all[Math.floorMod(epochDay, all.size.toLong()).toInt()]
+    fun forDay(epochDay: Long): String = tr(all[Math.floorMod(epochDay, all.size.toLong()).toInt()])
 }

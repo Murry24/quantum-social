@@ -1,5 +1,7 @@
 package app.quantumsocial.core.model
 
+import app.quantumsocial.core.i18n.tr
+
 /**
  * Spojenia medzi hviezdami bez servera – zatiaľ s ukážkovými hviezdami (server ich neskôr nahradí skutočnými).
  * 10 Serendipity, 22 Constellations, 23 SoulLinks.
@@ -59,7 +61,7 @@ data class Constellation(
                 val start = Math.floorMod(epochDay * 7 + i * 11, DemoStars.ids.size.toLong()).toInt()
                 Constellation(
                     id = "c-$epochDay-$i",
-                    theme = THEMES[k],
+                    theme = tr(THEMES[k]),
                     emotion = Emotion.values()[(k + i) % Emotion.values().size],
                     members = List(3 + (k % 5)) { DemoStars.ids[(start + it) % DemoStars.ids.size] },
                     createdDay = epochDay,
