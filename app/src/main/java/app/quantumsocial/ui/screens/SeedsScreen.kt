@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilledTonalButton
@@ -38,6 +39,7 @@ import app.quantumsocial.core.ui.theme.GalaxyPalette
 @Composable
 fun SeedsScreen(onBack: () -> Unit) {
     val garden by SeedStore.garden.collectAsState()
+    var digOut by remember { mutableStateOf<String?>(null) }
     val today = StarDustState.epochDay(System.currentTimeMillis())
     var text by remember { mutableStateOf("") }
     val onSky = Color(GalaxyPalette.ON_SKY)
@@ -56,11 +58,24 @@ fun SeedsScreen(onBack: () -> Unit) {
         OutlinedTextField(
             value = text,
             onValueChange = { text = it.take(FutureSeed.MAX_TEXT) },
-            label = { Text("moje semienko (max ${FutureSeed.MAX_TEXT})") },
+            label = { Text(tr("moje semienko (max %s)", FutureSeed.MAX_TEXT)) },
             modifier = Modifier.fillMaxWidth().background(Color.White.copy(alpha = 0.9f)),
         )
         Button(onClick = { if (SeedStore.plant(text)) text = "" }, enabled = text.isNotBlank()) {
             Text(tr("Zasadiť 🌰"))
+        }
+        digOut?.let { id ->
+            AlertDialog(
+                onDismissRequest = { digOut = null },
+                text = { Text(tr("Vykopať semienko?")) },
+                confirmButton = {
+                    TextButton(onClick = {
+                        SeedStore.remove(id)
+                        digOut = null
+                    }) { Text(tr("Vykopať")) }
+                },
+                dismissButton = { TextButton(onClick = { digOut = null }) { Text(tr("Zrušiť")) } },
+            )
         }
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(garden.seeds, key = { it.id }) { s ->
@@ -69,14 +84,29 @@ fun SeedsScreen(onBack: () -> Unit) {
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(12.dp),
                     ) {
-                        Text(s.stage.emoji, fontSize = 32.sp, modifier = Modifier.padding(end = 12.dp))
+                        val thirsty = s.isThirsty(today)
+                        Text(
+                            if (thirsty) "🥀" else s.stage.emoji,
+                            fontSize = 32.sp,
+                            modifier = Modifier.padding(end = 12.dp),
+                        )
                         Column(modifier = Modifier.weight(1f)) {
                             Text(s.text)
                             Text(
                                 tr("%s · zaliate %s/%s", tr(s.stage.label), s.waterings, FutureSeed.WATERINGS_TO_BLOOM),
                                 style = MaterialTheme.typography.bodySmall,
                             )
+                            val small = MaterialTheme.typography.bodySmall
+                            if (thirsty) Text(tr("🥀 Smädné – zalej ho"), style = small)
+                            when {
+                                s.released -> Text(tr("💫 Letí vo WishNete"), style = small)
+                                s.stage == SeedStage.Bloom ->
+                                    TextButton(onClick = { SeedStore.release(s.id) }) {
+                                        Text(tr("💫 Pustiť do WishNetu"))
+                                    }
+                            }
                         }
+                        TextButton(onClick = { digOut = s.id }) { Text("🗑") }
                         if (s.stage != SeedStage.Bloom) {
                             FilledTonalButton(onClick = { SeedStore.water(s.id) }, enabled = s.canWater(today)) {
                                 Text(tr("💧"))
