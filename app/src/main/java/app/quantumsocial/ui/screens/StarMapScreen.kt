@@ -57,6 +57,7 @@ import app.quantumsocial.core.data.InMemorySignalRepository
 import app.quantumsocial.core.data.ModerationStore
 import app.quantumsocial.core.data.PulseOutbox
 import app.quantumsocial.core.data.WatchedStars
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.EmojiSignal
 import app.quantumsocial.core.model.Emotion
 import app.quantumsocial.core.model.ImageSignal
@@ -370,7 +371,7 @@ fun StarMapScreen(
         // Bod 31: čierna diera na okraji veľkej galaxie (ľavý horný roh) – nič ju neprekrýva
         HoleButton(
             kind = HoleKind.Black,
-            label = "Moje galaxie",
+            label = tr("Moje galaxie"),
             modifier = Modifier.align(Alignment.TopStart).padding(8.dp),
         ) { showGalaxies = true }
 
@@ -503,13 +504,13 @@ private fun FilterSheetContent(
                 .padding(bottom = 24.dp),
     ) {
         Text(
-            text = "Filtre",
+            text = tr("Filtre"),
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(top = 8.dp).align(Alignment.CenterHorizontally),
         )
 
         ChipsRow(
-            label = "Jazyk",
+            label = tr("Jazyk"),
             items = langs,
             selected = selLangs,
             onToggle = { item, selected -> if (selected) selLangs.add(item) else selLangs.remove(item) },
@@ -517,7 +518,7 @@ private fun FilterSheetContent(
         )
 
         ChipsRow(
-            label = "Emócia",
+            label = tr("Emócia"),
             items = emotions.map { it.label() },
             selected = selEmotions.map { it.label() },
             onToggle = { name, selected ->
@@ -527,23 +528,23 @@ private fun FilterSheetContent(
         )
 
         ChipsRow(
-            label = "Téma",
+            label = tr("Téma"),
             items = topics,
             selected = selTopics,
             onToggle = { item, selected -> if (selected) selTopics.add(item) else selTopics.remove(item) },
         )
 
         ChipsRow(
-            label = "WishNet",
-            items = listOf("Len WishNet"),
-            selected = if (wishNetOnly) listOf("Len WishNet") else emptyList(),
+            label = tr("WishNet"),
+            items = listOf(tr("Len WishNet")),
+            selected = if (wishNetOnly) listOf(tr("Len WishNet")) else emptyList(),
             onToggle = { _, selected -> onWishToggle(selected) },
         )
 
         ChipsRow(
-            label = "Animácie",
-            items = listOf("Menej animácií"),
-            selected = if (reduceMotion) listOf("Menej animácií") else emptyList(),
+            label = tr("Animácie"),
+            items = listOf(tr("Menej animácií")),
+            selected = if (reduceMotion) listOf(tr("Menej animácií")) else emptyList(),
             onToggle = { _, selected -> onReduceToggle(selected) },
         )
     }
@@ -583,7 +584,7 @@ private fun demoFakeSignals(count: Int): List<Signal> {
         out +=
             when (i % 4) {
                 0 -> TextSignal(text = "Hello #$i")
-                1 -> EmojiSignal(emoji = listOf("✨", "⭐", "🚀", "💙").random())
+                1 -> EmojiSignal(emoji = listOf(tr("✨"), tr("⭐"), tr("🚀"), tr("💙")).random())
                 2 -> ImageSignal(imageUri = "content://demo/$i")
                 else -> MixSignal(parts = emptyList())
             }

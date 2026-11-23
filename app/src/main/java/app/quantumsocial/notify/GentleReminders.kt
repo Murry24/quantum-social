@@ -15,6 +15,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import app.quantumsocial.MainActivity
 import app.quantumsocial.R
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.GentleNotes
 import app.quantumsocial.core.model.StarDustState
 import java.util.Calendar
@@ -68,7 +69,7 @@ object GentleReminders {
         if (!allowed || !isOn(context)) return
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         manager.createNotificationChannel(
-            NotificationChannel(CHANNEL, "Jemné pripomienky", NotificationManager.IMPORTANCE_LOW).apply {
+            NotificationChannel(CHANNEL, tr("Jemné pripomienky"), NotificationManager.IMPORTANCE_LOW).apply {
                 setShowBadge(false)
             },
         )

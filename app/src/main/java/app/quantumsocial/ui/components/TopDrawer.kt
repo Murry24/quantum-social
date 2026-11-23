@@ -31,6 +31,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.quantumsocial.core.i18n.tr
 
 private const val DRAG_PX = 6f
 
@@ -90,7 +91,7 @@ fun TopDrawer(
                         Modifier
                             .clickable { onOpenChange(false) }
                             .padding(horizontal = 24.dp, vertical = 2.dp)
-                            .semantics { contentDescription = "Zavrieť filtre" },
+                            .semantics { contentDescription = tr("Zavrieť filtre") },
                 )
             }
         }
@@ -106,7 +107,7 @@ fun TopDrawer(
                         .size(width = 96.dp, height = 40.dp)
                         .draggable(drag, Orientation.Vertical)
                         .clickable { onOpenChange(true) }
-                        .semantics { contentDescription = "Otvoriť filtre" },
+                        .semantics { contentDescription = tr("Otvoriť filtre") },
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(

@@ -26,6 +26,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.unit.dp
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.ui.theme.GalaxyGradient
 
 @Composable
@@ -102,7 +103,7 @@ fun GalaxyScreen() {
         IconButton(onClick = { /* neskôr: akcia */ }) {
             Icon(
                 imageVector = Icons.Filled.Star,
-                contentDescription = "Pulsujúca hviezda",
+                contentDescription = tr("Pulsujúca hviezda"),
                 tint = primary,
                 modifier =
                     Modifier
@@ -113,7 +114,7 @@ fun GalaxyScreen() {
 
         // titulok
         Text(
-            text = "Quantum Social",
+            text = tr("Quantum Social"),
             color = onPrimary.copy(alpha = 0.9f),
         )
     }

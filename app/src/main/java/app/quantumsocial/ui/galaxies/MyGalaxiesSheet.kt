@@ -33,6 +33,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import app.quantumsocial.core.data.GalaxyStore
 import app.quantumsocial.core.data.StarDust
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.DustAction
 import app.quantumsocial.core.model.Emotion
 import app.quantumsocial.core.model.EnterResult
@@ -72,8 +73,8 @@ fun MyGalaxiesSheet(
                 .padding(horizontal = 20.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Text("Moje galaxie", style = MaterialTheme.typography.titleLarge)
-        if (mine.isEmpty()) Text("Zatiaľ nežiariš v žiadnej malej galaxii.")
+        Text(tr("Moje galaxie"), style = MaterialTheme.typography.titleLarge)
+        if (mine.isEmpty()) Text(tr("Zatiaľ nežiariš v žiadnej malej galaxii."))
         mine.forEach { g ->
             val light = g.brightness(now)
             Row(
@@ -86,16 +87,16 @@ fun MyGalaxiesSheet(
                         .background(g.emotion.color().copy(alpha = 0.3f + 0.7f * light), CircleShape),
                 )
                 Column(modifier = Modifier.padding(start = 12.dp)) {
-                    Text((if (g.id in favorites) "⭐ " else "") + g.name, fontWeight = FontWeight.SemiBold)
-                    val role = if (g.coreStarId == myStarId) " · si jadro" else ""
-                    Text("${g.members.size} hviezd · jas ${(light * 100).roundToInt()} %$role")
+                    Text((if (g.id in favorites) tr("⭐ ") else "") + g.name, fontWeight = FontWeight.SemiBold)
+                    val role = if (g.coreStarId == myStarId) tr(" · si jadro") else ""
+                    Text(tr("%s hviezd · jas %s %%s", g.members.size, (light * 100).roundToInt(), role))
                 }
             }
         }
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            TextButton(onClick = { section = Section.Create }) { Text("+ Založiť galaxiu") }
-            TextButton(onClick = { section = Section.Enter }) { Text("Vstúpiť čiernou dierou") }
+            TextButton(onClick = { section = Section.Create }) { Text(tr("+ Založiť galaxiu")) }
+            TextButton(onClick = { section = Section.Enter }) { Text(tr("Vstúpiť čiernou dierou")) }
         }
 
         when (section) {
@@ -103,7 +104,7 @@ fun MyGalaxiesSheet(
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it.take(GalaxyRules.MAX_NAME) },
-                    label = { Text("Meno galaxie (max ${GalaxyRules.MAX_NAME})") },
+                    label = { Text(tr("Meno galaxie (max %s)", GalaxyRules.MAX_NAME)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -116,9 +117,9 @@ fun MyGalaxiesSheet(
                         StarDust.earn(DustAction.Galaxy)
                         onOpen(g.id)
                     } else {
-                        message = "Nedá sa: meno nesmie byť prázdne, max 2 vlastné a 5 galaxií."
+                        message = tr("Nedá sa: meno nesmie byť prázdne, max 2 vlastné a 5 galaxií.")
                     }
-                }) { Text("Založiť") }
+                }) { Text(tr("Založiť")) }
             }
             Section.Enter -> {
                 OutlinedTextField(
@@ -126,7 +127,7 @@ fun MyGalaxiesSheet(
                     onValueChange = { input ->
                         code = input.uppercase().filter(Char::isLetterOrDigit).take(GalaxyRules.CODE_LENGTH)
                     },
-                    label = { Text("Kód čiernej diery") },
+                    label = { Text(tr("Kód čiernej diery")) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters),
                     modifier = Modifier.fillMaxWidth(),
@@ -136,7 +137,7 @@ fun MyGalaxiesSheet(
                         EnterResult.Entered, EnterResult.AlreadyMember -> store.galaxyIdForCode(code)?.let(onOpen)
                         else -> message = r.message()
                     }
-                }) { Text("Vletieť") }
+                }) { Text(tr("Vletieť")) }
             }
             Section.None -> Unit
         }
@@ -147,10 +148,10 @@ fun MyGalaxiesSheet(
 private fun EnterResult.message(): String =
     when (this) {
         EnterResult.Entered, EnterResult.AlreadyMember -> ""
-        EnterResult.Expired -> "Táto čierna diera už zhasla."
-        EnterResult.Full -> "Galaxia je plná (${GalaxyRules.MAX_MEMBERS} hviezd)."
-        EnterResult.GalaxyClosed -> "Čierna diera je práve zatvorená."
+        EnterResult.Expired -> tr("Táto čierna diera už zhasla.")
+        EnterResult.Full -> tr("Galaxia je plná (%s hviezd).", GalaxyRules.MAX_MEMBERS)
+        EnterResult.GalaxyClosed -> tr("Čierna diera je práve zatvorená.")
         EnterResult.TooManyGalaxies ->
-            "Už žiariš v ${GalaxyRules.MAX_GALAXIES_PER_STAR} galaxiách – najprv z jednej odleť."
-        EnterResult.Unknown -> "Taký kód vesmír nepozná."
+            tr("Už žiariš v %s galaxiách – najprv z jednej odleť.", GalaxyRules.MAX_GALAXIES_PER_STAR)
+        EnterResult.Unknown -> tr("Taký kód vesmír nepozná.")
     }

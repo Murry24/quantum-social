@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import app.quantumsocial.core.data.GalaxyStore
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.Emotion
 import app.quantumsocial.core.model.FriendGalaxy
 import app.quantumsocial.core.model.GalaxyCampfire
@@ -35,15 +36,18 @@ fun GalaxyHeaderExtras(
     val store = GalaxyStore.shared
     var editing by remember { mutableStateOf(false) }
 
-    if (galaxy.motto.isNotEmpty()) Text("„${galaxy.motto}“", fontStyle = FontStyle.Italic)
+    if (galaxy.motto.isNotEmpty()) Text(tr("„%s“", galaxy.motto), fontStyle = FontStyle.Italic)
     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         TextButton(onClick = { store.toggleFavorite(galaxy.id) }) {
-            Text(if (isFavorite) "⭐ Obľúbená" else "☆ Obľúbiť")
+            Text(if (isFavorite) tr("⭐ Obľúbená") else tr("☆ Obľúbiť"))
         }
-        if (galaxy.coreStarId == me) TextButton(onClick = { editing = true }) { Text("✎ Upraviť") }
+        if (galaxy.coreStarId == me) TextButton(onClick = { editing = true }) { Text(tr("✎ Upraviť")) }
     }
     val today = StarDustState.epochDay(System.currentTimeMillis())
-    Text("🔥 Táborák: ${GalaxyCampfire.questionFor(galaxy.id, today)}", style = MaterialTheme.typography.bodyMedium)
+    Text(
+        tr("🔥 Táborák: %s", GalaxyCampfire.questionFor(galaxy.id, today)),
+        style = MaterialTheme.typography.bodyMedium,
+    )
 
     if (editing) {
         var name by remember { mutableStateOf(galaxy.name) }
@@ -51,19 +55,19 @@ fun GalaxyHeaderExtras(
         var emotion by remember { mutableStateOf(galaxy.emotion) }
         AlertDialog(
             onDismissRequest = { editing = false },
-            title = { Text("Upraviť galaxiu") },
+            title = { Text(tr("Upraviť galaxiu")) },
             text = {
                 Column {
                     OutlinedTextField(
                         value = name,
                         onValueChange = { name = it.take(GalaxyRules.MAX_NAME) },
-                        label = { Text("Meno") },
+                        label = { Text(tr("Meno")) },
                         singleLine = true,
                     )
                     OutlinedTextField(
                         value = motto,
                         onValueChange = { motto = it.take(GalaxyRules.MAX_MOTTO) },
-                        label = { Text("Motto (max ${GalaxyRules.MAX_MOTTO})") },
+                        label = { Text(tr("Motto (max %s)", GalaxyRules.MAX_MOTTO)) },
                     )
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                         Emotion.values().forEach { e ->
@@ -76,9 +80,9 @@ fun GalaxyHeaderExtras(
                 TextButton(
                     onClick = { if (store.edit(galaxy.id, me, name, motto, emotion)) editing = false },
                     enabled = GalaxyRules.cleanName(name) != null,
-                ) { Text("Uložiť") }
+                ) { Text(tr("Uložiť")) }
             },
-            dismissButton = { TextButton(onClick = { editing = false }) { Text("Zrušiť") } },
+            dismissButton = { TextButton(onClick = { editing = false }) { Text(tr("Zrušiť")) } },
         )
     }
 }

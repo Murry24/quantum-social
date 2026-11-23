@@ -32,6 +32,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.notify.GentleReminders
 import app.quantumsocial.ui.galaxies.FriendGalaxyScreen
 import app.quantumsocial.ui.nav.ActionOrb
@@ -134,8 +135,8 @@ fun MainScaffold() {
                                 restoreState = true
                             }
                         },
-                        icon = { Icon(imageVector = Icons.Filled.Home, contentDescription = "Galaxia") },
-                        label = { Text("Galaxia") },
+                        icon = { Icon(imageVector = Icons.Filled.Home, contentDescription = tr("Galaxia")) },
+                        label = { Text(tr("Galaxia")) },
                     )
 
                     NavigationBarItem(
@@ -149,8 +150,8 @@ fun MainScaffold() {
                                 restoreState = true
                             }
                         },
-                        icon = { Icon(imageVector = Icons.Filled.Star, contentDescription = "WishNet") },
-                        label = { Text("WishNet") },
+                        icon = { Icon(imageVector = Icons.Filled.Star, contentDescription = tr("WishNet")) },
+                        label = { Text(tr("WishNet")) },
                     )
 
                     // ✦ = akcie: Do chaosu, ZenNet, Moje galaxie (namiesto tlačidiel na mape)
@@ -158,7 +159,7 @@ fun MainScaffold() {
                         selected = false,
                         onClick = { showActions = true },
                         icon = { ActionOrb() },
-                        label = { Text("Vesmír") },
+                        label = { Text(tr("Vesmír")) },
                     )
 
                     NavigationBarItem(
@@ -172,8 +173,8 @@ fun MainScaffold() {
                                 restoreState = true
                             }
                         },
-                        icon = { Icon(imageVector = Icons.Filled.Person, contentDescription = "Profil") },
-                        label = { Text("Profil") },
+                        icon = { Icon(imageVector = Icons.Filled.Person, contentDescription = tr("Profil")) },
+                        label = { Text(tr("Profil")) },
                     )
 
                     NavigationBarItem(
@@ -187,8 +188,8 @@ fun MainScaffold() {
                                 restoreState = true
                             }
                         },
-                        icon = { Icon(imageVector = Icons.Filled.Tune, contentDescription = "Filtre") },
-                        label = { Text("Filtre") },
+                        icon = { Icon(imageVector = Icons.Filled.Tune, contentDescription = tr("Filtre")) },
+                        label = { Text(tr("Filtre")) },
                     )
                 }
             }

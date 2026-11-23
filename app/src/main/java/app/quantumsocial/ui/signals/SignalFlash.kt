@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.FlashSignal
 import kotlinx.coroutines.delay
 
@@ -50,7 +51,7 @@ fun SignalFlash(onSubmit: (FlashSignal) -> Unit) {
                 .padding(16.dp),
     ) {
         Text(
-            text = "Intenzita záblesku: ${(intensity * 100).toInt()}%",
+            text = tr("Intenzita záblesku: %s%", (intensity * 100).toInt()),
         )
 
         Slider(
@@ -76,7 +77,7 @@ fun SignalFlash(onSubmit: (FlashSignal) -> Unit) {
                 },
             ) {
                 Text(
-                    text = "Náhľad",
+                    text = tr("Náhľad"),
                 )
             }
 
@@ -96,7 +97,7 @@ fun SignalFlash(onSubmit: (FlashSignal) -> Unit) {
                 },
             ) {
                 Text(
-                    text = "Odoslať záblesk",
+                    text = tr("Odoslať záblesk"),
                 )
             }
         }

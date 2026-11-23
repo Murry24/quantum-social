@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.AudioSignal
 import app.quantumsocial.core.model.EmojiSignal
 import app.quantumsocial.core.model.FlashSignal
@@ -88,12 +89,12 @@ fun WishNetCard(
         Column(Modifier.padding(12.dp)) {
             val badge =
                 when {
-                    phase == LifePhase.FadingOut -> "✨ zhasína"
-                    phase == LifePhase.Expiring -> "⌛ končí"
-                    signal.category == SignalCategory.WishNet -> "💫 WishNet"
-                    else -> "⏳ mizne"
+                    phase == LifePhase.FadingOut -> tr("✨ zhasína")
+                    phase == LifePhase.Expiring -> tr("⌛ končí")
+                    signal.category == SignalCategory.WishNet -> tr("💫 WishNet")
+                    else -> tr("⏳ mizne")
                 }
-            Text("$badge • ${signal.typeLabel()}")
+            Text(tr("%s • %s", badge, signal.typeLabel()))
 
             when (signal) {
                 // bod 25: cudzí text rovno preložený do môjho jazyka
@@ -102,34 +103,34 @@ fun WishNetCard(
                 is ImageSignal ->
                     AsyncImage(
                         model = Uri.parse(signal.imageUri),
-                        contentDescription = "obrázok",
+                        contentDescription = tr("obrázok"),
                         modifier = Modifier.padding(top = 6.dp),
                     )
                 is AudioSignal ->
                     Text(
-                        "🎧 Audio: ${signal.durationMs / 1000}s",
+                        tr("🎧 Audio: %ss", signal.durationMs / 1000),
                         modifier = Modifier.padding(top = 6.dp),
                     )
                 is FlashSignal ->
                     Text(
-                        "⚡ Záblesk: ${(signal.intensity * 100).toInt()}%",
+                        tr("⚡ Záblesk: %s%", (signal.intensity * 100).toInt()),
                         modifier = Modifier.padding(top = 6.dp),
                     )
                 is MixSignal ->
                     Text(
-                        "Mix ${signal.parts.size} prvkov",
+                        tr("Mix %s prvkov", signal.parts.size),
                         modifier = Modifier.padding(top = 6.dp),
                     )
                 is PulseSignal ->
                     Text(
-                        "✦ Pulz: ${signal.emotion.label()}",
+                        tr("✦ Pulz: %s", tr(signal.emotion.label())),
                         modifier = Modifier.padding(top = 6.dp),
                     )
             }
 
             val remaining = signal.remainingMillis(now)
             if (phase != LifePhase.FadingOut && remaining != null && remaining > 0) {
-                Text("Zostáva: ${remainingText(remaining)}", modifier = Modifier.padding(top = 6.dp))
+                Text(tr("Zostáva: %s", remainingText(remaining)), modifier = Modifier.padding(top = 6.dp))
             }
 
             if (phase != LifePhase.FadingOut) extras?.invoke()
@@ -137,12 +138,12 @@ fun WishNetCard(
             replies.forEach { r ->
                 Row(modifier = Modifier.padding(start = 12.dp, top = 4.dp)) {
                     // farebná iskra, text v bežnej farbe (žltá na bielej by bola nečitateľná)
-                    Text("✦ ", color = r.emotion?.color() ?: Color.Unspecified, fontSize = 13.sp)
+                    Text(tr("✦ "), color = r.emotion?.color() ?: Color.Unspecified, fontSize = 13.sp)
                     Text(r.text ?: r.emotion?.label().orEmpty(), fontSize = 13.sp)
                 }
             }
             if (onReply != null && phase != LifePhase.FadingOut && replies.size < ReplyThread.MAX_REPLIES) {
-                TextButton(onClick = onReply) { Text("Odpovedať svetlom") }
+                TextButton(onClick = onReply) { Text(tr("Odpovedať svetlom")) }
             }
         }
     }
@@ -151,13 +152,13 @@ fun WishNetCard(
 /** Slovenský názov typu signálu (namiesto technického názvu triedy). */
 fun Signal.typeLabel(): String =
     when (this) {
-        is TextSignal -> "Text"
-        is EmojiSignal -> "Emoji"
-        is AudioSignal -> "Zvuk"
-        is ImageSignal -> "Obrázok"
-        is FlashSignal -> "Záblesk"
-        is MixSignal -> "Mix"
-        is PulseSignal -> "Pulz"
+        is TextSignal -> tr("Text")
+        is EmojiSignal -> tr("Emoji")
+        is AudioSignal -> tr("Zvuk")
+        is ImageSignal -> tr("Obrázok")
+        is FlashSignal -> tr("Záblesk")
+        is MixSignal -> tr("Mix")
+        is PulseSignal -> tr("Pulz")
     }
 
 // sekundy len pri krátkych signáloch, WishNet žije hodiny

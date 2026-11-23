@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.WishBoard
 import app.quantumsocial.core.model.WishTheme
 
@@ -48,16 +49,16 @@ fun WishCardExtras(
 ) {
     val theme = board.themes[wishId]
     val fulfilled = wishId in board.fulfilled
-    if (fulfilled) Text("🌟 Splnilo sa!", color = Color(0xFFB8860B), fontWeight = FontWeight.Bold)
+    if (fulfilled) Text(tr("🌟 Splnilo sa!"), color = Color(0xFFB8860B), fontWeight = FontWeight.Bold)
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         if (theme != null) Text("${theme.emoji} ${theme.label}")
         val cheers = board.cheersFor(wishId)
         if (wishId in board.mine) {
-            Text("🤞 $cheers")
-            if (!fulfilled) TextButton(onClick = onFulfill) { Text("🌟 Splnilo sa") }
+            Text(tr("🤞 %s", cheers))
+            if (!fulfilled) TextButton(onClick = onFulfill) { Text(tr("🌟 Splnilo sa")) }
         } else {
             val mark = if (wishId in board.cheered) "✓" else ""
-            TextButton(onClick = onCheer) { Text("🤞 Držím palce · $cheers $mark") }
+            TextButton(onClick = onCheer) { Text(tr("🤞 Držím palce · %s %s", cheers, mark)) }
         }
     }
 }

@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.AudioSignal
 import kotlinx.coroutines.delay
 import java.io.File
@@ -102,12 +103,12 @@ fun SignalAudioRecorder(onSubmit: (AudioSignal) -> Unit) {
                 // start sa nastaví v onResult keď je granted (vyššie)
                 lastFilePath = startRecording()
                 isRecording = true
-            }) { Text("🎙️ Nahrať (max 15 s)") }
+            }) { Text(tr("🎙️ Nahrať (max 15 s)")) }
         } else {
             Button(onClick = {
                 isRecording = false
                 stopRecording()
-            }) { Text("⏹️ Stop (${elapsedMs / 1000}s)") }
+            }) { Text(tr("⏹️ Stop (%ss)", elapsedMs / 1000)) }
         }
 
         if (!isRecording && lastFilePath != null && elapsedMs > 0) {
@@ -120,7 +121,7 @@ fun SignalAudioRecorder(onSubmit: (AudioSignal) -> Unit) {
                     elapsedMs = 0
                 },
                 modifier = Modifier.padding(top = 12.dp),
-            ) { Text("Odoslať audio ($seconds s)") }
+            ) { Text(tr("Odoslať audio (%s s)", seconds)) }
         }
     }
 }

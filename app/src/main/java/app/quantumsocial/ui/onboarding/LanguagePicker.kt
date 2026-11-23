@@ -17,6 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.WorldLanguages
 
 /** Výber jazyka z celého sveta – s vyhľadávaním podľa názvu alebo skratky. */
@@ -29,7 +30,7 @@ fun LanguagePicker(
     OutlinedTextField(
         value = query,
         onValueChange = { query = it },
-        label = { Text("Hľadať jazyk…") },
+        label = { Text(tr("Hľadať jazyk…")) },
         singleLine = true,
         modifier = Modifier.fillMaxWidth(),
     )

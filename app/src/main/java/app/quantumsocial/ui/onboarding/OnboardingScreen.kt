@@ -46,6 +46,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.Emotion
 import app.quantumsocial.core.model.OnboardingState
 import app.quantumsocial.core.model.OnboardingStep
@@ -96,12 +97,12 @@ fun OnboardingScreen(onDone: () -> Unit) {
                 when (state.step) {
                     OnboardingStep.Birth -> BirthStep()
                     OnboardingStep.Language -> {
-                        Title("Akým jazykom žiariš?")
+                        Title(tr("Akým jazykom žiariš?"))
                         // celý svet, nielen SK / EN / CZ
                         LanguagePicker(selected = language) { language = it }
                     }
                     OnboardingStep.Emotion -> {
-                        Title("Aký pocit dnes vyžaruješ?")
+                        Title(tr("Aký pocit dnes vyžaruješ?"))
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                             Emotion.values().forEach { e ->
                                 EmotionOrb(emotion = e, selected = e == emotion, onClick = { emotion = e })
@@ -109,12 +110,12 @@ fun OnboardingScreen(onDone: () -> Unit) {
                         }
                     }
                     OnboardingStep.Name -> {
-                        Title("Tvoje kvanti-meno")
+                        Title(tr("Tvoje kvanti-meno"))
                         Text(QuantName.of(starId), style = MaterialTheme.typography.headlineMedium)
-                        OutlinedButton(onClick = { starId = UUID.randomUUID().toString() }) { Text("Iné meno") }
+                        OutlinedButton(onClick = { starId = UUID.randomUUID().toString() }) { Text(tr("Iné meno")) }
                     }
                     OnboardingStep.RecoveryKey -> {
-                        Title("Tvoj obnovovací kľúč")
+                        Title(tr("Tvoj obnovovací kľúč"))
                         ElevatedCard {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 key.chunked(2).forEachIndexed { row, pair ->
@@ -122,18 +123,18 @@ fun OnboardingScreen(onDone: () -> Unit) {
                                 }
                             }
                         }
-                        Body("Zapíš si ich – podľa nich obnovíš svoju hviezdu.")
+                        Body(tr("Zapíš si ich – podľa nich obnovíš svoju hviezdu."))
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Checkbox(checked = state.keyConfirmed, onCheckedChange = { state = state.confirmKey(it) })
-                            Text("Zapísal som si ich")
+                            Text(tr("Zapísal som si ich"))
                         }
                     }
                     OnboardingStep.Notifications -> NotificationsStep(notifications) { notifications = it }
                     OnboardingStep.Tutorial -> {
-                        Title("Ako sa tu svieti")
-                        TutorialCard("✦ Ťukni na hviezdu", "Pošleš jej pulz pocitu.")
-                        TutorialCard("☄ Podrž hviezdu", "Otvorí sa jej profil.")
-                        TutorialCard("○ ZenNet", "Minúta ticha len pre teba.")
+                        Title(tr("Ako sa tu svieti"))
+                        TutorialCard(tr("✦ Ťukni na hviezdu"), tr("Pošleš jej pulz pocitu."))
+                        TutorialCard(tr("☄ Podrž hviezdu"), tr("Otvorí sa jej profil."))
+                        TutorialCard(tr("○ ZenNet"), tr("Minúta ticha len pre teba."))
                     }
                 }
 
@@ -143,14 +144,14 @@ fun OnboardingScreen(onDone: () -> Unit) {
                     CircularProgressIndicator(color = Color(GalaxyPalette.ON_SKY))
                 } else {
                     Button(onClick = { state = state.next() }, enabled = state.canContinue) {
-                        Text(if (state.step == OnboardingStep.Birth) "Zrodiť hviezdu ✦" else "Pokračovať")
+                        Text(if (state.step == OnboardingStep.Birth) tr("Zrodiť hviezdu ✦") else tr("Pokračovať"))
                     }
                 }
                 if (state.canSkip) {
                     // biela, nie modrá tlačidla – na modrej oblohe by nebola čitateľná
                     TextButton(
                         onClick = { state = state.skip() },
-                    ) { Text("Preskočiť", color = Color(GalaxyPalette.ON_SKY)) }
+                    ) { Text(tr("Preskočiť"), color = Color(GalaxyPalette.ON_SKY)) }
                 }
             }
         }
@@ -167,8 +168,8 @@ private fun BirthStep() {
         val r = size.minDimension / 2 * (0.05f + 0.95f * grow.value)
         drawCircle(Brush.radialGradient(listOf(Color.White, glow, Color.Transparent), center, r), r)
     }
-    Title("Vo vesmíre sa rodí nová hviezda")
-    Body("Bez mena, bez fotky – len tvoje svetlo.")
+    Title(tr("Vo vesmíre sa rodí nová hviezda"))
+    Body(tr("Bez mena, bez fotky – len tvoje svetlo."))
 }
 
 @Composable
@@ -178,9 +179,9 @@ private fun NotificationsStep(
 ) {
     val context = LocalContext.current
     val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { onChange(it) }
-    Title("Jemné pulzy")
+    Title(tr("Jemné pulzy"))
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text("Jemné pulzy, keď k tebe letí signál", modifier = Modifier.weight(1f))
+        Text(tr("Jemné pulzy, keď k tebe letí signál"), modifier = Modifier.weight(1f))
         Switch(
             checked = enabled,
             onCheckedChange = { on ->

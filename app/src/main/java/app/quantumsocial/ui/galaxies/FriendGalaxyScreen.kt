@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import app.quantumsocial.core.data.GalaxyStore
 import app.quantumsocial.core.data.PulseOutbox
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.BlackHoleInvite
 import app.quantumsocial.core.model.SignalTarget
 import app.quantumsocial.core.ui.theme.GalaxyPalette
@@ -173,7 +174,7 @@ fun FriendGalaxyScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(galaxy.name, style = MaterialTheme.typography.titleLarge)
-                Text("${galaxy.members.size} hviezd" + if (isCore) " · si jadro" else "")
+                Text("${galaxy.members.size} hviezd" + if (isCore) tr(" · si jadro") else "")
                 GalaxyHeaderExtras(galaxy, me, isFavorite = galaxy.id in favorites)
                 if (isCore) {
                     Row(
@@ -183,17 +184,17 @@ fun FriendGalaxyScreen(
                         FilledTonalButton(
                             onClick = { invite = store.createInvite(galaxyId, me) },
                             enabled = galaxy.open,
-                        ) { Text("Vytvoriť čiernu dieru") }
+                        ) { Text(tr("Vytvoriť čiernu dieru")) }
                         Switch(checked = galaxy.open, onCheckedChange = { store.setOpen(galaxyId, me, it) })
                     }
-                    Text(if (galaxy.open) "Čierna diera otvorená" else "Čierna diera zatvorená")
+                    Text(if (galaxy.open) tr("Čierna diera otvorená") else tr("Čierna diera zatvorená"))
                 }
             }
         }
 
         HoleButton(
             kind = HoleKind.White,
-            label = "Odletieť",
+            label = tr("Odletieť"),
             modifier = Modifier.align(Alignment.BottomStart).padding(8.dp),
         ) { confirmLeave = true }
 
@@ -233,47 +234,47 @@ fun FriendGalaxyScreen(
     if (confirmLeave) {
         AlertDialog(
             onDismissRequest = { confirmLeave = false },
-            title = { Text("Odletieť späť do veľkej galaxie?") },
-            text = { Text("Biela diera ťa potichu vráti – nikto nedostane upozornenie.") },
+            title = { Text(tr("Odletieť späť do veľkej galaxie?")) },
+            text = { Text(tr("Biela diera ťa potichu vráti – nikto nedostane upozornenie.")) },
             confirmButton = {
                 TextButton(onClick = {
                     confirmLeave = false
                     flyAway { store.leave(galaxyId, me) }
-                }) { Text("Odletieť") }
+                }) { Text(tr("Odletieť")) }
             },
-            dismissButton = { TextButton(onClick = { confirmLeave = false }) { Text("Ostať") } },
+            dismissButton = { TextButton(onClick = { confirmLeave = false }) { Text(tr("Ostať")) } },
         )
     }
 
     invite?.let { inv ->
         AlertDialog(
             onDismissRequest = { invite = null },
-            title = { Text("Čierna diera: ${inv.code}") },
-            text = { Text("Platí 24 hodín alebo pre ${inv.maxUses} hviezd.") },
+            title = { Text(tr("Čierna diera: %s", inv.code)) },
+            text = { Text(tr("Platí 24 hodín alebo pre %s hviezd.", inv.maxUses)) },
             confirmButton = {
                 TextButton(onClick = {
                     val send =
                         Intent(Intent.ACTION_SEND)
                             .setType("text/plain")
-                            .putExtra(Intent.EXTRA_TEXT, "Vleť do mojej galaxie v Quantum Social: ${inv.code}")
+                            .putExtra(Intent.EXTRA_TEXT, tr("Vleť do mojej galaxie v Quantum Social: %s", inv.code))
                     context.startActivity(Intent.createChooser(send, null))
-                }) { Text("Zdieľať") }
+                }) { Text(tr("Zdieľať")) }
             },
-            dismissButton = { TextButton(onClick = { invite = null }) { Text("Zavrieť") } },
+            dismissButton = { TextButton(onClick = { invite = null }) { Text(tr("Zavrieť")) } },
         )
     }
 
     expelId?.let { id ->
         AlertDialog(
             onDismissRequest = { expelId = null },
-            title = { Text("Vypľuť z galaxie?") },
+            title = { Text(tr("Vypľuť z galaxie?")) },
             confirmButton = {
                 TextButton(onClick = {
                     store.expel(galaxyId, me, id)
                     expelId = null
-                }) { Text("Vypľuť") }
+                }) { Text(tr("Vypľuť")) }
             },
-            dismissButton = { TextButton(onClick = { expelId = null }) { Text("Nechať") } },
+            dismissButton = { TextButton(onClick = { expelId = null }) { Text(tr("Nechať")) } },
         )
     }
 }

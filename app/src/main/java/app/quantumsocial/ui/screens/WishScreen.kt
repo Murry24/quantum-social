@@ -30,6 +30,7 @@ import app.quantumsocial.core.data.InMemorySignalRepository
 import app.quantumsocial.core.data.ModerationStore
 import app.quantumsocial.core.data.ReplyStore
 import app.quantumsocial.core.data.WishBoardStore
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.Signal
 import app.quantumsocial.core.model.WishSort
 import app.quantumsocial.core.model.WishTheme
@@ -63,7 +64,7 @@ fun WishScreen() {
         InMemorySignalRepository.send(wish)
         WishBoardStore.post(wish.id, sendTheme)
     }
-    val tabs = listOf("Text", "Emoji", "Zvuk", "Záblesk", "Obrázok", "Mix")
+    val tabs = listOf(tr("Text"), tr("Emoji"), tr("Zvuk"), tr("Záblesk"), tr("Obrázok"), tr("Mix"))
 
     // jemná pastelová obloha, aby WishNet sedel k veselej galaxii a tmavý text ostal čitateľný
     Column(modifier = Modifier.fillMaxSize().background(GalaxyPalette.softSkyBrush)) {
@@ -74,8 +75,8 @@ fun WishScreen() {
             }
         }
 
-        Text("Téma priania", modifier = Modifier.padding(start = 12.dp, top = 6.dp))
-        WishThemeRow(selected = sendTheme, none = "Bez témy") { sendTheme = it }
+        Text(tr("Téma priania"), modifier = Modifier.padding(start = 12.dp, top = 6.dp))
+        WishThemeRow(selected = sendTheme, none = tr("Bez témy")) { sendTheme = it }
 
         when (tabIndex) {
             // signály z WishNet žijú ako WishNet (24 h), nie 30 s
@@ -91,12 +92,12 @@ fun WishScreen() {
             modifier = Modifier.padding(start = 12.dp, top = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text("Priania")
+            Text(tr("Priania"))
             WishSort.values().forEach { s ->
-                TextButton(onClick = { sort = s }) { Text(if (sort == s) "● ${s.label}" else s.label) }
+                TextButton(onClick = { sort = s }) { Text(if (sort == s) tr("● %s", tr(s.label)) else s.label) }
             }
         }
-        WishThemeRow(selected = filterTheme, none = "Všetko") { filterTheme = it }
+        WishThemeRow(selected = filterTheme, none = tr("Všetko")) { filterTheme = it }
 
         val shown = board.arrange(moderation.visible(signals) { it.id }, { it.id }, { it.createdAt }, filterTheme, sort)
         LazyColumn {

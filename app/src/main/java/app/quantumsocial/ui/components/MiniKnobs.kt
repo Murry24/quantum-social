@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import app.quantumsocial.core.i18n.tr
 
 @Composable
 fun MiniKnobs(
@@ -29,14 +30,14 @@ fun MiniKnobs(
                 .padding(8.dp),
     ) {
         Column {
-            Text(text = "Min. intenzita: ${(minIntensity * 100).toInt()}%", color = Color.White)
+            Text(text = tr("Min. intenzita: %s%", (minIntensity * 100).toInt()), color = Color.White)
             Slider(
                 value = minIntensity,
                 onValueChange = onIntensityChange,
                 valueRange = 0f..1f,
                 modifier = Modifier.fillMaxWidth(),
             )
-            Text(text = "Max. vzdialenosť: ${(maxDistance * 100).toInt()}%", color = Color.White)
+            Text(text = tr("Max. vzdialenosť: %s%", (maxDistance * 100).toInt()), color = Color.White)
             Slider(
                 value = maxDistance,
                 onValueChange = onDistanceChange,

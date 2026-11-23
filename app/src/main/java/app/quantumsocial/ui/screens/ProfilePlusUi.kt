@@ -28,6 +28,7 @@ import app.quantumsocial.core.data.GalaxyStore
 import app.quantumsocial.core.data.GratitudeStore
 import app.quantumsocial.core.data.SeedStore
 import app.quantumsocial.core.data.StarDust
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.Badge
 import app.quantumsocial.core.model.BadgeStats
 import app.quantumsocial.core.model.DailyAura
@@ -47,10 +48,13 @@ fun DailyAuraCard() {
 
     ElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text("Dnešná aura", style = MaterialTheme.typography.titleMedium)
+            Text(tr("Dnešná aura"), style = MaterialTheme.typography.titleMedium)
             Text(
-                active?.let { "Dnes žiariš: ${it.emotion.label()}" + if (it.text.isEmpty()) "" else " – „${it.text}“" }
-                    ?: "Ako dnes žiariš? Aura zhasne o polnoci.",
+                active?.let {
+                    val note = if (it.text.isEmpty()) "" else tr(" – „%s“", it.text)
+                    tr("Dnes žiariš: %s", tr(it.emotion.label())) + note
+                }
+                    ?: tr("Ako dnes žiariš? Aura zhasne o polnoci."),
                 style = MaterialTheme.typography.bodySmall,
             )
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -59,13 +63,13 @@ fun DailyAuraCard() {
             OutlinedTextField(
                 value = text,
                 onValueChange = { text = it.take(DailyAura.MAX_TEXT) },
-                label = { Text("Krátky odkaz (max ${DailyAura.MAX_TEXT})") },
+                label = { Text(tr("Krátky odkaz (max %s)", DailyAura.MAX_TEXT)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
             Row {
-                TextButton(onClick = { AuraStore.set(emotion, text) }) { Text("✨ Rozžiariť auru") }
-                if (active != null) TextButton(onClick = { AuraStore.clear() }) { Text("Zhasnúť") }
+                TextButton(onClick = { AuraStore.set(emotion, text) }) { Text(tr("✨ Rozžiariť auru")) }
+                if (active != null) TextButton(onClick = { AuraStore.clear() }) { Text(tr("Zhasnúť")) }
             }
         }
     }
@@ -94,9 +98,12 @@ fun BadgesCard(myStarId: String) {
 
     ElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text("Odznaky ${earned.size}/${Badge.values().size}", style = MaterialTheme.typography.titleMedium)
+            Text(tr("Odznaky %s/%s", earned.size, Badge.values().size), style = MaterialTheme.typography.titleMedium)
             if (stats.gratitudeStreak > 0) {
-                Text("🔥 ${stats.gratitudeStreak} dní vďačnosti v rade", style = MaterialTheme.typography.bodySmall)
+                Text(
+                    tr("🔥 %s dní vďačnosti v rade", stats.gratitudeStreak),
+                    style = MaterialTheme.typography.bodySmall,
+                )
             }
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -109,8 +116,8 @@ fun BadgesCard(myStarId: String) {
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Text(b.emoji, style = MaterialTheme.typography.headlineSmall)
-                        Text(b.label, style = MaterialTheme.typography.labelSmall)
-                        if (!has) Text(b.hint, style = MaterialTheme.typography.labelSmall)
+                        Text(tr(b.label), style = MaterialTheme.typography.labelSmall)
+                        if (!has) Text(tr(b.hint), style = MaterialTheme.typography.labelSmall)
                     }
                 }
             }

@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.Emotion
 import app.quantumsocial.core.model.Memory
 import app.quantumsocial.core.model.MemoryNebula
@@ -82,20 +83,23 @@ fun MemoryScreen(onBack: () -> Unit) {
         modifier = Modifier.fillMaxSize().background(GalaxyPalette.zenBrush).padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        TextButton(onClick = onBack) { Text("‹ Späť", color = onSky) }
-        Text("🔮 Memory Nebula", style = MaterialTheme.typography.titleLarge, color = onSky)
-        Text("Tvoje výnimočné chvíle. Zašifrované, len v tomto telefóne, nikto iný ich neuvidí.", color = onSky)
+        TextButton(onClick = onBack) { Text(tr("‹ Späť"), color = onSky) }
+        Text(tr("🔮 Memory Nebula"), style = MaterialTheme.typography.titleLarge, color = onSky)
+        Text(tr("Tvoje výnimočné chvíle. Zašifrované, len v tomto telefóne, nikto iný ich neuvidí."), color = onSky)
 
         nebula.onThisDay(today).firstOrNull()?.let { m ->
             ElevatedCard(modifier = Modifier.fillMaxWidth()) {
-                Text("🌠 V tento deň pred ${(today - m.day) / 365} r.: ${m.text}", modifier = Modifier.padding(12.dp))
+                Text(
+                    tr("🌠 V tento deň pred %s r.: %s", (today - m.day) / 365, m.text),
+                    modifier = Modifier.padding(12.dp),
+                )
             }
         }
 
         OutlinedTextField(
             value = text,
             onValueChange = { text = it.take(MemoryNebula.MAX_TEXT) },
-            label = { Text("výnimočná chvíľa (max ${MemoryNebula.MAX_TEXT})") },
+            label = { Text(tr("výnimočná chvíľa (max %s)", MemoryNebula.MAX_TEXT)) },
             modifier = Modifier.fillMaxWidth().background(Color.White.copy(alpha = 0.9f)),
         )
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -109,10 +113,10 @@ fun MemoryScreen(onBack: () -> Unit) {
                 }
             },
             enabled = text.isNotBlank(),
-        ) { Text("Uložiť do hmloviny 🔮") }
+        ) { Text(tr("Uložiť do hmloviny 🔮")) }
 
         LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            item { FilterChip(selected = filter == null, onClick = { filter = null }, label = { Text("Všetky") }) }
+            item { FilterChip(selected = filter == null, onClick = { filter = null }, label = { Text(tr("Všetky")) }) }
             items(Emotion.values()) { e ->
                 FilterChip(
                     selected = filter == e,
@@ -129,12 +133,12 @@ fun MemoryScreen(onBack: () -> Unit) {
                             Text(m.text)
                             val ago = today - m.day
                             Text(
-                                "${m.emotion.label()} · " + if (ago == 0L) "dnes" else "pred $ago d",
+                                tr("%s · ", tr(m.emotion.label())) + if (ago == 0L) "dnes" else "pred $ago d",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = m.emotion.color(),
                             )
                         }
-                        TextButton(onClick = { update(nebula.remove(m.id)) }) { Text("🗑") }
+                        TextButton(onClick = { update(nebula.remove(m.id)) }) { Text(tr("🗑")) }
                     }
                 }
             }
