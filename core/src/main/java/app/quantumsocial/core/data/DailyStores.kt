@@ -4,6 +4,8 @@ import app.quantumsocial.core.model.DustAction
 import app.quantumsocial.core.model.Echo
 import app.quantumsocial.core.model.EchoDay
 import app.quantumsocial.core.model.GratitudeJournal
+import app.quantumsocial.core.model.Moderation
+import app.quantumsocial.core.model.ReportReason
 import app.quantumsocial.core.model.SeedGarden
 import app.quantumsocial.core.model.SoulLinks
 import app.quantumsocial.core.model.StarDustState
@@ -136,5 +138,34 @@ object ConnectionStore {
     ) {
         _links.value = links
         _joined.value = joined
+    }
+}
+
+/** Bod 19 (lokálne): koho som zablokoval a nahlásil. Ukladanie rieši app. */
+object ModerationStore {
+    private val _state = MutableStateFlow(Moderation())
+    val state: StateFlow<Moderation> = _state.asStateFlow()
+
+    fun block(starId: String) {
+        _state.value = _state.value.block(starId)
+    }
+
+    fun unblock(starId: String) {
+        _state.value = _state.value.unblock(starId)
+    }
+
+    /** @return false, ak dnes už nahlásiť nemožno */
+    fun report(
+        starId: String,
+        reason: ReportReason,
+        now: Long = System.currentTimeMillis(),
+    ): Boolean {
+        val next = _state.value.report(starId, reason, StarDustState.epochDay(now)) ?: return false
+        _state.value = next
+        return true
+    }
+
+    fun restore(moderation: Moderation) {
+        _state.value = moderation
     }
 }

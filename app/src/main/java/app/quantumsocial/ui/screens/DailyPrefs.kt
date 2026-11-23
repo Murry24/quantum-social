@@ -5,9 +5,11 @@ import app.quantumsocial.core.data.ChallengeStore
 import app.quantumsocial.core.data.ConnectionStore
 import app.quantumsocial.core.data.EchoStore
 import app.quantumsocial.core.data.GratitudeStore
+import app.quantumsocial.core.data.ModerationStore
 import app.quantumsocial.core.data.SeedStore
 import app.quantumsocial.core.model.EchoDay
 import app.quantumsocial.core.model.GratitudeJournal
+import app.quantumsocial.core.model.Moderation
 import app.quantumsocial.core.model.SeedGarden
 import app.quantumsocial.core.model.SoulLinks
 import app.quantumsocial.core.model.StarDustState
@@ -24,6 +26,7 @@ object DailyPrefs {
     private const val KEY_ECHOES = "echoes"
     private const val KEY_LINKS = "soul_links"
     private const val KEY_JOINED = "constellations_joined"
+    private const val KEY_MODERATION = "moderation"
 
     suspend fun keepSaved(context: Context) {
         val prefs = context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
@@ -40,11 +43,13 @@ object DailyPrefs {
             prefs.getStringSet(KEY_JOINED, emptySet()).orEmpty().toSet(),
         )
         ConnectionStore.refresh()
+        ModerationStore.restore(Moderation.decode(prefs.getString(KEY_MODERATION, null)))
         coroutineScope {
             launch { GratitudeStore.journal.collect { prefs.edit().putString(KEY_GRATITUDE, it.encode()).apply() } }
             launch { SeedStore.garden.collect { prefs.edit().putString(KEY_SEEDS, it.encode()).apply() } }
             launch { EchoStore.day.collect { prefs.edit().putString(KEY_ECHOES, it.encode()).apply() } }
             launch { ConnectionStore.links.collect { prefs.edit().putString(KEY_LINKS, it.encode()).apply() } }
+            launch { ModerationStore.state.collect { prefs.edit().putString(KEY_MODERATION, it.encode()).apply() } }
             launch { ConnectionStore.joined.collect { prefs.edit().putStringSet(KEY_JOINED, it).apply() } }
             launch {
                 ChallengeStore.doneDay.collect { d ->

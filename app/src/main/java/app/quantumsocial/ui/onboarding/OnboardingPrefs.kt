@@ -18,6 +18,9 @@ object OnboardingPrefs {
 
     fun isDone(context: Context) = prefs(context).getBoolean(KEY_DONE, false)
 
+    /** Jazyk, ktorým hviezda žiari (z onboardingu). */
+    fun language(context: Context): String = prefs(context).getString("language", null) ?: "SK"
+
     /** Id mojej hviezdy (z onboardingu); ak ešte nie je uložené, vytvorí sa nové. */
     fun myStarId(context: Context): String {
         val p = prefs(context)

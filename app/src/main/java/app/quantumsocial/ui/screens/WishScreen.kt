@@ -23,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.quantumsocial.core.data.InMemorySignalRepository
+import app.quantumsocial.core.data.ModerationStore
 import app.quantumsocial.core.data.ReplyStore
 import app.quantumsocial.core.model.Signal
 import app.quantumsocial.core.model.asWishNet
@@ -39,6 +40,7 @@ import app.quantumsocial.ui.signals.WishNetCard
 @Composable
 fun WishScreen() {
     val signals by InMemorySignalRepository.signals.collectAsState()
+    val moderation by ModerationStore.state.collectAsState()
     val fadingSince by InMemorySignalRepository.fadingSince.collectAsState()
     val threads by ReplyStore.threads.collectAsState()
     var replyTo by remember { mutableStateOf<String?>(null) }
@@ -65,7 +67,7 @@ fun WishScreen() {
         }
 
         LazyColumn {
-            items(signals, key = Signal::id) { s ->
+            items(moderation.visible(signals) { it.id }, key = Signal::id) { s ->
                 WishNetCard(
                     signal = s,
                     fadingSince = fadingSince[s.id],

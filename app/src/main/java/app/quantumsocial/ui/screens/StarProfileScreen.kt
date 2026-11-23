@@ -267,6 +267,9 @@ fun StarProfileScreen(
         // bod 23: trvalé spojenie 1:1 po obojstrannom súhlase
         Row(modifier = Modifier.padding(horizontal = 8.dp)) { SoulLinkOffer(starId) }
 
+        // bod 19: nahlásiť / zablokovať – po zablokovaní sa vrátime späť
+        ModerationRow(starId, onBlocked = onBack)
+
         Row(
             modifier =
                 Modifier

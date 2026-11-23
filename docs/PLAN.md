@@ -33,7 +33,7 @@ Dáta najprv lokálne (mock), server až od bodu 9.
 | 22 | Constellations | Dočasné skupiny do 10 hviezd na tému/emóciu (3 dni) | 🟡 súhvezdia dňa (ukážkové hviezdy) |
 | 23 | SoulLinks | Dlhodobé 1:1 kanály po obojstrannom súhlase (max 5) | 🟡 SoulLinks so súhlasom (ukážkový) |
 | 24 | Memory Nebula | Súkromný šifrovaný archív výnimočných momentov | 🟡 šifrovaný archív v telefóne |
-| 25 | Lingua Bridges | Voliteľné AI preklady (originál ↔ preklad) | ⬜ |
+| 25 | Lingua Bridges | Voliteľné AI preklady (originál ↔ preklad) | 🟡 preklad priamo v telefóne (ML Kit, 46 jazykov) |
 | 26 | Mood Waves | Živé globálne vlny nálad „tu a teraz“ | 🟡 lokálne (z mapy) |
 | 27 | Pulse Alerts | Zvýraznený naliehavý signál, stojí StarDust, max 1/deň | 🟡 naliehavý pulz za 10 StarDust, 1× denne |
 | 28 | StarChords | Osobná melódia hviezdy, zmena raz za kvartál | 🟡 melódia z pentatoniky, zmena raz za štvrťrok |
