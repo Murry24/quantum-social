@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.MixSignal
 import app.quantumsocial.core.model.Signal
 
@@ -21,7 +22,7 @@ fun SignalMix(
 ) {
     val picked = remember { mutableStateListOf<String>() }
     Column(Modifier.padding(16.dp)) {
-        Text("Vyber signály na mix:")
+        Text(tr("Vyber signály na mix:"))
         available.take(10).forEach { s ->
             Row {
                 Checkbox(
@@ -39,6 +40,6 @@ fun SignalMix(
                 if (selected.isNotEmpty()) onSubmit(MixSignal(parts = selected))
             },
             modifier = Modifier.padding(top = 12.dp),
-        ) { Text("Odoslať Mix") }
+        ) { Text(tr("Odoslať Mix")) }
     }
 }

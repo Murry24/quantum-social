@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.quantumsocial.core.data.StarDust
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.DustAction
 import app.quantumsocial.core.model.ZenSession
 import app.quantumsocial.core.ui.theme.GalaxyPalette
@@ -155,14 +156,14 @@ fun ZenScreen(onClose: () -> Unit) {
             when {
                 active == null ->
                     Button(onClick = { session = ZenSession(startedAt = System.currentTimeMillis()) }) {
-                        Text("Vstúpiť do ticha")
+                        Text(tr("Vstúpiť do ticha"))
                     }
                 finished ->
                     Text(text = "✓", fontSize = 32.sp, color = Color.White)
                 else -> Unit
             }
             TextButton(onClick = onClose, modifier = Modifier.alpha(0.7f)) {
-                Text(if (finished) "Späť do galaxie" else "Odísť", color = Color.White)
+                Text(if (finished) tr("Späť do galaxie") else tr("Odísť"), color = Color.White)
             }
         }
     }

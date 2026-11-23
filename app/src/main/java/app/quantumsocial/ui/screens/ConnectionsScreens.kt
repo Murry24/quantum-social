@@ -34,6 +34,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import app.quantumsocial.core.data.ConnectionStore
 import app.quantumsocial.core.data.PulseOutbox
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.Constellation
 import app.quantumsocial.core.model.LinkStatus
 import app.quantumsocial.core.model.QuantName
@@ -61,7 +62,7 @@ private fun SkyColumn(
         modifier = Modifier.fillMaxSize().background(GalaxyPalette.zenBrush).padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        TextButton(onClick = onBack) { Text("‹ Späť", color = onSky) }
+        TextButton(onClick = onBack) { Text(tr("‹ Späť"), color = onSky) }
         Text(title, style = MaterialTheme.typography.titleLarge, color = onSky)
         Text(subtitle, color = onSky)
         content()
@@ -108,21 +109,25 @@ fun SerendipityScreen(
     val links by ConnectionStore.links.collectAsState()
     var pulseTo by remember { mutableStateOf<String?>(null) }
 
-    SkyColumn("🌉 Svetelný most dňa", "Každý deň ťa galaxia spojí s jednou hviezdou. Most zhasne o polnoci.", onBack) {
+    SkyColumn(
+        tr("🌉 Svetelný most dňa"),
+        tr("Každý deň ťa galaxia spojí s jednou hviezdou. Most zhasne o polnoci."),
+        onBack,
+    ) {
         val id = match ?: return@SkyColumn
         ElevatedCard(modifier = Modifier.fillMaxWidth()) {
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(16.dp)) {
                 LightSignatureView(starId = id)
                 Column(modifier = Modifier.padding(start = 16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text(QuantName.of(id), style = MaterialTheme.typography.titleLarge)
-                    Text("Žiari: ${starEmotionForId(id).label()}", color = starEmotionForId(id).color())
-                    Text("Jazyk: ${WorldLanguages.chip(starLangForId(id))}")
+                    Text(tr("Žiari: %s", tr(starEmotionForId(id).label())), color = starEmotionForId(id).color())
+                    Text(tr("Jazyk: %s", WorldLanguages.chip(starLangForId(id))))
                 }
             }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(onClick = { pulseTo = id }) { Text("✦ Pošli pulz") }
-            FilledTonalButton(onClick = { onOpenStar(id) }) { Text("Profil") }
+            Button(onClick = { pulseTo = id }) { Text(tr("✦ Pošli pulz")) }
+            FilledTonalButton(onClick = { onOpenStar(id) }) { Text(tr("Profil")) }
         }
         SoulLinkButton(id, links)
     }
@@ -135,13 +140,13 @@ private fun SoulLinkButton(
     links: SoulLinks,
 ) {
     when (links.of(starId)?.status) {
-        LinkStatus.Active -> Text("💞 Máte SoulLink", color = onSky)
-        LinkStatus.Pending -> Text("⏳ SoulLink čaká na súhlas druhej hviezdy", color = onSky)
+        LinkStatus.Active -> Text(tr("💞 Máte SoulLink"), color = onSky)
+        LinkStatus.Pending -> Text(tr("⏳ SoulLink čaká na súhlas druhej hviezdy"), color = onSky)
         null ->
             TextButton(
                 onClick = { ConnectionStore.requestLink(starId) },
                 enabled = links.links.size < SoulLinks.MAX_LINKS,
-            ) { Text("💞 Ponúknuť SoulLink (${links.links.size}/${SoulLinks.MAX_LINKS})", color = onSky) }
+            ) { Text(tr("💞 Ponúknuť SoulLink (%s/%s)", links.links.size, SoulLinks.MAX_LINKS), color = onSky) }
     }
 }
 
@@ -153,8 +158,8 @@ fun ConstellationsScreen(onBack: () -> Unit) {
     val list = remember(today) { (0L until Constellation.LIFE_DAYS).flatMap { Constellation.ofDay(today - it) } }
     var pulseTo by remember { mutableStateOf<String?>(null) }
 
-    val subtitle = "Malé skupiny do ${Constellation.MAX_MEMBERS} hviezd na jednu tému. Po 3 dňoch zhasnú."
-    SkyColumn("✨ Súhvezdia", subtitle, onBack) {
+    val subtitle = tr("Malé skupiny do %s hviezd na jednu tému. Po 3 dňoch zhasnú.", Constellation.MAX_MEMBERS)
+    SkyColumn(tr("✨ Súhvezdia"), subtitle, onBack) {
         LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             items(list.filter { it.isAlive(today) }, key = { it.id }) { c ->
                 val inside = c.id in joined
@@ -163,16 +168,17 @@ fun ConstellationsScreen(onBack: () -> Unit) {
                     Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(c.theme, style = MaterialTheme.typography.titleMedium, color = c.emotion.color())
                         val left = c.daysLeft(today)
-                        Text("${c.emotion.label()} · $count/${Constellation.MAX_MEMBERS} hviezd · ešte $left d")
+                        val emotion = tr(c.emotion.label())
+                        Text(tr("%s · %s/%s hviezd · ešte %s d", emotion, count, Constellation.MAX_MEMBERS, left))
                         if (inside) {
                             c.members.take(5).forEach { m ->
-                                TextButton(onClick = { pulseTo = m }) { Text("✦ ${QuantName.of(m)}") }
+                                TextButton(onClick = { pulseTo = m }) { Text(tr("✦ %s", QuantName.of(m))) }
                             }
                         }
                         TextButton(
                             onClick = { ConnectionStore.toggleConstellation(c.id) },
                             enabled = inside || count < Constellation.MAX_MEMBERS,
-                        ) { Text(if (inside) "Opustiť súhvezdie" else "Vstúpiť do súhvezdia") }
+                        ) { Text(if (inside) tr("Opustiť súhvezdie") else tr("Vstúpiť do súhvezdia")) }
                     }
                 }
             }
@@ -191,10 +197,10 @@ fun SoulLinksScreen(
     var pulseTo by remember { mutableStateOf<String?>(null) }
     LaunchedEffect(Unit) { ConnectionStore.refresh() }
 
-    val subtitle = "Najviac ${SoulLinks.MAX_LINKS} trvalých spojení. Vznikajú len keď súhlasia obe hviezdy."
-    SkyColumn("💞 SoulLinks", subtitle, onBack) {
+    val subtitle = tr("Najviac %s trvalých spojení. Vznikajú len keď súhlasia obe hviezdy.", SoulLinks.MAX_LINKS)
+    SkyColumn(tr("💞 SoulLinks"), subtitle, onBack) {
         if (links.links.isEmpty()) {
-            Text("Zatiaľ žiadne. Ponúkni SoulLink v profile hviezdy alebo na svetelnom moste.", color = onSky)
+            Text(tr("Zatiaľ žiadne. Ponúkni SoulLink v profile hviezdy alebo na svetelnom moste."), color = onSky)
         }
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(links.links, key = { it.starId }) { l ->
@@ -202,10 +208,10 @@ fun SoulLinksScreen(
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(12.dp)) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(QuantName.of(l.starId), style = MaterialTheme.typography.titleMedium)
-                            Text(if (l.status == LinkStatus.Active) "💞 spojení" else "⏳ čaká na súhlas")
+                            Text(if (l.status == LinkStatus.Active) tr("💞 spojení") else tr("⏳ čaká na súhlas"))
                         }
                         if (l.status == LinkStatus.Active) TextButton(onClick = { pulseTo = l.starId }) { Text("✦") }
-                        TextButton(onClick = { onOpenStar(l.starId) }) { Text("Profil") }
+                        TextButton(onClick = { onOpenStar(l.starId) }) { Text(tr("Profil")) }
                         TextButton(onClick = { ConnectionStore.removeLink(l.starId) }) { Text("✕") }
                     }
                 }

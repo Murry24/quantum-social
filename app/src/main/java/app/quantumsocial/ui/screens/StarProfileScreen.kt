@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import app.quantumsocial.core.data.InMemorySignalRepository
 import app.quantumsocial.core.data.PulseOutbox
 import app.quantumsocial.core.data.WatchedStars
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.EmojiSignal
 import app.quantumsocial.core.model.Emotion
 import app.quantumsocial.core.model.MixSignal
@@ -103,12 +104,12 @@ fun StarProfileScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
-            title = { Text(text = "Profil hviezdy") },
+            title = { Text(text = tr("Profil hviezdy")) },
             navigationIcon = {
                 IconButton(onClick = onBack) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Späť",
+                        contentDescription = tr("Späť"),
                     )
                 }
             },
@@ -142,14 +143,14 @@ fun StarProfileScreen(
                 }
                 Column(modifier = Modifier.padding(start = 12.dp)) {
                     Text(text = QuantName.of(starId), fontWeight = FontWeight.SemiBold)
-                    Text(text = "Jazyky: ${langs.joinToString()}")
-                    Text(text = "Prevláda: ${dominant.label()}", color = dominant.color())
+                    Text(text = tr("Jazyky: %s", langs.joinToString()))
+                    Text(text = tr("Prevláda: %s", tr(dominant.label())), color = dominant.color())
                 }
             }
 
             Spacer(Modifier.height(8.dp))
 
-            Text(text = "Emócie", fontWeight = FontWeight.SemiBold)
+            Text(text = tr("Emócie"), fontWeight = FontWeight.SemiBold)
             LazyRow(contentPadding = PaddingValues(vertical = 6.dp)) {
                 items(domEmotions) { e ->
                     FilterChip(
@@ -165,7 +166,7 @@ fun StarProfileScreen(
                 }
             }
 
-            Text(text = "Témy", fontWeight = FontWeight.SemiBold)
+            Text(text = tr("Témy"), fontWeight = FontWeight.SemiBold)
             LazyRow(contentPadding = PaddingValues(vertical = 6.dp)) {
                 items(topics) { t ->
                     FilterChip(
@@ -183,9 +184,9 @@ fun StarProfileScreen(
 
         // ----------- ARCHÍV PRIANÍ -----------
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-            Text(text = "Archív prianí", fontWeight = FontWeight.SemiBold)
+            Text(text = tr("Archív prianí"), fontWeight = FontWeight.SemiBold)
             if (wishArchive.isEmpty()) {
-                Text(text = "Zatiaľ žiadne priania.")
+                Text(text = tr("Zatiaľ žiadne priania."))
             } else {
                 LazyRow(contentPadding = PaddingValues(vertical = 8.dp)) {
                     items(wishArchive) { s ->
@@ -204,9 +205,9 @@ fun StarProfileScreen(
 
         // Posledné signály
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-            Text(text = "Posledné signály", fontWeight = FontWeight.SemiBold)
+            Text(text = tr("Posledné signály"), fontWeight = FontWeight.SemiBold)
             if (starSignals.isEmpty()) {
-                Text(text = "Zatiaľ žiadne signály.")
+                Text(text = tr("Zatiaľ žiadne signály."))
             } else {
                 starSignals.take(6).forEach { s ->
                     ElevatedCard(
@@ -218,7 +219,7 @@ fun StarProfileScreen(
                         Column(modifier = Modifier.padding(12.dp)) {
                             when (s) {
                                 is TextSignal -> LinguaText(s.text)
-                                is MixSignal -> Text(text = "Mix (${s.parts.size})")
+                                is MixSignal -> Text(text = tr("Mix (%s)", s.parts.size))
                                 is EmojiSignal -> Text(text = s.emoji)
                                 else -> Text(text = s.typeLabel())
                             }
@@ -232,7 +233,7 @@ fun StarProfileScreen(
 
         if (pulseSentAt != null) {
             Text(
-                text = "✦ Pulz letí k hviezde",
+                text = tr("✦ Pulz letí k hviezde"),
                 color = dominant.color(),
                 modifier = Modifier.align(Alignment.CenterHorizontally),
             )
@@ -251,12 +252,12 @@ fun StarProfileScreen(
                 onClick = { showPulse = true },
                 modifier = Modifier.weight(1f),
             ) {
-                Text(text = "✦ Pošli pulz")
+                Text(text = tr("✦ Pošli pulz"))
             }
             FilterChip(
                 selected = isWatched,
                 onClick = { WatchedStars.toggle(starId) },
-                label = { Text(text = if (isWatched) "◉ Sleduješ žiarenie" else "○ Sleduj žiarenie") },
+                label = { Text(text = if (isWatched) tr("◉ Sleduješ žiarenie") else tr("○ Sleduj žiarenie")) },
                 modifier = Modifier.weight(1f),
                 colors =
                     FilterChipDefaults.filterChipColors(
@@ -283,13 +284,13 @@ fun StarProfileScreen(
                 onClick = { showReply = true },
                 modifier = Modifier.weight(1f),
             ) {
-                Text(text = "Odpovedať")
+                Text(text = tr("Odpovedať"))
             }
             Button(
                 onClick = { onViewOnMap(starId) },
                 modifier = Modifier.weight(1f),
             ) {
-                Text(text = "Zobraziť na mape")
+                Text(text = tr("Zobraziť na mape"))
             }
         }
     }
@@ -341,18 +342,18 @@ private fun ReplySheet(
         sheetState = sheetState,
     ) {
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-            Text(text = "Odpovedať ako", fontWeight = FontWeight.SemiBold)
+            Text(text = tr("Odpovedať ako"), fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.height(8.dp))
 
             val options =
                 listOf(
-                    ReplyType.Text to "Text (200)",
-                    ReplyType.Emoji to "Emotikon",
-                    ReplyType.Audio15s to "Audio 15s",
-                    ReplyType.Flash to "Záblesk",
-                    ReplyType.Image to "Mini vizuál",
-                    ReplyType.Mix to "Mix",
-                    ReplyType.Wish to "WishNet prianie",
+                    ReplyType.Text to tr("Text (200)"),
+                    ReplyType.Emoji to tr("Emotikon"),
+                    ReplyType.Audio15s to tr("Audio 15s"),
+                    ReplyType.Flash to tr("Záblesk"),
+                    ReplyType.Image to tr("Mini vizuál"),
+                    ReplyType.Mix to tr("Mix"),
+                    ReplyType.Wish to tr("WishNet prianie"),
                 )
 
             options.chunked(3).forEach { row ->

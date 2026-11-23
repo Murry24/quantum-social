@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.quantumsocial.core.data.StarDust
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.Emotion
 import app.quantumsocial.core.model.PulseEffect
 import app.quantumsocial.core.model.SignalTarget
@@ -72,15 +73,15 @@ fun SendPulseSheet(
         Text(
             text =
                 when (target) {
-                    is SignalTarget.Star -> "✦ Pošli pocit tejto hviezde"
-                    SignalTarget.Chaos -> "🌌 Pošli pocit do chaosu"
+                    is SignalTarget.Star -> tr("✦ Pošli pocit tejto hviezde")
+                    SignalTarget.Chaos -> tr("🌌 Pošli pocit do chaosu")
                 },
             fontWeight = FontWeight.SemiBold,
             fontSize = 18.sp,
         )
         if (target == SignalTarget.Chaos) {
             Text(
-                text = "Zachytí ho náhodná hviezda",
+                text = tr("Zachytí ho náhodná hviezda"),
                 fontSize = 13.sp,
                 modifier = Modifier.alpha(0.7f),
             )
@@ -104,7 +105,7 @@ fun SendPulseSheet(
         Spacer(Modifier.height(16.dp))
 
         Text(
-            text = "Pridaj k pulzu (nepovinné)",
+            text = tr("Pridaj k pulzu (nepovinné)"),
             fontSize = 13.sp,
             modifier = Modifier.alpha(0.7f).fillMaxWidth(),
         )
@@ -126,9 +127,9 @@ fun SendPulseSheet(
             Text(
                 text =
                     if (canAlert) {
-                        "  ⚡ Naliehavý pulz (${StarDustState.ALERT_COST} ✨, 1× denne)"
+                        tr("  ⚡ Naliehavý pulz (%s ✨, 1× denne)", StarDustState.ALERT_COST)
                     } else {
-                        "  ⚡ Naliehavý pulz – dnes už nie alebo málo ✨"
+                        tr("  ⚡ Naliehavý pulz – dnes už nie alebo málo ✨")
                     },
                 fontSize = 13.sp,
             )
@@ -140,12 +141,12 @@ fun SendPulseSheet(
             onClick = { onSend(selected, emoji, effect, urgent && canAlert) },
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text("Vypustiť pulz ✦")
+            Text(tr("Vypustiť pulz ✦"))
         }
 
         if (target is SignalTarget.Star && onOpenProfile != null) {
             TextButton(onClick = { onOpenProfile(target.starId) }) {
-                Text("Profil hviezdy")
+                Text(tr("Profil hviezdy"))
             }
         }
 
@@ -193,8 +194,8 @@ internal fun EmotionOrb(
 
 internal fun PulseEffect.label(): String =
     when (this) {
-        PulseEffect.Sparks -> "✨ Iskry"
-        PulseEffect.Rainbow -> "🌈 Dúha"
-        PulseEffect.Wave -> "🌊 Vlna"
-        PulseEffect.Flash -> "⚡ Záblesk"
+        PulseEffect.Sparks -> tr("✨ Iskry")
+        PulseEffect.Rainbow -> tr("🌈 Dúha")
+        PulseEffect.Wave -> tr("🌊 Vlna")
+        PulseEffect.Flash -> tr("⚡ Záblesk")
     }

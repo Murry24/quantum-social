@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.quantumsocial.core.data.ModerationStore
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.QuantName
 import app.quantumsocial.core.model.ReportReason
 
@@ -36,19 +37,19 @@ fun ModerationRow(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        TextButton(onClick = { reporting = true }) { Text("⚑ Nahlásiť") }
+        TextButton(onClick = { reporting = true }) { Text(tr("⚑ Nahlásiť")) }
         TextButton(
             onClick = {
                 ModerationStore.block(starId)
                 onBlocked()
             },
-        ) { Text("🚫 Zablokovať") }
+        ) { Text(tr("🚫 Zablokovať")) }
     }
 
     if (reporting) {
         AlertDialog(
             onDismissRequest = { reporting = false },
-            title = { Text("Prečo hlásiš túto hviezdu?") },
+            title = { Text(tr("Prečo hlásiš túto hviezdu?")) },
             text = {
                 Column {
                     ReportReason.values().forEach { reason ->
@@ -57,11 +58,11 @@ fun ModerationRow(
                                 reporting = false
                                 if (ModerationStore.report(starId, reason)) reported = reason else tooMany = true
                             },
-                        ) { Text(reason.label) }
+                        ) { Text(tr(reason.label)) }
                     }
                 }
             },
-            confirmButton = { TextButton(onClick = { reporting = false }) { Text("Zrušiť") } },
+            confirmButton = { TextButton(onClick = { reporting = false }) { Text(tr("Zrušiť")) } },
         )
     }
 
@@ -71,13 +72,13 @@ fun ModerationRow(
                 reported = null
                 onBlocked()
             },
-            title = { Text("Ďakujeme ✦") },
+            title = { Text(tr("Ďakujeme ✦")) },
             text = {
                 Text(
                     if (reason == ReportReason.SelfHarm) {
-                        "Ak je niekto v ohrození, volaj 112. Hviezda je skrytá a viac ju neuvidíš."
+                        tr("Ak je niekto v ohrození, volaj 112. Hviezda je skrytá a viac ju neuvidíš.")
                     } else {
-                        "Hviezda je skrytá a viac ju neuvidíš. Odblokovať ju môžeš v Profile."
+                        tr("Hviezda je skrytá a viac ju neuvidíš. Odblokovať ju môžeš v Profile.")
                     },
                 )
             },
@@ -87,7 +88,7 @@ fun ModerationRow(
                         reported = null
                         onBlocked()
                     },
-                ) { Text("OK") }
+                ) { Text(tr("OK")) }
             },
         )
     }
@@ -95,8 +96,8 @@ fun ModerationRow(
     if (tooMany) {
         AlertDialog(
             onDismissRequest = { tooMany = false },
-            text = { Text("Túto hviezdu si dnes už nahlásil, alebo si dnes nahlásil priveľa hviezd.") },
-            confirmButton = { TextButton(onClick = { tooMany = false }) { Text("OK") } },
+            text = { Text(tr("Túto hviezdu si dnes už nahlásil, alebo si dnes nahlásil priveľa hviezd.")) },
+            confirmButton = { TextButton(onClick = { tooMany = false }) { Text(tr("OK")) } },
         )
     }
 }
@@ -106,11 +107,11 @@ fun ModerationRow(
 fun BlockedStarsList() {
     val moderation by ModerationStore.state.collectAsState()
     if (moderation.blocked.isEmpty()) return
-    Text("Zablokované hviezdy", style = MaterialTheme.typography.titleMedium)
+    Text(tr("Zablokované hviezdy"), style = MaterialTheme.typography.titleMedium)
     moderation.blocked.sorted().forEach { id ->
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(QuantName.of(id), modifier = Modifier.padding(top = 12.dp))
-            OutlinedButton(onClick = { ModerationStore.unblock(id) }) { Text("Odblokovať") }
+            OutlinedButton(onClick = { ModerationStore.unblock(id) }) { Text(tr("Odblokovať")) }
         }
     }
 }

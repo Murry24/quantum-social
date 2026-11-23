@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.TextSignal
 
 private const val MAX = 200
@@ -28,18 +29,18 @@ fun SignalText(onSubmit: (TextSignal) -> Unit) {
             onValueChange = {
                 if (it.text.length <= MAX) setValue(it)
             },
-            label = { Text("Text (max $MAX znakov)") },
+            label = { Text(tr("Text (max %s znakov)", MAX)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = false,
         )
         Text(
-            text = "$left zostáva",
+            text = tr("%s zostáva", left),
             modifier = Modifier.padding(top = 8.dp),
         )
         Button(
             onClick = { onSubmit(TextSignal(text = value.text.trim())) },
             enabled = isValid,
             modifier = Modifier.padding(top = 12.dp),
-        ) { Text("Odoslať text") }
+        ) { Text(tr("Odoslať text")) }
     }
 }

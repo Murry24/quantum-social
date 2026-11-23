@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.ui.perf.LocalPerformanceMode
 
 /** Okrúhle ✦ v strede spodnej lišty; jemne pulzuje (v šetriči výkonu nie). */
@@ -86,19 +87,19 @@ fun ActionsSheet(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp, vertical = 8.dp),
     ) {
-        BigAction("🌌  Do chaosu – pocit náhodnej hviezde", onChaos)
-        BigAction("🌉  Svetelný most dňa", onBridge)
-        BigAction("✨  Súhvezdia", onConstellations)
-        BigAction("💞  SoulLinks", onSoulLinks)
-        BigAction("○  ZenNet – minúta ticha", onZen)
-        BigAction("🕳  Moje galaxie", onGalaxies)
-        BigAction("🌟  Vďačnosť – zlatá iskra dňa", onGratitude)
-        BigAction("🎯  Výzva dňa", onChallenge)
-        BigAction("🌊  Vlny nálad galaxie", onMood)
-        BigAction("🌙  DreamMirror – snový most", onDream)
-        BigAction("🌱  Semienka budúcnosti", onSeeds)
-        BigAction("🎧  EchoNet – ozvena dňa", onEcho)
-        BigAction("🔮  Memory Nebula – moje chvíle", onMemory)
+        BigAction(tr("🌌  Do chaosu – pocit náhodnej hviezde"), onChaos)
+        BigAction(tr("🌉  Svetelný most dňa"), onBridge)
+        BigAction(tr("✨  Súhvezdia"), onConstellations)
+        BigAction(tr("💞  SoulLinks"), onSoulLinks)
+        BigAction(tr("○  ZenNet – minúta ticha"), onZen)
+        BigAction(tr("🕳  Moje galaxie"), onGalaxies)
+        BigAction(tr("🌟  Vďačnosť – zlatá iskra dňa"), onGratitude)
+        BigAction(tr("🎯  Výzva dňa"), onChallenge)
+        BigAction(tr("🌊  Vlny nálad galaxie"), onMood)
+        BigAction(tr("🌙  DreamMirror – snový most"), onDream)
+        BigAction(tr("🌱  Semienka budúcnosti"), onSeeds)
+        BigAction(tr("🎧  EchoNet – ozvena dňa"), onEcho)
+        BigAction(tr("🔮  Memory Nebula – moje chvíle"), onMemory)
     }
 }
 

@@ -4,6 +4,7 @@ import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.net.Uri
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.CustomSound
 import java.io.File
 
@@ -40,7 +41,7 @@ object CustomSoundStore {
             }
         CustomSound.problem(duration, if (bytes < 0) CustomSound.MAX_BYTES + 1 else bytes)?.let { return it }
         resolver.openInputStream(uri)?.use { input -> file(context).outputStream().use { input.copyTo(it) } }
-            ?: return "Súbor sa nedá otvoriť."
+            ?: return tr("Súbor sa nedá otvoriť.")
         return null
     }
 

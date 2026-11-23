@@ -40,6 +40,7 @@ import app.quantumsocial.core.data.ChallengeStore
 import app.quantumsocial.core.data.GratitudeStore
 import app.quantumsocial.core.data.InMemorySignalRepository
 import app.quantumsocial.core.data.PulseOutbox
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.DailyChallenge
 import app.quantumsocial.core.model.DustAction
 import app.quantumsocial.core.model.Emotion
@@ -67,7 +68,7 @@ private fun SkyFrame(
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            TextButton(onClick = onBack) { Text("‹ Späť", color = onSky) }
+            TextButton(onClick = onBack) { Text(tr("‹ Späť"), color = onSky) }
             Text(title, style = MaterialTheme.typography.titleLarge, color = onSky)
         }
         content()
@@ -81,28 +82,28 @@ fun GratitudeScreen(onBack: () -> Unit) {
     val today = StarDustState.epochDay(System.currentTimeMillis())
     var text by remember { mutableStateOf("") }
 
-    SkyFrame("🌟 Vďačnosť", onBack) {
+    SkyFrame(tr("🌟 Vďačnosť"), onBack) {
         if (journal.canWrite(today)) {
-            Text("Za čo si dnes vďačný?", color = onSky)
+            Text(tr("Za čo si dnes vďačný?"), color = onSky)
             OutlinedTextField(
                 value = text,
                 onValueChange = { text = it.take(GratitudeJournal.MAX_TEXT) },
-                label = { Text("pár slov (max ${GratitudeJournal.MAX_TEXT})") },
+                label = { Text(tr("pár slov (max %s)", GratitudeJournal.MAX_TEXT)) },
                 modifier = Modifier.fillMaxWidth().background(Color.White.copy(alpha = 0.9f)),
             )
             Button(onClick = { if (GratitudeStore.write(text)) text = "" }, enabled = text.isNotBlank()) {
-                Text("Zapáliť zlatú iskru ✨ (+${DustAction.Gratitude.reward})")
+                Text(tr("Zapáliť zlatú iskru ✨ (+%s)", DustAction.Gratitude.reward))
             }
         } else {
-            Text("Dnešná iskra už svieti. Zajtra môžeš zapáliť ďalšiu. ✨", color = onSky)
+            Text(tr("Dnešná iskra už svieti. Zajtra môžeš zapáliť ďalšiu. ✨"), color = onSky)
         }
-        Text("Tvoje zlaté iskry (zhasnú po 7 dňoch)", style = MaterialTheme.typography.titleSmall, color = onSky)
+        Text(tr("Tvoje zlaté iskry (zhasnú po 7 dňoch)"), style = MaterialTheme.typography.titleSmall, color = onSky)
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(journal.visible(today).entries) { e ->
                 ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                     val ago = today - e.day
                     Text(
-                        "✨ ${e.text}" + if (ago == 0L) "  · dnes" else "  · pred $ago d",
+                        tr("✨ %s", e.text) + if (ago == 0L) tr("  · dnes") else tr("  · pred %s d", ago),
                         modifier = Modifier.padding(12.dp),
                     )
                 }
@@ -118,7 +119,7 @@ fun ChallengeScreen(onBack: () -> Unit) {
     val today = StarDustState.epochDay(System.currentTimeMillis())
     val done = doneDay == today
 
-    SkyFrame("🎯 Výzva dňa", onBack) {
+    SkyFrame(tr("🎯 Výzva dňa"), onBack) {
         ElevatedCard(modifier = Modifier.fillMaxWidth()) {
             Text(
                 DailyChallenge.forDay(today),
@@ -126,12 +127,12 @@ fun ChallengeScreen(onBack: () -> Unit) {
                 modifier = Modifier.padding(20.dp),
             )
         }
-        Text("Dnes ju dostali všetky hviezdy v galaxii. Zajtra príde nová.", color = onSky)
+        Text(tr("Dnes ju dostali všetky hviezdy v galaxii. Zajtra príde nová."), color = onSky)
         if (done) {
-            Text("✅ Splnené – dobrá práca, hviezda!", color = onSky, style = MaterialTheme.typography.titleMedium)
+            Text(tr("✅ Splnené – dobrá práca, hviezda!"), color = onSky, style = MaterialTheme.typography.titleMedium)
         } else {
             Button(onClick = { ChallengeStore.complete() }) {
-                Text("Splnil som ✓ (+${DustAction.Challenge.reward} StarDust)")
+                Text(tr("Splnil som ✓ (+%s StarDust)", DustAction.Challenge.reward))
             }
         }
     }
@@ -153,14 +154,18 @@ fun MoodWavesScreen(onBack: () -> Unit) {
         label = "waves-phase",
     )
 
-    SkyFrame("🌊 Vlny nálad", onBack) {
+    SkyFrame(tr("🌊 Vlny nálad"), onBack) {
         Text(
-            if (dominant != null) "Galaxia práve najviac cíti: ${dominant.label()}" else "Galaxia je zatiaľ tichá.",
+            if (dominant != null) {
+                tr("Galaxia práve najviac cíti: %s", tr(dominant.label()))
+            } else {
+                tr("Galaxia je zatiaľ tichá.")
+            },
             color = onSky,
             style = MaterialTheme.typography.titleMedium,
         )
         // bod 17: emócia dňa je rovnaká pre celú galaxiu
-        Text("✨ " + emotionOfDayText(StarDustState.epochDay(System.currentTimeMillis())), color = onSky)
+        Text(tr("✨ ") + emotionOfDayText(StarDustState.epochDay(System.currentTimeMillis())), color = onSky)
         Canvas(modifier = Modifier.fillMaxWidth().height(260.dp)) {
             val emotionsAll = Emotion.values()
             emotionsAll.forEachIndexed { i, e ->

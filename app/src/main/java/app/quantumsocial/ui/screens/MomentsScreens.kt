@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.quantumsocial.core.data.StarDust
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.DreamMirror
 import app.quantumsocial.core.model.Emotion
 import app.quantumsocial.core.model.GalacticMoments
@@ -91,14 +92,14 @@ fun GalacticMomentOverlay() {
             }
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("🌟 Galaktický moment", style = MaterialTheme.typography.titleLarge, color = onSky)
+            Text(tr("🌟 Galaktický moment"), style = MaterialTheme.typography.titleLarge, color = onSky)
             Text(
-                "Stala sa z teba ${level.label} ${level.emoji}",
+                tr("Stala sa z teba %s %s", tr(level.label), level.emoji),
                 style = MaterialTheme.typography.headlineSmall,
                 color = onSky,
                 textAlign = TextAlign.Center,
             )
-            Text("Celá galaxia ti posiela svetlo.", color = onSky)
+            Text(tr("Celá galaxia ti posiela svetlo."), color = onSky)
         }
     }
 }
@@ -114,16 +115,16 @@ fun DreamScreen(onBack: () -> Unit) {
         modifier = Modifier.fillMaxSize().background(GalaxyPalette.zenBrush).padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        TextButton(onClick = onBack) { Text("‹ Späť", color = onSky) }
-        Text("🌙 DreamMirror", style = MaterialTheme.typography.titleLarge, color = onSky)
-        Text("Čo sa ti snívalo? Sen ostane len v tomto telefóne a po zatvorení zmizne.", color = onSky)
+        TextButton(onClick = onBack) { Text(tr("‹ Späť"), color = onSky) }
+        Text(tr("🌙 DreamMirror"), style = MaterialTheme.typography.titleLarge, color = onSky)
+        Text(tr("Čo sa ti snívalo? Sen ostane len v tomto telefóne a po zatvorení zmizne."), color = onSky)
         OutlinedTextField(
             value = dream,
             onValueChange = {
                 dream = it.take(DreamMirror.MAX_TEXT)
                 searched = false
             },
-            label = { Text("môj sen (max ${DreamMirror.MAX_TEXT})") },
+            label = { Text(tr("môj sen (max %s)", DreamMirror.MAX_TEXT)) },
             modifier = Modifier.fillMaxWidth().background(Color.White.copy(alpha = 0.9f)),
         )
         Button(
@@ -132,20 +133,20 @@ fun DreamScreen(onBack: () -> Unit) {
                 searched = true
             },
             enabled = dream.isNotBlank(),
-        ) { Text("Hľadať snový most 🌉") }
+        ) { Text(tr("Hľadať snový most 🌉")) }
         if (searched) {
             val b = bridge
             if (b != null) {
-                Text("Snový most s inou hviezdou · zhoda ${(b.second * 100).toInt()} %", color = onSky)
+                Text(tr("Snový most s inou hviezdou · zhoda %s %", (b.second * 100).toInt()), color = onSky)
                 ElevatedCard(modifier = Modifier.fillMaxWidth()) {
-                    Text("🌙 ${b.first}", modifier = Modifier.padding(16.dp))
+                    Text(tr("🌙 %s", b.first), modifier = Modifier.padding(16.dp))
                 }
             } else {
-                Text("Tvoj sen je zatiaľ jedinečný – žiadna hviezda nemala podobný. ✨", color = onSky)
+                Text(tr("Tvoj sen je zatiaľ jedinečný – žiadna hviezda nemala podobný. ✨"), color = onSky)
             }
         }
     }
 }
 
 /** Emócia dňa (bod 17) – krátky riadok pre obrazovky galaxie. */
-fun emotionOfDayText(epochDay: Long): String = "Emócia dňa: ${GalacticMoments.emotionOfDay(epochDay).label()}"
+fun emotionOfDayText(epochDay: Long): String = tr("Emócia dňa: %s", tr(GalacticMoments.emotionOfDay(epochDay).label()))

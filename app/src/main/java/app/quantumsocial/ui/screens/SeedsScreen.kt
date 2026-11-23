@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.quantumsocial.core.data.SeedStore
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.FutureSeed
 import app.quantumsocial.core.model.SeedStage
 import app.quantumsocial.core.model.StarDustState
@@ -45,11 +46,11 @@ fun SeedsScreen(onBack: () -> Unit) {
         modifier = Modifier.fillMaxSize().background(GalaxyPalette.zenBrush).padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        TextButton(onClick = onBack) { Text("‹ Späť", color = onSky) }
-        Text("🌱 Semienka budúcnosti", style = MaterialTheme.typography.titleLarge, color = onSky)
+        TextButton(onClick = onBack) { Text(tr("‹ Späť"), color = onSky) }
+        Text(tr("🌱 Semienka budúcnosti"), style = MaterialTheme.typography.titleLarge, color = onSky)
         Text(
-            "Zasaď prianie do budúcnosti. Zalievaj ho raz denne – " +
-                "po ${FutureSeed.WATERINGS_TO_BLOOM} dňoch rozkvitne. 🌸",
+            tr("Zasaď prianie do budúcnosti. Zalievaj ho raz denne – ") +
+                tr("po %s dňoch rozkvitne. 🌸", FutureSeed.WATERINGS_TO_BLOOM),
             color = onSky,
         )
         OutlinedTextField(
@@ -59,7 +60,7 @@ fun SeedsScreen(onBack: () -> Unit) {
             modifier = Modifier.fillMaxWidth().background(Color.White.copy(alpha = 0.9f)),
         )
         Button(onClick = { if (SeedStore.plant(text)) text = "" }, enabled = text.isNotBlank()) {
-            Text("Zasadiť 🌰")
+            Text(tr("Zasadiť 🌰"))
         }
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(garden.seeds, key = { it.id }) { s ->
@@ -72,13 +73,13 @@ fun SeedsScreen(onBack: () -> Unit) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(s.text)
                             Text(
-                                "${s.stage.label} · zaliate ${s.waterings}/${FutureSeed.WATERINGS_TO_BLOOM}",
+                                tr("%s · zaliate %s/%s", tr(s.stage.label), s.waterings, FutureSeed.WATERINGS_TO_BLOOM),
                                 style = MaterialTheme.typography.bodySmall,
                             )
                         }
                         if (s.stage != SeedStage.Bloom) {
                             FilledTonalButton(onClick = { SeedStore.water(s.id) }, enabled = s.canWater(today)) {
-                                Text("💧")
+                                Text(tr("💧"))
                             }
                         }
                     }

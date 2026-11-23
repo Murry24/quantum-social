@@ -14,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.ImageSignal
 import coil.compose.AsyncImage
 
@@ -28,12 +29,12 @@ fun SignalImagePicker(onSubmit: (ImageSignal) -> Unit) {
     Column(Modifier.padding(16.dp)) {
         Button(onClick = {
             launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-        }) { Text("Vybrať obrázok") }
+        }) { Text(tr("Vybrať obrázok")) }
 
         uri?.let {
             AsyncImage(
                 model = it,
-                contentDescription = "náhľad",
+                contentDescription = tr("náhľad"),
                 modifier =
                     Modifier
                         .fillMaxWidth()
@@ -42,7 +43,7 @@ fun SignalImagePicker(onSubmit: (ImageSignal) -> Unit) {
             Button(
                 onClick = { onSubmit(ImageSignal(imageUri = it.toString())) },
                 modifier = Modifier.padding(top = 12.dp),
-            ) { Text("Odoslať obrázok") }
+            ) { Text(tr("Odoslať obrázok")) }
         }
     }
 }

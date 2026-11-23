@@ -13,6 +13,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.LinguaBridges
 import app.quantumsocial.core.model.WorldLanguages
 import app.quantumsocial.ui.onboarding.OnboardingPrefs
@@ -53,10 +54,11 @@ fun LinguaText(
         if (iso == null || !LinguaBridges.shouldOffer(iso, myCode)) return@Column
         val small = MaterialTheme.typography.labelSmall
         when {
-            busy -> Text("🌐 prekladám…", style = small)
+            busy -> Text(tr("🌐 prekladám…"), style = small)
             done != null ->
                 TextButton(onClick = { showOriginal = !showOriginal }) {
-                    Text(if (showOriginal) "🌐 Zobraziť preklad" else "🌐 Preložené · ukázať originál", style = small)
+                    val label = if (showOriginal) tr("🌐 Zobraziť preklad") else tr("🌐 Preložené · ukázať originál")
+                    Text(label, style = small)
                 }
             else ->
                 TextButton(
@@ -69,8 +71,8 @@ fun LinguaText(
                         }
                     },
                 ) {
-                    val label = if (failed) "skús to s internetom" else WorldLanguages.chip(myCode)
-                    Text("🌐 Preložiť do: $label", style = small)
+                    val label = if (failed) tr("skús to s internetom") else WorldLanguages.chip(myCode)
+                    Text(tr("🌐 Preložiť do: %s", label), style = small)
                 }
         }
     }

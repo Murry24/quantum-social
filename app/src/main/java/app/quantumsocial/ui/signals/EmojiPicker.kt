@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.quantumsocial.core.data.RecentEmojis
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.EmojiCatalog
 
 /** Veľký výber emoji v skupinách (WishNet → Emoji). Ťuk = emoji sa hneď použije. */
@@ -39,7 +40,7 @@ fun EmojiGrid(
     val recent by RecentEmojis.recent.collectAsState()
     val groups =
         buildList {
-            if (recent.isNotEmpty()) add(EmojiCatalog.Group("Naposledy", recent))
+            if (recent.isNotEmpty()) add(EmojiCatalog.Group(tr("Naposledy"), recent))
             addAll(EmojiCatalog.groups)
         }
 

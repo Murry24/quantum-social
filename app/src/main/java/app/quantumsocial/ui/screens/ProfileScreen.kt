@@ -37,12 +37,14 @@ import androidx.compose.ui.unit.dp
 import app.quantumsocial.audio.CustomSoundStore
 import app.quantumsocial.audio.ToneSynth
 import app.quantumsocial.core.data.StarDust
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.DustAction
 import app.quantumsocial.core.model.PerformanceChoice
 import app.quantumsocial.core.model.StarChord
 import app.quantumsocial.core.model.StarDustState
 import app.quantumsocial.core.model.StarLevel
 import app.quantumsocial.core.ui.theme.GalaxyTheme
+import app.quantumsocial.lingua.AppLanguagePicker
 import app.quantumsocial.notify.GentleReminders
 import app.quantumsocial.ui.onboarding.OnboardingPrefs
 import app.quantumsocial.ui.perf.GalaxyThemeSettings
@@ -60,7 +62,7 @@ fun ProfileScreen(onRebirth: () -> Unit) {
         modifier = Modifier.verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Text("Môj profil", style = MaterialTheme.typography.titleLarge)
+        Text(tr("Môj profil"), style = MaterialTheme.typography.titleLarge)
 
         // bod 20: StarDust – nedá sa kúpiť ani predať
         ElevatedCard(modifier = Modifier.fillMaxWidth()) {
@@ -74,21 +76,21 @@ fun ProfileScreen(onRebirth: () -> Unit) {
                 )
                 level.next?.let { next ->
                     Text(
-                        "Do levelu ${next.label} chýba ${next.minDust - dust.lifetime} StarDust",
+                        tr("Do levelu %s chýba %s StarDust", tr(next.label), next.minDust - dust.lifetime),
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }
-                Text("✨ ${dust.balance} StarDust", style = MaterialTheme.typography.headlineSmall)
+                Text(tr("✨ %s StarDust", dust.balance), style = MaterialTheme.typography.headlineSmall)
                 Text(
-                    "Hviezdny prach za pulzy, odpovede, priania, minútu ticha a nové galaxie. " +
-                        "Nedá sa kúpiť ani predať.",
+                    tr("Hviezdny prach za pulzy, odpovede, priania, minútu ticha a nové galaxie. ") +
+                        tr("Nedá sa kúpiť ani predať."),
                     style = MaterialTheme.typography.bodySmall,
                 )
                 val today = StarDustState.epochDay(System.currentTimeMillis())
                 DustAction.values().forEach { a ->
                     val used = if (dust.day == today) dust.countToday(a) else 0
                     Text(
-                        "${a.label()}: dnes $used/${a.dailyCap} · +${a.reward}",
+                        tr("%s: dnes %s/%s · +%s", tr(a.label()), used, a.dailyCap, a.reward),
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }
@@ -103,8 +105,8 @@ fun ProfileScreen(onRebirth: () -> Unit) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             LightSignatureView(starId = OnboardingPrefs.myStarId(context))
             Column {
-                Text("Môj svetelný podpis", style = MaterialTheme.typography.titleMedium)
-                Text("Farby a rytmus len tvojej hviezdy.", style = MaterialTheme.typography.bodySmall)
+                Text(tr("Môj svetelný podpis"), style = MaterialTheme.typography.titleMedium)
+                Text(tr("Farby a rytmus len tvojej hviezdy."), style = MaterialTheme.typography.bodySmall)
             }
         }
 
@@ -118,11 +120,11 @@ fun ProfileScreen(onRebirth: () -> Unit) {
                 if (uri != null) {
                     val problem = CustomSoundStore.import(context, uri)
                     hasCustom = CustomSoundStore.has(context)
-                    soundMessage = problem ?: "Vlastný zvuk je uložený ✓"
+                    soundMessage = problem ?: tr("Vlastný zvuk je uložený ✓")
                 }
             }
         BlockedStarsList()
-        Text("Môj zvuk", style = MaterialTheme.typography.titleMedium)
+        Text(tr("Môj zvuk"), style = MaterialTheme.typography.titleMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(
                 onClick = {
@@ -132,36 +134,38 @@ fun ProfileScreen(onRebirth: () -> Unit) {
                         ToneSynth.play(StarChord.of(myStar, chordState.first))
                     }
                 },
-            ) { Text(if (hasCustom) "🎵 Môj vlastný zvuk" else "🎵 Moja melódia") }
+            ) { Text(if (hasCustom) tr("🎵 Môj vlastný zvuk") else tr("🎵 Moja melódia")) }
             if (!hasCustom) {
                 TextButton(
                     onClick = { ChordPrefs.change(context) },
                     enabled = ChordPrefs.canChange(),
-                ) { Text(if (ChordPrefs.canChange()) "Zmeniť melódiu" else "Zmena až o štvrťrok") }
+                ) { Text(if (ChordPrefs.canChange()) tr("Zmeniť melódiu") else tr("Zmena až o štvrťrok")) }
             }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            TextButton(onClick = { pickSound.launch(arrayOf("audio/*")) }) { Text("📁 Vložiť vlastný zvuk (max 15 s)") }
+            TextButton(onClick = { pickSound.launch(arrayOf("audio/*")) }) {
+                Text(tr("📁 Vložiť vlastný zvuk (max 15 s)"))
+            }
             if (hasCustom) {
                 TextButton(
                     onClick = {
                         CustomSoundStore.remove(context)
                         hasCustom = false
-                        soundMessage = "Späť na melódiu hviezdy"
+                        soundMessage = tr("Späť na melódiu hviezdy")
                     },
-                ) { Text("Zrušiť") }
+                ) { Text(tr("Zrušiť")) }
             }
         }
         soundMessage?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
 
         // bod 32: farebná nálada oblohy hlavnej galaxie
-        Text("Farba galaxie", style = MaterialTheme.typography.titleMedium)
+        Text(tr("Farba galaxie"), style = MaterialTheme.typography.titleMedium)
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             items(GalaxyTheme.values()) { t ->
                 FilterChip(
                     selected = t == theme,
                     onClick = { GalaxyThemeSettings.set(context, t) },
-                    label = { Text(t.label) },
+                    label = { Text(tr(t.label)) },
                     leadingIcon = {
                         Box(Modifier.size(16.dp).clip(CircleShape).background(t.skyBrush))
                     },
@@ -170,7 +174,7 @@ fun ProfileScreen(onRebirth: () -> Unit) {
         }
 
         // bod 33: moja galaxia ako pohyblivá tapeta telefónu
-        OutlinedButton(onClick = { WallpaperLauncher.open(context) }) { Text("✨ Nastaviť galaxiu ako tapetu") }
+        OutlinedButton(onClick = { WallpaperLauncher.open(context) }) { Text(tr("✨ Nastaviť galaxiu ako tapetu")) }
 
         // bod 15: jemná večerná pripomienka (bez čísiel a odznakov)
         var gentle by remember { mutableStateOf(GentleReminders.isOn(context)) }
@@ -182,11 +186,11 @@ fun ProfileScreen(onRebirth: () -> Unit) {
                     GentleReminders.setOn(context, it)
                 },
             )
-            Text("🌙 Jemná pripomienka večer")
+            Text(tr("🌙 Jemná pripomienka večer"))
         }
 
         // bod 6: ručné prepnutie šetriča výkonu (Auto = podľa šetriča batérie v Androide)
-        Text("Animácie galaxie", style = MaterialTheme.typography.titleMedium)
+        Text(tr("Animácie galaxie"), style = MaterialTheme.typography.titleMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             PerformanceChoice.values().forEach { option ->
                 FilterChip(
@@ -197,28 +201,31 @@ fun ProfileScreen(onRebirth: () -> Unit) {
             }
         }
 
+        // jazyk celej aplikácie
+        AppLanguagePicker()
+
         // bod 18: na testovanie – otvorí onboarding znova, obnovovací kľúč ostáva
-        OutlinedButton(onClick = onRebirth) { Text("Znova prejsť zrodením") }
+        OutlinedButton(onClick = onRebirth) { Text(tr("Znova prejsť zrodením")) }
     }
 }
 
 private fun PerformanceChoice.label() =
     when (this) {
-        PerformanceChoice.Auto -> "Auto"
-        PerformanceChoice.Full -> "Plné"
-        PerformanceChoice.Saver -> "Šetrič"
+        PerformanceChoice.Auto -> tr("Auto")
+        PerformanceChoice.Full -> tr("Plné")
+        PerformanceChoice.Saver -> tr("Šetrič")
     }
 
 private fun DustAction.label() =
     when (this) {
-        DustAction.Pulse -> "Pulz"
-        DustAction.Reply -> "Odpoveď svetlom"
-        DustAction.Wish -> "Prianie vo WishNet"
-        DustAction.Zen -> "Minúta ticha"
-        DustAction.Galaxy -> "Nová galaxia"
-        DustAction.Gratitude -> "Vďačnosť"
-        DustAction.Challenge -> "Výzva dňa"
-        DustAction.Empathy -> "Prvá pomoc prianiu"
-        DustAction.Seed -> "Zaliate semienko"
-        DustAction.Echo -> "Ozvena dňa"
+        DustAction.Pulse -> tr("Pulz")
+        DustAction.Reply -> tr("Odpoveď svetlom")
+        DustAction.Wish -> tr("Prianie vo WishNet")
+        DustAction.Zen -> tr("Minúta ticha")
+        DustAction.Galaxy -> tr("Nová galaxia")
+        DustAction.Gratitude -> tr("Vďačnosť")
+        DustAction.Challenge -> tr("Výzva dňa")
+        DustAction.Empathy -> tr("Prvá pomoc prianiu")
+        DustAction.Seed -> tr("Zaliate semienko")
+        DustAction.Echo -> tr("Ozvena dňa")
     }

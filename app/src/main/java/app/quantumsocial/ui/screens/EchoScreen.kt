@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import app.quantumsocial.audio.CustomSoundStore
 import app.quantumsocial.core.data.EchoStore
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.Echo
 import app.quantumsocial.core.model.EchoDay
 import app.quantumsocial.core.model.Emotion
@@ -128,7 +129,7 @@ fun EchoScreen(onBack: () -> Unit) {
         val problem = EchoDay.problem(ms)
         if (f == null || problem != null) {
             f?.delete()
-            message = problem ?: "Nahrávka sa nepodarila."
+            message = problem ?: tr("Nahrávka sa nepodarila.")
         } else {
             recorded = f to ms
         }
@@ -136,7 +137,7 @@ fun EchoScreen(onBack: () -> Unit) {
 
     val askMic =
         rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            if (granted) begin() else message = "Bez mikrofónu sa ozvena nahrať nedá."
+            if (granted) begin() else message = tr("Bez mikrofónu sa ozvena nahrať nedá.")
         }
 
     LaunchedEffect(recording) {
@@ -152,15 +153,15 @@ fun EchoScreen(onBack: () -> Unit) {
         modifier = Modifier.fillMaxSize().background(GalaxyPalette.zenBrush).padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        TextButton(onClick = onBack) { Text("‹ Späť", color = onSky) }
-        Text("🎧 EchoNet – ozvena dňa", style = MaterialTheme.typography.titleLarge, color = onSky)
-        Text("Nahraj 5 až 15 sekúnd zvuku svojho dňa. Ozveny zhasnú o polnoci.", color = onSky)
+        TextButton(onClick = onBack) { Text(tr("‹ Späť"), color = onSky) }
+        Text(tr("🎧 EchoNet – ozvena dňa"), style = MaterialTheme.typography.titleLarge, color = onSky)
+        Text(tr("Nahraj 5 až 15 sekúnd zvuku svojho dňa. Ozveny zhasnú o polnoci."), color = onSky)
 
         when {
             recording ->
-                Button(onClick = { finish() }) { Text("⏹ Stop (${elapsed / 1000} s)") }
+                Button(onClick = { finish() }) { Text(tr("⏹ Stop (%s s)", elapsed / 1000)) }
             !echoes.canAdd(today) ->
-                Text("Dnes už máš ${EchoDay.MAX_PER_DAY} ozveny. Zajtra môžeš nahrať ďalšie.", color = onSky)
+                Text(tr("Dnes už máš %s ozveny. Zajtra môžeš nahrať ďalšie.", EchoDay.MAX_PER_DAY), color = onSky)
             else ->
                 Button(
                     onClick = {
@@ -169,28 +170,28 @@ fun EchoScreen(onBack: () -> Unit) {
                                 PackageManager.PERMISSION_GRANTED
                         if (granted) begin() else askMic.launch(Manifest.permission.RECORD_AUDIO)
                     },
-                ) { Text("🎙 Nahrať ozvenu") }
+                ) { Text(tr("🎙 Nahrať ozvenu")) }
         }
         message?.let { Text(it, color = onSky) }
 
         recorded?.let { (file, ms) ->
             ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("Aká je nálada tejto ozveny? (${ms / 1000} s)")
+                    Text(tr("Aká je nálada tejto ozveny? (%s s)", ms / 1000))
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                         Emotion.values().forEach { e -> EmotionOrb(emotion = e, selected = e == mood) { mood = e } }
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        TextButton(onClick = { playFile(file.absolutePath) }) { Text("▶ Vypočuť") }
+                        TextButton(onClick = { playFile(file.absolutePath) }) { Text(tr("▶ Vypočuť")) }
                         Button(
                             onClick = {
                                 val echo = Echo(UUID.randomUUID().toString(), file.absolutePath, ms, mood, today)
                                 if (EchoStore.add(echo)) {
                                     recorded = null
-                                    message = "Ozvena letí galaxiou ✨"
+                                    message = tr("Ozvena letí galaxiou ✨")
                                 }
                             },
-                        ) { Text("Pustiť do éteru") }
+                        ) { Text(tr("Pustiť do éteru")) }
                     }
                 }
             }
@@ -200,14 +201,14 @@ fun EchoScreen(onBack: () -> Unit) {
             items(echoes.today(today), key = { it.id }) { e ->
                 ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(12.dp)) {
-                        Text("🎧 ${e.mood.label()} · ${e.durationMs / 1000} s", modifier = Modifier.weight(1f))
+                        Text(tr("🎧 %s · %s s", tr(e.mood.label()), e.durationMs / 1000), modifier = Modifier.weight(1f))
                         TextButton(onClick = { playFile(e.filePath) }) { Text("▶") }
                         TextButton(
                             onClick = {
                                 CustomSoundStore.useFile(context, File(e.filePath))
-                                message = "Ozvena je teraz zvukom tvojej hviezdy 🎵"
+                                message = tr("Ozvena je teraz zvukom tvojej hviezdy 🎵")
                             },
-                        ) { Text("Môj zvuk") }
+                        ) { Text(tr("Môj zvuk")) }
                     }
                 }
             }

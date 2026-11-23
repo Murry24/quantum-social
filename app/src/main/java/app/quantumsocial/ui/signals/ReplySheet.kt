@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.Emotion
 import app.quantumsocial.core.model.Reply
 import app.quantumsocial.core.model.ReplyThread
@@ -38,7 +39,7 @@ fun ReplySheet(onSend: (Reply) -> Unit) {
                 .padding(horizontal = 20.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text("Odpovedať svetlom", style = MaterialTheme.typography.titleMedium)
+        Text(tr("Odpovedať svetlom"), style = MaterialTheme.typography.titleMedium)
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             Emotion.values().forEach { e ->
                 EmotionOrb(emotion = e, selected = e == emotion) { emotion = e }
@@ -49,10 +50,10 @@ fun ReplySheet(onSend: (Reply) -> Unit) {
         OutlinedTextField(
             value = text,
             onValueChange = { text = it.take(ReplyThread.MAX_TEXT) },
-            label = { Text("alebo pár slov (max ${ReplyThread.MAX_TEXT})") },
+            label = { Text(tr("alebo pár slov (max %s)", ReplyThread.MAX_TEXT)) },
             modifier = Modifier.fillMaxWidth(),
         )
         // text má prednosť, inak vybraná emócia
-        Button(onClick = { reply?.let(onSend) }, enabled = reply != null) { Text("Poslať iskru ✦") }
+        Button(onClick = { reply?.let(onSend) }, enabled = reply != null) { Text(tr("Poslať iskru ✦")) }
     }
 }
