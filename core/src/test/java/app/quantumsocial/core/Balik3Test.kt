@@ -8,6 +8,7 @@ import app.quantumsocial.core.model.DustAction
 import app.quantumsocial.core.model.Emotion
 import app.quantumsocial.core.model.Reply
 import app.quantumsocial.core.model.SeedGarden
+import app.quantumsocial.core.model.SeedSize
 import app.quantumsocial.core.model.SeedStage
 import app.quantumsocial.core.model.StarChord
 import org.junit.Assert.assertEquals
@@ -73,7 +74,7 @@ class Balik3Test {
         var g = SeedGarden().plant("x", "  nový   začiatok ", day)!!
         assertEquals("nový začiatok", g.seeds.single().text)
         assertNull(g.water("x", day)?.water("x", day))
-        for (d in 0L until 5L) g = g.water("x", day + d)!!
+        for (d in 0L until SeedSize.Small.days) g = g.water("x", day + d)!!
         assertEquals(SeedStage.Bloom, g.seeds.single().stage)
         assertNull(g.water("x", day + 9))
         assertEquals(g, SeedGarden.decode(g.encode()))
