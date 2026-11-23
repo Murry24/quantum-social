@@ -34,14 +34,15 @@ Tento súbor je „odovzdávka“ medzi sedeniami. Prečítaj ho ako prvý.
 | #33 | Pamäť: priania z WishNetu po reštarte | feat/pamat-prani |
 | #34 | Pamäť: priania s obrázkom | feat/pamat-obrazkov |
 | #35 | ZenNet+ (dĺžka, dych, séria) | feat/zen-plus |
+| #36 | Opravy po teste (ZenNet, séria) | fix/po-teste-2 |
 
-**Na test stačí vetva `feat/zen-plus`** (obsahuje všetko). Po OK zlúčiť v poradí #16 → #35
+**Na test stačí vetva `fix/po-teste-2`** (obsahuje všetko). Po OK zlúčiť v poradí #16 → #36
 (každý PR pred zlúčením prepnúť na base `main`, merge commit, vetvy nemazať).
 Pri teste v Android Studiu: po prepnutí vetvy **Sync**, pri čudných chybách **Build → Clean Project**.
 Netestované zatiaľ: KVANT7 (vstup do galaxie priateľov), melódia/zvuk, tapeta, notifikácie.
 
 ## Ďalšie kroky (v tomto poradí)
-1. Spoločný test + zlúčenie #16–#35.
+1. Spoločný test + zlúčenie #16–#36.
 2. Balík C: **19** lokálne (nahlásiť / zablokovať hviezdu), **25** preklady správ (prekladač v telefóne).
 3. **Detailné vylepšenie každej časti** (Marošovo želanie: „nabité všetkým, na čo si používateľ spomenie“):
    WishNet → galaxie priateľov → profil → ZenNet → … každú časť do hĺbky.
@@ -67,3 +68,10 @@ Netestované zatiaľ: KVANT7 (vstup do galaxie priateľov), melódia/zvuk, tapet
 - Slovníky: `app/src/main/assets/i18n/<iso>.tsv` (slovensky TAB preklad), nový jazyk pridať aj do `I18n.available`.
 - `I18nTest` stráži počet `%s`. Preložené aj texty z `core` (17 jazykov, 423 textov). Nový text = pridať riadok do všetkých .tsv (test to vyžaduje).
 - Pri kontrole dĺžky riadku počítať emoji ako 2 znaky (ktlint počíta UTF-16).
+
+## Test v emulátore 23. 11. (Claude cez Android Studio)
+- OK: angličtina podľa telefónu, Profil (level, StarDust, aura), ✦ menu, ZenNet+ (dĺžka, dych 4–7–8, odpočet, séria),
+  WishNet (emoji prianie s témou, „Splnilo sa“), priania po reštarte ostali.
+- Neotestované (treba písať alebo rolovať – Claude v Android Studiu nevie): odznaky a výber jazyka dole v Profile,
+  preklad textu, nahlásenie/blokovanie, galaxie (meno, KVANT7), arabčina sprava doľava.
+- Build na notebooku ~20 min (Kotlin daemon sa nepripojil → pomalá náhradná kompilácia).
