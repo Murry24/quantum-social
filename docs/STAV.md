@@ -28,14 +28,16 @@ Tento súbor je „odovzdávka“ medzi sedeniami. Prečítaj ho ako prvý.
 | #27 | Profil+ (aura, odznaky, séria vďačnosti) | feat/profil-plus |
 | #28 | Preklad 1: systém slovníkov + angličtina | feat/i18n-1 |
 | #29 | Preklad 2: DE, ES, FR, CS, PL | feat/i18n-2 |
+| #30 | Preklad 3: IT, PT, UK, RU, TR, ZH, JA, KO, HI, AR | feat/i18n-3 |
+| #31 | Preklad 4: texty z core | feat/i18n-4 |
 
-**Na test stačí vetva `feat/i18n-2`** (obsahuje všetko). Po OK zlúčiť v poradí #16 → #29
+**Na test stačí vetva `feat/i18n-4`** (obsahuje všetko). Po OK zlúčiť v poradí #16 → #31
 (každý PR pred zlúčením prepnúť na base `main`, merge commit, vetvy nemazať).
 Pri teste v Android Studiu: po prepnutí vetvy **Sync**, pri čudných chybách **Build → Clean Project**.
 Netestované zatiaľ: KVANT7 (vstup do galaxie priateľov), melódia/zvuk, tapeta, notifikácie.
 
 ## Ďalšie kroky (v tomto poradí)
-1. Spoločný test + zlúčenie #16–#29.
+1. Spoločný test + zlúčenie #16–#31.
 2. Balík C: **19** lokálne (nahlásiť / zablokovať hviezdu), **25** preklady správ (prekladač v telefóne).
 3. **Detailné vylepšenie každej časti** (Marošovo želanie: „nabité všetkým, na čo si používateľ spomenie“):
    WishNet → galaxie priateľov → profil → ZenNet → … každú časť do hĺbky.
@@ -59,5 +61,5 @@ Netestované zatiaľ: KVANT7 (vstup do galaxie priateľov), melódia/zvuk, tapet
 ## Preklad aplikácie (i18n)
 - Texty v kóde: `tr("slovenský text")` alebo `tr("text %s", x)` (import `app.quantumsocial.core.i18n.tr`).
 - Slovníky: `app/src/main/assets/i18n/<iso>.tsv` (slovensky TAB preklad), nový jazyk pridať aj do `I18n.available`.
-- `I18nTest` stráži počet `%s`. Ešte nepreložené: texty z `core` (otázky táboráka, výzvy, sny, pripomienky, názvy levelov/odznakov).
+- `I18nTest` stráži počet `%s`. Preložené aj texty z `core` (17 jazykov, 423 textov). Nový text = pridať riadok do všetkých .tsv (test to vyžaduje).
 - Pri kontrole dĺžky riadku počítať emoji ako 2 znaky (ktlint počíta UTF-16).
