@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Quantum Social</string>
+    <string name="wallpaper_name">Moja galaxia</string>
+    <string name="wallpaper_description">Tvoja galaxia z Quantum Social ako pohyblivá tapeta</string>
 </resources>
