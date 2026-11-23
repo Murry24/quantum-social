@@ -23,14 +23,15 @@ Tento súbor je „odovzdávka“ medzi sedeniami. Prečítaj ho ako prvý.
 | #22 | 24, 27, 56 jazykov sveta | feat/balik-24-27-jazyky |
 | #23 | 10, 22, 23 | feat/balik-10-22-23 |
 | #24 | 19 (lokálne), 25 | feat/balik-19-25 |
+| #25 | WishNet+ (témy, palce, splnené) | feat/wishnet-plus |
 
-**Na test stačí vetva `feat/balik-19-25`** (obsahuje všetko). Po OK zlúčiť v poradí #16 → #24
+**Na test stačí vetva `feat/wishnet-plus`** (obsahuje všetko). Po OK zlúčiť v poradí #16 → #25
 (každý PR pred zlúčením prepnúť na base `main`, merge commit, vetvy nemazať).
 Pri teste v Android Studiu: po prepnutí vetvy **Sync**, pri čudných chybách **Build → Clean Project**.
 Netestované zatiaľ: KVANT7 (vstup do galaxie priateľov), melódia/zvuk, tapeta, notifikácie.
 
 ## Ďalšie kroky (v tomto poradí)
-1. Spoločný test + zlúčenie #16–#24.
+1. Spoločný test + zlúčenie #16–#25.
 2. Balík C: **19** lokálne (nahlásiť / zablokovať hviezdu), **25** preklady správ (prekladač v telefóne).
 3. **Detailné vylepšenie každej časti** (Marošovo želanie: „nabité všetkým, na čo si používateľ spomenie“):
    WishNet → galaxie priateľov → profil → ZenNet → … každú časť do hĺbky.
