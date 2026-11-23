@@ -1,6 +1,9 @@
 package app.quantumsocial.core.data
 
 import app.quantumsocial.core.model.DailyAura
+import app.quantumsocial.core.model.DreamCirclesState
+import app.quantumsocial.core.model.DreamNoteKind
+import app.quantumsocial.core.model.DreamSymbol
 import app.quantumsocial.core.model.DustAction
 import app.quantumsocial.core.model.Echo
 import app.quantumsocial.core.model.EchoDay
@@ -277,5 +280,46 @@ object ZenStore {
 
     fun restore(days: ZenDays) {
         _days.value = days
+    }
+}
+
+/** Moje snové kruhy (DreamMirror). Ukladanie rieši app. */
+object DreamCircleStore {
+    private val _state = MutableStateFlow(DreamCirclesState())
+    val state: StateFlow<DreamCirclesState> = _state.asStateFlow()
+
+    private fun today(now: Long) = StarDustState.epochDay(now)
+
+    fun join(
+        symbol: DreamSymbol,
+        now: Long = System.currentTimeMillis(),
+    ) {
+        _state.value = _state.value.join(symbol, today(now))
+    }
+
+    fun post(
+        key: String,
+        kind: DreamNoteKind,
+        emotion: Emotion?,
+        text: String,
+        now: Long = System.currentTimeMillis(),
+    ): Boolean {
+        val id = UUID.randomUUID().toString()
+        _state.value = _state.value.post(key, id, kind, emotion, text, today(now)) ?: return false
+        return true
+    }
+
+    fun toggleResonance(
+        key: String,
+        noteId: String,
+    ) {
+        _state.value = _state.value.toggleResonance(key, noteId)
+    }
+
+    fun restore(
+        state: DreamCirclesState,
+        now: Long = System.currentTimeMillis(),
+    ) {
+        _state.value = state.alive(today(now))
     }
 }

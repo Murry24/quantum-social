@@ -118,6 +118,12 @@ fun DreamScreen(onBack: () -> Unit) {
     var dream by remember { mutableStateOf("") }
     // sny+: symboly snov (fungujú v každom jazyku)
     var symbols by remember { mutableStateOf(emptySet<DreamSymbol>()) }
+    // snové kruhy: otvorený kruh prekryje obrazovku
+    var openCircle by remember { mutableStateOf<String?>(null) }
+    openCircle?.let {
+        DreamCircleScreen(it, onBack = { openCircle = null })
+        return
+    }
     var bridge by remember { mutableStateOf<Pair<String, Float>?>(null) }
     var searched by remember { mutableStateOf(false) }
 
@@ -184,6 +190,7 @@ fun DreamScreen(onBack: () -> Unit) {
                 }
             }
         }
+        DreamCirclesSection(if (searched) symbols else emptySet(), onOpen = { openCircle = it })
         if (searched) {
             val b = bridge
             if (b != null) {
