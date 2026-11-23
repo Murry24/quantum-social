@@ -11,9 +11,11 @@ import app.quantumsocial.core.model.ReportReason
 import app.quantumsocial.core.model.SeedGarden
 import app.quantumsocial.core.model.SoulLinks
 import app.quantumsocial.core.model.StarDustState
+import app.quantumsocial.core.model.TextSignal
 import app.quantumsocial.core.model.WishBoard
 import app.quantumsocial.core.model.WishTheme
 import app.quantumsocial.core.model.ZenDays
+import app.quantumsocial.core.model.asWishNet
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -82,6 +84,18 @@ object SeedStore {
         val next = _garden.value.water(id, StarDustState.epochDay(now)) ?: return false
         _garden.value = next
         StarDust.earn(DustAction.Seed, now)
+        return true
+    }
+
+    fun remove(id: String) {
+        _garden.value = _garden.value.remove(id)
+    }
+
+    /** Rozkvitnuté semienko poletí do WishNetu ako prianie. */
+    fun release(id: String): Boolean {
+        val seed = _garden.value.seeds.firstOrNull { it.id == id } ?: return false
+        _garden.value = _garden.value.release(id) ?: return false
+        InMemorySignalRepository.send(TextSignal("🌸 ${seed.text}").asWishNet())
         return true
     }
 
