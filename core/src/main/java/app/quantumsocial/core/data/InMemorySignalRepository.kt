@@ -49,6 +49,12 @@ object InMemorySignalRepository {
         if (signal.category == SignalCategory.WishNet) StarDust.earn(DustAction.Wish, signal.createdAt)
     }
 
+    /** Po reštarte vráti uložené priania (bez nového StarDust, ten už bol). */
+    fun restore(saved: List<Signal>) {
+        val have = _signals.value.map { it.id }.toSet()
+        _signals.value = _signals.value + saved.filter { it.id !in have }
+    }
+
     /** Prečítanie: signál s expireOnRead začne zhasínať. */
     fun markRead(
         id: String,

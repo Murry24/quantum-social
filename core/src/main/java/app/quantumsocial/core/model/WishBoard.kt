@@ -60,7 +60,36 @@ data class WishBoard(
         }
     }
 
+    /** Riadky: T id téma | C id (palec) | M id (moje) | D id (splnené). */
+    fun encode(): String =
+        (
+            themes.map { "T\t${it.key}\t${it.value.name}" } + cheered.map { "C\t$it" } +
+                mine.map { "M\t$it" } + fulfilled.map { "D\t$it" }
+        ).joinToString("\n")
+
+    /** Necháme len záznamy k prianiam, ktoré ešte žijú. */
+    fun keepOnly(ids: Set<String>): WishBoard =
+        WishBoard(themes.filterKeys { it in ids }, cheered intersect ids, mine intersect ids, fulfilled intersect ids)
+
     companion object {
+        fun decode(stored: String?): WishBoard {
+            var b = WishBoard()
+            stored.orEmpty().lineSequence().forEach { line ->
+                val p = line.split('\t')
+                runCatching {
+                    b =
+                        when (p[0]) {
+                            "T" -> b.copy(themes = b.themes + (p[1] to WishTheme.valueOf(p[2])))
+                            "C" -> b.copy(cheered = b.cheered + p[1])
+                            "M" -> b.copy(mine = b.mine + p[1])
+                            "D" -> b.copy(fulfilled = b.fulfilled + p[1])
+                            else -> b
+                        }
+                }
+            }
+            return b
+        }
+
         fun demoCheers(wishId: String): Int = abs(wishId.hashCode() % 13)
     }
 }

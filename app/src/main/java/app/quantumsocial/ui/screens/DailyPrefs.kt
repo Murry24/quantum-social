@@ -7,8 +7,10 @@ import app.quantumsocial.core.data.ConnectionStore
 import app.quantumsocial.core.data.EchoStore
 import app.quantumsocial.core.data.GalaxyStore
 import app.quantumsocial.core.data.GratitudeStore
+import app.quantumsocial.core.data.InMemorySignalRepository
 import app.quantumsocial.core.data.ModerationStore
 import app.quantumsocial.core.data.SeedStore
+import app.quantumsocial.core.data.WishBoardStore
 import app.quantumsocial.core.model.DailyAura
 import app.quantumsocial.core.model.EchoDay
 import app.quantumsocial.core.model.GratitudeJournal
@@ -16,6 +18,8 @@ import app.quantumsocial.core.model.Moderation
 import app.quantumsocial.core.model.SeedGarden
 import app.quantumsocial.core.model.SoulLinks
 import app.quantumsocial.core.model.StarDustState
+import app.quantumsocial.core.model.WishBoard
+import app.quantumsocial.core.model.WishNetVault
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
@@ -33,6 +37,8 @@ object DailyPrefs {
     private const val KEY_MODERATION = "moderation"
     private const val KEY_AURA = "daily_aura"
     private const val KEY_GALAXIES = "friend_galaxies"
+    private const val KEY_WISHES = "wishnet_wishes"
+    private const val KEY_WISH_BOARD = "wishnet_board"
 
     suspend fun keepSaved(context: Context) {
         val prefs = context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
@@ -49,6 +55,11 @@ object DailyPrefs {
             prefs.getStringSet(KEY_JOINED, emptySet()).orEmpty().toSet(),
         )
         ConnectionStore.refresh()
+        // priania z WishNetu žijú 24 h aj cez reštart
+        val wishes = WishNetVault.decode(prefs.getString(KEY_WISHES, null), System.currentTimeMillis())
+        InMemorySignalRepository.restore(wishes)
+        val board = WishBoard.decode(prefs.getString(KEY_WISH_BOARD, null))
+        WishBoardStore.restore(board.keepOnly(wishes.map { it.id }.toSet()))
         val galaxies = GalaxyStore.shared
         galaxies.restore(prefs.getString(KEY_GALAXIES, null))
         AuraStore.restore(DailyAura.decode(prefs.getString(KEY_AURA, null)))
@@ -63,6 +74,12 @@ object DailyPrefs {
                     galaxies.encode()
                 }.collect { prefs.edit().putString(KEY_GALAXIES, it).apply() }
             }
+            launch {
+                InMemorySignalRepository.signals.collect {
+                    prefs.edit().putString(KEY_WISHES, WishNetVault.encode(it)).apply()
+                }
+            }
+            launch { WishBoardStore.board.collect { prefs.edit().putString(KEY_WISH_BOARD, it.encode()).apply() } }
             launch {
                 AuraStore.aura.collect { a ->
                     prefs.edit().apply { if (a == null) remove(KEY_AURA) else putString(KEY_AURA, a.encode()) }.apply()

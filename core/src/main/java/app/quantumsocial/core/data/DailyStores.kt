@@ -193,6 +193,10 @@ object WishBoardStore {
     fun fulfill(wishId: String) {
         _board.value = _board.value.fulfill(wishId)
     }
+
+    fun restore(board: WishBoard) {
+        _board.value = board
+    }
 }
 
 /** Moja dnešná aura (profil). Ukladanie rieši app. */

@@ -30,14 +30,16 @@ Tento súbor je „odovzdávka“ medzi sedeniami. Prečítaj ho ako prvý.
 | #29 | Preklad 2: DE, ES, FR, CS, PL | feat/i18n-2 |
 | #30 | Preklad 3: IT, PT, UK, RU, TR, ZH, JA, KO, HI, AR | feat/i18n-3 |
 | #31 | Preklad 4: texty z core | feat/i18n-4 |
+| #32 | Pamäť: galaxie priateľov po reštarte | feat/pamat-galaxii |
+| #33 | Pamäť: priania z WishNetu po reštarte | feat/pamat-prani |
 
-**Na test stačí vetva `feat/i18n-4`** (obsahuje všetko). Po OK zlúčiť v poradí #16 → #31
+**Na test stačí vetva `feat/pamat-prani`** (obsahuje všetko). Po OK zlúčiť v poradí #16 → #33
 (každý PR pred zlúčením prepnúť na base `main`, merge commit, vetvy nemazať).
 Pri teste v Android Studiu: po prepnutí vetvy **Sync**, pri čudných chybách **Build → Clean Project**.
 Netestované zatiaľ: KVANT7 (vstup do galaxie priateľov), melódia/zvuk, tapeta, notifikácie.
 
 ## Ďalšie kroky (v tomto poradí)
-1. Spoločný test + zlúčenie #16–#31.
+1. Spoločný test + zlúčenie #16–#33.
 2. Balík C: **19** lokálne (nahlásiť / zablokovať hviezdu), **25** preklady správ (prekladač v telefóne).
 3. **Detailné vylepšenie každej časti** (Marošovo želanie: „nabité všetkým, na čo si používateľ spomenie“):
    WishNet → galaxie priateľov → profil → ZenNet → … každú časť do hĺbky.
