@@ -21,6 +21,30 @@ class GalaxyStore {
 
     private val invites = mutableMapOf<String, BlackHoleInvite>()
 
+    private val _favorites = MutableStateFlow<Set<String>>(emptySet())
+    val favorites: StateFlow<Set<String>> = _favorites.asStateFlow()
+
+    /** ⭐ obľúbená galaxia je v zozname prvá. */
+    fun toggleFavorite(galaxyId: String) {
+        val f = _favorites.value
+        _favorites.value = if (galaxyId in f) f - galaxyId else f + galaxyId
+    }
+
+    /** Jadro môže zmeniť meno, motto a farbu. @return false pri prázdnom mene alebo ak nie je jadro */
+    fun edit(
+        galaxyId: String,
+        byStarId: String,
+        name: String,
+        motto: String,
+        emotion: Emotion,
+    ): Boolean {
+        val g = galaxy(galaxyId) ?: return false
+        val clean = GalaxyRules.cleanName(name) ?: return false
+        if (g.coreStarId != byStarId) return false
+        update(g.copy(name = clean, motto = GalaxyRules.cleanMotto(motto), emotion = emotion))
+        return true
+    }
+
     fun galaxy(id: String): FriendGalaxy? = _galaxies.value.firstOrNull { it.id == id }
 
     /** Kam vedie čierna diera s týmto kódom (aby UI vedelo, kam po vstupe letieť). */

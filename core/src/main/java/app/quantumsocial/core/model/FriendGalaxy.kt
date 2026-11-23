@@ -17,6 +17,8 @@ data class FriendGalaxy(
     val lastActivityAt: Long,
     // čierna diera otvorená = dajú sa vytvárať pozvánky a vstupovať
     val open: Boolean = true,
+    // krátke motto pod menom, píše ho jadro
+    val motto: String = "",
 ) {
     fun brightness(now: Long): Float = GalaxyRules.brightness(lastActivityAt, now)
 
@@ -41,6 +43,7 @@ object GalaxyRules {
     const val MAX_GALAXIES_PER_STAR = 5
     const val MAX_OWNED = 2
     const val MAX_NAME = 24
+    const val MAX_MOTTO = 60
     const val INVITE_TTL_MS = 24 * 60 * 60 * 1000L
 
     private const val DAY_MS = 24 * 60 * 60 * 1000L
@@ -70,4 +73,32 @@ object GalaxyRules {
 
     /** Orezané meno, alebo null ak je prázdne. Dlhšie ako [MAX_NAME] sa skráti. */
     fun cleanName(name: String): String? = name.trim().take(MAX_NAME).trim().ifEmpty { null }
+
+    fun cleanMotto(motto: String): String = motto.replace('\n', ' ').trim().take(MAX_MOTTO).trim()
+}
+
+/** Táborák galaxie: každý deň iná spoločná otázka, rovnaká pre všetkých členov. */
+object GalaxyCampfire {
+    val questions =
+        listOf(
+            "Čo ťa dnes potešilo?",
+            "Za čo si dnes vďačný?",
+            "Aká pesnička ti dnes hrá v hlave?",
+            "Čo by si dnes rád zažil?",
+            "Ktorá chvíľa dňa bola najkrajšia?",
+            "Čo ťa dnes prekvapilo?",
+            "Čím by si dnes niekomu spravil radosť?",
+            "Aké miesto by si chcel navštíviť?",
+            "Čo ťa naposledy rozosmialo?",
+            "Na čo sa tešíš tento týždeň?",
+            "Akú farbu má dnes tvoja nálada?",
+            "Čo si sa nedávno naučil?",
+            "Komu by si dnes poslal svetlo?",
+            "Aký malý sen máš?",
+        )
+
+    fun questionFor(
+        galaxyId: String,
+        day: Long,
+    ): String = questions[Math.floorMod(galaxyId.hashCode() + day.toInt(), questions.size)]
 }

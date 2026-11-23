@@ -52,7 +52,9 @@ fun MyGalaxiesSheet(
     val store = GalaxyStore.shared
     val all by store.galaxies.collectAsState()
     val now = System.currentTimeMillis()
-    val mine = remember(all) { store.galaxiesOf(myStarId, now) }
+    val favorites by store.favorites.collectAsState()
+    // ⭐ obľúbené hore
+    val mine = remember(all, favorites) { store.galaxiesOf(myStarId, now).sortedByDescending { it.id in favorites } }
 
     var section by remember { mutableStateOf(Section.None) }
     var name by remember { mutableStateOf("") }
@@ -84,7 +86,7 @@ fun MyGalaxiesSheet(
                         .background(g.emotion.color().copy(alpha = 0.3f + 0.7f * light), CircleShape),
                 )
                 Column(modifier = Modifier.padding(start = 12.dp)) {
-                    Text(g.name, fontWeight = FontWeight.SemiBold)
+                    Text((if (g.id in favorites) "⭐ " else "") + g.name, fontWeight = FontWeight.SemiBold)
                     val role = if (g.coreStarId == myStarId) " · si jadro" else ""
                     Text("${g.members.size} hviezd · jas ${(light * 100).roundToInt()} %$role")
                 }
