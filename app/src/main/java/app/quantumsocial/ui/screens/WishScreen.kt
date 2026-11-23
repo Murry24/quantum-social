@@ -94,7 +94,7 @@ fun WishScreen() {
         ) {
             Text(tr("Priania"))
             WishSort.values().forEach { s ->
-                TextButton(onClick = { sort = s }) { Text(if (sort == s) tr("● %s", tr(s.label)) else s.label) }
+                TextButton(onClick = { sort = s }) { Text(if (sort == s) tr("● %s", tr(s.label)) else tr(s.label)) }
             }
         }
         WishThemeRow(selected = filterTheme, none = tr("Všetko")) { filterTheme = it }

@@ -1,5 +1,7 @@
 package app.quantumsocial.core.model
 
+import app.quantumsocial.core.i18n.tr
+
 /**
  * EchoNet (bod 11): zvuky dňa – krátka nahrávka (5–15 s) s náladou.
  * Ozveny žijú len do konca dňa a za deň ich môže byť najviac [MAX_PER_DAY].
@@ -37,8 +39,8 @@ data class EchoDay(
 
         fun problem(durationMs: Long): String? =
             when {
-                durationMs < MIN_MS -> "Ozvena má mať aspoň 5 sekúnd."
-                durationMs > MAX_MS + 500 -> "Ozvena môže mať najviac 15 sekúnd."
+                durationMs < MIN_MS -> tr("Ozvena má mať aspoň 5 sekúnd.")
+                durationMs > MAX_MS + 500 -> tr("Ozvena môže mať najviac 15 sekúnd.")
                 else -> null
             }
 

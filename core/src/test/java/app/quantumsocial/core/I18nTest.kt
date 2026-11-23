@@ -39,6 +39,8 @@ class I18nTest {
             assertTrue("chýba slovník $code", f.isFile)
             val dict = I18n.parse(f.readText())
             assertTrue("prázdny slovník $code", dict.size > 100)
+            val english = I18n.parse(File(dir, "en.tsv").readText())
+            assertEquals("$code: iné kľúče ako angličtina", english.keys, dict.keys)
             dict.forEach { (sk, t) ->
                 assertEquals("$code: „$sk“", I18n.placeholders(sk), I18n.placeholders(t))
             }

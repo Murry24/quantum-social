@@ -1,5 +1,6 @@
 package app.quantumsocial.core.model
 
+import app.quantumsocial.core.i18n.tr
 import kotlin.random.Random
 
 /**
@@ -100,5 +101,5 @@ object GalaxyCampfire {
     fun questionFor(
         galaxyId: String,
         day: Long,
-    ): String = questions[Math.floorMod(galaxyId.hashCode() + day.toInt(), questions.size)]
+    ): String = tr(questions[Math.floorMod(galaxyId.hashCode() + day.toInt(), questions.size)])
 }

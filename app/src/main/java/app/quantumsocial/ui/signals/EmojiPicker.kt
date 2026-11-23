@@ -52,7 +52,7 @@ fun EmojiGrid(
         groups.forEach { g ->
             item(key = "title-${g.title}", span = { GridItemSpan(maxLineSpan) }) {
                 Text(
-                    g.title,
+                    tr(g.title),
                     style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
                 )
