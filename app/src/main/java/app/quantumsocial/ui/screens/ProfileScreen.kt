@@ -117,6 +117,7 @@ fun ProfileScreen(onRebirth: () -> Unit) {
                     soundMessage = problem ?: "Vlastný zvuk je uložený ✓"
                 }
             }
+        BlockedStarsList()
         Text("Môj zvuk", style = MaterialTheme.typography.titleMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(

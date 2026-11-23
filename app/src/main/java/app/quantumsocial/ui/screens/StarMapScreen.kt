@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import app.quantumsocial.core.data.InMemorySignalRepository
+import app.quantumsocial.core.data.ModerationStore
 import app.quantumsocial.core.data.PulseOutbox
 import app.quantumsocial.core.data.WatchedStars
 import app.quantumsocial.core.model.EmojiSignal
@@ -160,9 +161,10 @@ fun StarMapScreen(
             }
         }
 
+    val moderation by ModerationStore.state.collectAsState()
     val filtered =
-        remember(stars, selLangs, selEmotions, selTopics, minIntensity, maxDistance, wishNetOnly) {
-            stars.filter { s ->
+        remember(stars, selLangs, selEmotions, selTopics, minIntensity, maxDistance, wishNetOnly, moderation) {
+            moderation.visible(stars) { it.id }.filter { s ->
                 (selLangs.isEmpty() || selLangs.contains(s.lang)) &&
                     (selEmotions.isEmpty() || selEmotions.contains(s.emotion)) &&
                     (selTopics.isEmpty() || selTopics.contains(s.topic)) &&

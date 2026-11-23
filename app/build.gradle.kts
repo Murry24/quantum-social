@@ -66,6 +66,9 @@ dependencies {
     implementation(libs.lifecycle.runtime.compose)
     implementation(libs.compose.animation)
     implementation(libs.compose.foundation)
+    // bod 25: preklad priamo v telefóne (bez servera)
+    implementation(libs.mlkit.translate)
+    implementation(libs.mlkit.language.id)
     implementation("androidx.compose.material:material-icons-extended")
 
 }
