@@ -27,7 +27,7 @@ Dáta najprv lokálne (mock), server až od bodu 9.
 | 16 | Svetelné levely | Iskra → Hviezda → Pulzár → Hmlovina → Supernova podľa aktivity | 🟡 lokálne (podľa StarDust) |
 | 17 | Galactic Moments | Kolektívne globálne udalosti (zmena farieb, téma dňa) | 🟡 lokálne (moment pri leveli, emócia dňa) |
 | 18 | Onboarding | „Zrodenie hviezdy“ za 60 s: jazyk, emócia, kvanti-meno, obnovovací kľúč, tutoriál | ✅ |
-| 19 | Overenie a Aurora | 1 zariadenie = 1 hviezda, SMS overenie, captcha, moderácia, report/blok | ⬜ |
+| 19 | Overenie a Aurora | 1 zariadenie = 1 hviezda, SMS overenie, captcha, moderácia, report/blok | 🟡 lokálne: nahlásiť a zablokovať (SMS/captcha až so serverom) |
 | 20 | StarDust | Jediná (nepredajná) mena za pozitívne interakcie; spúšťač Galactic Moments | 🟡 lokálne (StarDust v profile) |
 | 21 | LightSignature | Jedinečný svetelno-zvukový podpis hviezdy | 🟡 vizuálny podpis (bez zvuku) |
 | 22 | Constellations | Dočasné skupiny do 10 hviezd na tému/emóciu (3 dni) | 🟡 súhvezdia dňa (ukážkové hviezdy) |
