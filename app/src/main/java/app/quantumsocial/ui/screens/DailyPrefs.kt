@@ -5,6 +5,7 @@ import app.quantumsocial.core.data.AuraStore
 import app.quantumsocial.core.data.ChallengeStore
 import app.quantumsocial.core.data.ConnectionStore
 import app.quantumsocial.core.data.EchoStore
+import app.quantumsocial.core.data.GalaxyStore
 import app.quantumsocial.core.data.GratitudeStore
 import app.quantumsocial.core.data.ModerationStore
 import app.quantumsocial.core.data.SeedStore
@@ -16,6 +17,7 @@ import app.quantumsocial.core.model.SeedGarden
 import app.quantumsocial.core.model.SoulLinks
 import app.quantumsocial.core.model.StarDustState
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -30,6 +32,7 @@ object DailyPrefs {
     private const val KEY_JOINED = "constellations_joined"
     private const val KEY_MODERATION = "moderation"
     private const val KEY_AURA = "daily_aura"
+    private const val KEY_GALAXIES = "friend_galaxies"
 
     suspend fun keepSaved(context: Context) {
         val prefs = context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
@@ -46,6 +49,8 @@ object DailyPrefs {
             prefs.getStringSet(KEY_JOINED, emptySet()).orEmpty().toSet(),
         )
         ConnectionStore.refresh()
+        val galaxies = GalaxyStore.shared
+        galaxies.restore(prefs.getString(KEY_GALAXIES, null))
         AuraStore.restore(DailyAura.decode(prefs.getString(KEY_AURA, null)))
         ModerationStore.restore(Moderation.decode(prefs.getString(KEY_MODERATION, null)))
         coroutineScope {
@@ -53,6 +58,11 @@ object DailyPrefs {
             launch { SeedStore.garden.collect { prefs.edit().putString(KEY_SEEDS, it.encode()).apply() } }
             launch { EchoStore.day.collect { prefs.edit().putString(KEY_ECHOES, it.encode()).apply() } }
             launch { ConnectionStore.links.collect { prefs.edit().putString(KEY_LINKS, it.encode()).apply() } }
+            launch {
+                combine(galaxies.galaxies, galaxies.favorites, galaxies.invitesRevision) { _, _, _ ->
+                    galaxies.encode()
+                }.collect { prefs.edit().putString(KEY_GALAXIES, it).apply() }
+            }
             launch {
                 AuraStore.aura.collect { a ->
                     prefs.edit().apply { if (a == null) remove(KEY_AURA) else putString(KEY_AURA, a.encode()) }.apply()
