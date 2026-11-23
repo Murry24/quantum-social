@@ -1,6 +1,7 @@
 package app.quantumsocial.core
 
 import app.quantumsocial.core.model.EmojiSignal
+import app.quantumsocial.core.model.ImageSignal
 import app.quantumsocial.core.model.SignalLifecycle
 import app.quantumsocial.core.model.TextSignal
 import app.quantumsocial.core.model.WishBoard
@@ -19,6 +20,14 @@ class Balik12Test {
         val ephemeral = TextSignal("len 30 s", id = "e", createdAt = now)
         val back = WishNetVault.decode(WishNetVault.encode(listOf(text, old, ephemeral)) + "\nZLE", now)
         assertEquals(listOf(text), back)
+    }
+
+    @Test
+    fun onlyCopiedImagesAreKept() {
+        val now = 1_000_000L
+        val copy = ImageSignal("file:///data/wish_images/a.img", id = "i", createdAt = now).asWishNet()
+        val gallery = ImageSignal("content://media/1", id = "g", createdAt = now).asWishNet()
+        assertEquals(listOf(copy), WishNetVault.decode(WishNetVault.encode(listOf(copy, gallery)), now))
     }
 
     @Test
