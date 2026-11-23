@@ -22,6 +22,12 @@ data class GratitudeJournal(
     }
 
     /** Len iskry z posledných [KEEP_DAYS] dní – staršie zhasli. */
+    /** Posledných 7 dní (najstarší prvý, dnes posledný): či v ten deň svietila iskra. */
+    fun week(today: Long): List<Boolean> {
+        val days = entries.map { it.day }.toSet()
+        return (KEEP_DAYS - 1 downTo 0).map { (today - it) in days }
+    }
+
     fun visible(today: Long): GratitudeJournal = copy(entries = entries.filter { today - it.day < KEEP_DAYS })
 
     fun encode(): String = entries.joinToString("\n") { "${it.day}\t${it.text}" }
@@ -29,6 +35,9 @@ data class GratitudeJournal(
     companion object {
         const val MAX_TEXT = 140
         const val KEEP_DAYS = 7
+
+        /** Začiatky viet, ktoré pomôžu, keď nevieš, čo napísať (preklad cez tr v UI). */
+        val prompts = listOf("Za človeka, ktorý", "Za chvíľu, keď", "Za maličkosť:", "Za seba, lebo", "Za to, že dnes")
 
         fun decode(stored: String?): GratitudeJournal =
             GratitudeJournal(
