@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -71,6 +73,9 @@ fun ActionsSheet(
     onSeeds: () -> Unit,
     onEcho: () -> Unit,
     onMemory: () -> Unit,
+    onBridge: () -> Unit,
+    onConstellations: () -> Unit,
+    onSoulLinks: () -> Unit,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(6.dp),
@@ -78,9 +83,13 @@ fun ActionsSheet(
             Modifier
                 .fillMaxWidth()
                 .navigationBarsPadding()
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp, vertical = 8.dp),
     ) {
         BigAction("🌌  Do chaosu – pocit náhodnej hviezde", onChaos)
+        BigAction("🌉  Svetelný most dňa", onBridge)
+        BigAction("✨  Súhvezdia", onConstellations)
+        BigAction("💞  SoulLinks", onSoulLinks)
         BigAction("○  ZenNet – minúta ticha", onZen)
         BigAction("🕳  Moje galaxie", onGalaxies)
         BigAction("🌟  Vďačnosť – zlatá iskra dňa", onGratitude)
