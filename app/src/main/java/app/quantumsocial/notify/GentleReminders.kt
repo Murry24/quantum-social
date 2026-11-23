@@ -18,6 +18,7 @@ import app.quantumsocial.R
 import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.GentleNotes
 import app.quantumsocial.core.model.StarDustState
+import app.quantumsocial.ui.screens.DailyPrefs
 import java.util.Calendar
 
 /**
@@ -73,7 +74,14 @@ object GentleReminders {
                 setShowBadge(false)
             },
         )
-        val (title, text) = GentleNotes.forDay(StarDustState.epochDay(System.currentTimeMillis()))
+        // smädné semienko má prednosť pred bežnou pripomienkou
+        val thirsty = DailyPrefs.thirstySeed(context)
+        val (title, text) =
+            if (thirsty != null) {
+                tr("🥀 Tvoje semienko je smädné") to tr("„%s“ – zalej ho malým krokom.", thirsty.text)
+            } else {
+                GentleNotes.forDay(StarDustState.epochDay(System.currentTimeMillis()))
+            }
         val open =
             PendingIntent.getActivity(
                 context,

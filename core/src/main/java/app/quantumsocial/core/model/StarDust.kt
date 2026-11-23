@@ -21,6 +21,9 @@ enum class DustAction(
     Empathy(reward = 2, dailyCap = 5),
     Seed(reward = 1, dailyCap = 3),
     Echo(reward = 1, dailyCap = 3),
+
+    // splnený cieľ zo semienka – veľká odmena
+    Bloom(reward = 15, dailyCap = 1),
 }
 
 data class StarDustState(

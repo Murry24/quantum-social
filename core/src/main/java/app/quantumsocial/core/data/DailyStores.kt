@@ -9,6 +9,8 @@ import app.quantumsocial.core.model.GratitudeJournal
 import app.quantumsocial.core.model.Moderation
 import app.quantumsocial.core.model.ReportReason
 import app.quantumsocial.core.model.SeedGarden
+import app.quantumsocial.core.model.SeedOutcome
+import app.quantumsocial.core.model.SeedSize
 import app.quantumsocial.core.model.SoulLinks
 import app.quantumsocial.core.model.StarDustState
 import app.quantumsocial.core.model.TextSignal
@@ -66,24 +68,52 @@ object SeedStore {
     private val _garden = MutableStateFlow(SeedGarden())
     val garden: StateFlow<SeedGarden> = _garden.asStateFlow()
 
+    private fun day(now: Long) = StarDustState.epochDay(now)
+
     fun plant(
         text: String,
+        size: SeedSize = SeedSize.Small,
         now: Long = System.currentTimeMillis(),
     ): Boolean {
-        val id = UUID.randomUUID().toString()
-        val next = _garden.value.plant(id, text, StarDustState.epochDay(now)) ?: return false
+        val next = _garden.value.plant(UUID.randomUUID().toString(), text, day(now), size) ?: return false
         _garden.value = next
         return true
     }
 
-    /** Zaliatie – raz denne na semienko, každé prinesie trochu StarDust. */
+    /** Zaliatie malým krokom – raz denne na semienko, každé prinesie trochu StarDust. */
     fun water(
         id: String,
         now: Long = System.currentTimeMillis(),
+        emotion: Emotion? = null,
+        note: String = "",
     ): Boolean {
-        val next = _garden.value.water(id, StarDustState.epochDay(now)) ?: return false
+        val next = _garden.value.water(id, day(now), emotion, note) ?: return false
         _garden.value = next
         StarDust.earn(DustAction.Seed, now)
+        return true
+    }
+
+    fun share(
+        id: String,
+        now: Long = System.currentTimeMillis(),
+    ): Boolean {
+        _garden.value = _garden.value.share(id, day(now)) ?: return false
+        return true
+    }
+
+    fun notYet(id: String): Boolean {
+        _garden.value = _garden.value.notYet(id) ?: return false
+        return true
+    }
+
+    /** Splnilo sa → kvet + veľký bonus. Zmenilo sa → kompost + malý prach (žiadna hanba). */
+    fun finish(
+        id: String,
+        outcome: SeedOutcome,
+        now: Long = System.currentTimeMillis(),
+    ): Boolean {
+        _garden.value = _garden.value.finish(id, outcome) ?: return false
+        StarDust.earn(if (outcome == SeedOutcome.Done) DustAction.Bloom else DustAction.Seed, now)
         return true
     }
 
@@ -91,7 +121,7 @@ object SeedStore {
         _garden.value = _garden.value.remove(id)
     }
 
-    /** Rozkvitnuté semienko poletí do WishNetu ako prianie. */
+    /** Splnený cieľ poletí do WishNetu ako prianie. */
     fun release(id: String): Boolean {
         val seed = _garden.value.seeds.firstOrNull { it.id == id } ?: return false
         _garden.value = _garden.value.release(id) ?: return false

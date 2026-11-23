@@ -90,6 +90,7 @@ fun BadgesCard(myStarId: String) {
             lifetimeDust = dust.lifetime,
             gratitudeDays = journal.entries.map { it.day }.toSet(),
             seeds = garden.seeds.size,
+            flowers = garden.flowers.size,
             galaxies = galaxies.count { myStarId in it.members },
             activeSoulLinks = links.links.count { it.status == LinkStatus.Active },
             today = today,

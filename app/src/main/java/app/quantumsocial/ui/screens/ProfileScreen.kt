@@ -228,4 +228,5 @@ private fun DustAction.label() =
         DustAction.Empathy -> tr("Prvá pomoc prianiu")
         DustAction.Seed -> tr("Zaliate semienko")
         DustAction.Echo -> tr("Ozvena dňa")
+        DustAction.Bloom -> tr("Splnený cieľ")
     }

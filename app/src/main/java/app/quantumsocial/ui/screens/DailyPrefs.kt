@@ -14,6 +14,7 @@ import app.quantumsocial.core.data.WishBoardStore
 import app.quantumsocial.core.data.ZenStore
 import app.quantumsocial.core.model.DailyAura
 import app.quantumsocial.core.model.EchoDay
+import app.quantumsocial.core.model.FutureSeed
 import app.quantumsocial.core.model.GratitudeJournal
 import app.quantumsocial.core.model.ImageSignal
 import app.quantumsocial.core.model.Moderation
@@ -44,6 +45,13 @@ object DailyPrefs {
     private const val KEY_WISHES = "wishnet_wishes"
     private const val KEY_ZEN = "zen_days"
     private const val KEY_WISH_BOARD = "wishnet_board"
+
+    /** Pre večernú pripomienku: prvé smädné semienko (číta priamo z telefónu, appka nemusí bežať). */
+    fun thirstySeed(context: Context): FutureSeed? {
+        val prefs = context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        val today = StarDustState.epochDay(System.currentTimeMillis())
+        return SeedGarden.decode(prefs.getString(KEY_SEEDS, null)).growing.firstOrNull { it.isThirsty(today) }
+    }
 
     suspend fun keepSaved(context: Context) {
         val prefs = context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)

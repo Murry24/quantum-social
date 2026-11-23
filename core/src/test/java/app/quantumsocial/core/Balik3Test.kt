@@ -8,6 +8,7 @@ import app.quantumsocial.core.model.DustAction
 import app.quantumsocial.core.model.Emotion
 import app.quantumsocial.core.model.Reply
 import app.quantumsocial.core.model.SeedGarden
+import app.quantumsocial.core.model.SeedSize
 import app.quantumsocial.core.model.SeedStage
 import app.quantumsocial.core.model.StarChord
 import org.junit.Assert.assertEquals
@@ -73,7 +74,7 @@ class Balik3Test {
         var g = SeedGarden().plant("x", "  nový   začiatok ", day)!!
         assertEquals("nový začiatok", g.seeds.single().text)
         assertNull(g.water("x", day)?.water("x", day))
-        for (d in 0L until 5L) g = g.water("x", day + d)!!
+        for (d in 0L until SeedSize.Small.days) g = g.water("x", day + d)!!
         assertEquals(SeedStage.Bloom, g.seeds.single().stage)
         assertNull(g.water("x", day + 9))
         assertEquals(g, SeedGarden.decode(g.encode()))
@@ -85,7 +86,7 @@ class Balik3Test {
         for (i in 1..3) g = g.plant("s$i", "prianie $i", day)!!
         assertNull(g.plant("s4", "ďalšie", day))
         assertNull(SeedGarden().plant("e", "   ", day))
-        assertTrue(SeedStore.plant("viac svetla", dayMs))
+        assertTrue(SeedStore.plant("viac svetla", now = dayMs))
         val id = SeedStore.garden.value.seeds.single().id
         assertTrue(SeedStore.water(id, dayMs))
         assertFalse(SeedStore.water(id, dayMs))
