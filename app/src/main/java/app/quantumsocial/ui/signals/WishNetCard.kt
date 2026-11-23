@@ -33,7 +33,7 @@ import app.quantumsocial.core.model.Signal
 import app.quantumsocial.core.model.SignalCategory
 import app.quantumsocial.core.model.SignalLifecycle
 import app.quantumsocial.core.model.TextSignal
-import app.quantumsocial.lingua.TranslateLine
+import app.quantumsocial.lingua.LinguaText
 import app.quantumsocial.ui.screens.color
 import app.quantumsocial.ui.screens.label
 import coil.compose.AsyncImage
@@ -94,11 +94,8 @@ fun WishNetCard(
             Text("$badge • ${signal.typeLabel()}")
 
             when (signal) {
-                is TextSignal -> {
-                    Text(signal.text, modifier = Modifier.padding(top = 6.dp))
-                    // bod 25: preklad do môjho jazyka
-                    TranslateLine(signal.text)
-                }
+                // bod 25: cudzí text rovno preložený do môjho jazyka
+                is TextSignal -> LinguaText(signal.text, modifier = Modifier.padding(top = 6.dp))
                 is EmojiSignal -> Text(signal.emoji, modifier = Modifier.padding(top = 6.dp))
                 is ImageSignal ->
                     AsyncImage(

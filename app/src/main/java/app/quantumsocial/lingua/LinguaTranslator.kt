@@ -28,13 +28,16 @@ object LinguaTranslator {
         text: String,
         fromIso: String,
         toIso: String,
+        wifiOnly: Boolean = false,
     ): String? {
         val from = TranslateLanguage.fromLanguageTag(fromIso) ?: return null
         val to = TranslateLanguage.fromLanguageTag(toIso) ?: return null
         val options = TranslatorOptions.Builder().setSourceLanguage(from).setTargetLanguage(to).build()
         val translator = Translation.getClient(options)
         return try {
-            translator.downloadModelIfNeeded(DownloadConditions.Builder().build()).awaitOrNull() ?: return null
+            // automatika sťahuje jazykový balík (~30 MB) len cez Wi-Fi, aby nepapala mobilné dáta
+            val conditions = DownloadConditions.Builder().apply { if (wifiOnly) requireWifi() }.build()
+            translator.downloadModelIfNeeded(conditions).awaitOrNull() ?: return null
             translator.translate(text).awaitOrNull()
         } finally {
             translator.close()

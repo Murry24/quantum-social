@@ -58,6 +58,7 @@ import app.quantumsocial.core.model.SignalCategory
 import app.quantumsocial.core.model.SignalTarget
 import app.quantumsocial.core.model.TextSignal
 import app.quantumsocial.core.model.WorldLanguages
+import app.quantumsocial.lingua.LinguaText
 import app.quantumsocial.ui.model.starEmotionForId
 import app.quantumsocial.ui.model.starLangForId
 import app.quantumsocial.ui.model.starTopicForId
@@ -216,7 +217,7 @@ fun StarProfileScreen(
                     ) {
                         Column(modifier = Modifier.padding(12.dp)) {
                             when (s) {
-                                is TextSignal -> Text(text = s.text)
+                                is TextSignal -> LinguaText(s.text)
                                 is MixSignal -> Text(text = "Mix (${s.parts.size})")
                                 is EmojiSignal -> Text(text = s.emoji)
                                 else -> Text(text = s.typeLabel())
