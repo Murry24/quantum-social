@@ -207,8 +207,9 @@ fun ProfileScreen(
         // jazyk celej aplikácie
         AppLanguagePicker()
 
-        // bod 18: na testovanie – otvorí onboarding znova, obnovovací kľúč ostáva
         MyDataCard()
+
+        // bod 18: na testovanie – otvorí onboarding znova, obnovovací kľúč ostáva
         OutlinedButton(onClick = onTour) { Text(tr("🧭 Ukázať sprievodcu")) }
         OutlinedButton(onClick = onRebirth) { Text(tr("Znova prejsť zrodením")) }
     }
