@@ -72,7 +72,7 @@ core/src/main/java/app/quantumsocial/core/
 ## Aktuálny stav (21. 11. 2026 večer)
 - **Najprv si prečítaj `docs/STAV.md`** – odovzdávka: čo čaká na test, poradie zlúčenia, ďalšie kroky.
 - V `main`: body 1–8, 18, 31 a lokálne 3, 5, 6, 7, 9, 20 (zlúčené PR #4–#15).
-- Na spoločný test čakajú PR #16–#39 (vetva `feat/semienka-ciele` obsahuje všetko).
+- Na spoločný test čakajú PR #16–#40 (vetva `feat/sny-plus` obsahuje všetko).
 - Server až úplne na záver; dovtedy ukážkové hviezdy (`DemoStars`).
 
 ## Dohodnuté smerovanie
