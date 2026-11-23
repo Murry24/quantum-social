@@ -9,6 +9,8 @@ import app.quantumsocial.core.model.ReportReason
 import app.quantumsocial.core.model.SeedGarden
 import app.quantumsocial.core.model.SoulLinks
 import app.quantumsocial.core.model.StarDustState
+import app.quantumsocial.core.model.WishBoard
+import app.quantumsocial.core.model.WishTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -167,5 +169,26 @@ object ModerationStore {
 
     fun restore(moderation: Moderation) {
         _state.value = moderation
+    }
+}
+
+/** WishNet+ (témy, palce, splnené priania). */
+object WishBoardStore {
+    private val _board = MutableStateFlow(WishBoard())
+    val board: StateFlow<WishBoard> = _board.asStateFlow()
+
+    fun post(
+        wishId: String,
+        theme: WishTheme?,
+    ) {
+        _board.value = _board.value.post(wishId, theme)
+    }
+
+    fun toggleCheer(wishId: String) {
+        _board.value = _board.value.toggleCheer(wishId)
+    }
+
+    fun fulfill(wishId: String) {
+        _board.value = _board.value.fulfill(wishId)
     }
 }
