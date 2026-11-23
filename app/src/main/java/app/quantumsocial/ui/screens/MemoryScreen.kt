@@ -41,7 +41,7 @@ import app.quantumsocial.ui.signals.EmotionOrb
 import java.util.UUID
 
 /** Uloženie archívu spomienok – len zašifrovane (Android Keystore) v trezore, ktorý sa nezálohuje. */
-private object MemoryVault {
+internal object MemoryVault {
     private const val VAULT = "quantum_vault"
     private const val KEY = "memories"
 
