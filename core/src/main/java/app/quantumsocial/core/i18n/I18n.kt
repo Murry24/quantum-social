@@ -7,7 +7,11 @@ package app.quantumsocial.core.i18n
  */
 object I18n {
     /** Jazyky, pre ktoré existuje slovník (+ slovenčina, ktorá ho nepotrebuje). */
-    val available = listOf("sk", "en", "de", "es", "fr", "cs", "pl")
+    val available =
+        listOf("sk", "en", "de", "es", "fr", "it", "pt", "cs", "pl", "uk", "ru", "tr", "zh", "ja", "ko", "hi", "ar")
+
+    /** Jazyky písané sprava doľava. */
+    val rtl = setOf("ar")
 
     @Volatile
     private var dict: Map<String, String> = emptyMap()
