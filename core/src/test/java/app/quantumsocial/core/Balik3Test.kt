@@ -86,7 +86,7 @@ class Balik3Test {
         for (i in 1..3) g = g.plant("s$i", "prianie $i", day)!!
         assertNull(g.plant("s4", "ďalšie", day))
         assertNull(SeedGarden().plant("e", "   ", day))
-        assertTrue(SeedStore.plant("viac svetla", dayMs))
+        assertTrue(SeedStore.plant("viac svetla", now = dayMs))
         val id = SeedStore.garden.value.seeds.single().id
         assertTrue(SeedStore.water(id, dayMs))
         assertFalse(SeedStore.water(id, dayMs))
