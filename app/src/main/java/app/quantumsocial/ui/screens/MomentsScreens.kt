@@ -8,11 +8,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -32,8 +37,10 @@ import androidx.compose.ui.unit.dp
 import app.quantumsocial.core.data.StarDust
 import app.quantumsocial.core.i18n.tr
 import app.quantumsocial.core.model.DreamMirror
+import app.quantumsocial.core.model.DreamSymbol
 import app.quantumsocial.core.model.Emotion
 import app.quantumsocial.core.model.GalacticMoments
+import app.quantumsocial.core.model.StarDustState
 import app.quantumsocial.core.model.StarLevel
 import app.quantumsocial.core.ui.theme.GalaxyPalette
 import app.quantumsocial.ui.perf.LocalPerformanceMode
@@ -105,18 +112,36 @@ fun GalacticMomentOverlay() {
 }
 
 /** DreamMirror (bod 12): sen ostáva len v pamäti, nájde sa snový most k podobnému snu. */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun DreamScreen(onBack: () -> Unit) {
     var dream by remember { mutableStateOf("") }
+    // sny+: symboly snov (fungujú v každom jazyku)
+    var symbols by remember { mutableStateOf(emptySet<DreamSymbol>()) }
     var bridge by remember { mutableStateOf<Pair<String, Float>?>(null) }
     var searched by remember { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier.fillMaxSize().background(GalaxyPalette.zenBrush).padding(20.dp),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(GalaxyPalette.zenBrush)
+                .verticalScroll(rememberScrollState())
+                .padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         TextButton(onClick = onBack) { Text(tr("‹ Späť"), color = onSky) }
         Text(tr("🌙 DreamMirror"), style = MaterialTheme.typography.titleLarge, color = onSky)
+        val today = StarDustState.epochDay(System.currentTimeMillis())
+        val galaxyDreams =
+            DreamMirror.galaxyToday(today).joinToString(" · ") { (sym, count) ->
+                "${sym.emoji} ${tr(sym.label)} $count"
+            }
+        Text(
+            tr("Dnes sa v galaxii snívalo: %s", galaxyDreams),
+            color = onSky,
+            style = MaterialTheme.typography.bodySmall,
+        )
         Text(tr("Čo sa ti snívalo? Sen ostane len v tomto telefóne a po zatvorení zmizne."), color = onSky)
         OutlinedTextField(
             value = dream,
@@ -127,13 +152,38 @@ fun DreamScreen(onBack: () -> Unit) {
             label = { Text(tr("môj sen (max %s)", DreamMirror.MAX_TEXT)) },
             modifier = Modifier.fillMaxWidth().background(Color.White.copy(alpha = 0.9f)),
         )
+        Text(tr("Čo sa v sne objavilo?"), color = onSky)
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            DreamSymbol.values().forEach { sym ->
+                FilterChip(
+                    selected = sym in symbols,
+                    onClick = {
+                        symbols = if (sym in symbols) symbols - sym else symbols + sym
+                        searched = false
+                    },
+                    label = { Text("${sym.emoji} ${tr(sym.label)}") },
+                )
+            }
+        }
         Button(
             onClick = {
-                bridge = DreamMirror.bridge(dream)
+                bridge = DreamMirror.bridge(dream, symbols)
                 searched = true
             },
-            enabled = dream.isNotBlank(),
+            enabled = dream.isNotBlank() || symbols.isNotEmpty(),
         ) { Text(tr("Hľadať snový most 🌉")) }
+        if (searched && symbols.isNotEmpty()) {
+            ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(tr("Čo môžu znamenať tvoje symboly"), style = MaterialTheme.typography.titleSmall)
+                    symbols.forEach { Text("${it.emoji} ${tr(it.label)} – ${tr(it.meaning)}") }
+                    Text(
+                        tr("Len pre radosť – sny si každý vykladá po svojom."),
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
+            }
+        }
         if (searched) {
             val b = bridge
             if (b != null) {
