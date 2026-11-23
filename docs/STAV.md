@@ -27,14 +27,15 @@ Tento súbor je „odovzdávka“ medzi sedeniami. Prečítaj ho ako prvý.
 | #26 | Galaxie+ (motto, úprava, obľúbené, táborák) | feat/galaxie-plus |
 | #27 | Profil+ (aura, odznaky, séria vďačnosti) | feat/profil-plus |
 | #28 | Preklad 1: systém slovníkov + angličtina | feat/i18n-1 |
+| #29 | Preklad 2: DE, ES, FR, CS, PL | feat/i18n-2 |
 
-**Na test stačí vetva `feat/i18n-1`** (obsahuje všetko). Po OK zlúčiť v poradí #16 → #28
+**Na test stačí vetva `feat/i18n-2`** (obsahuje všetko). Po OK zlúčiť v poradí #16 → #29
 (každý PR pred zlúčením prepnúť na base `main`, merge commit, vetvy nemazať).
 Pri teste v Android Studiu: po prepnutí vetvy **Sync**, pri čudných chybách **Build → Clean Project**.
 Netestované zatiaľ: KVANT7 (vstup do galaxie priateľov), melódia/zvuk, tapeta, notifikácie.
 
 ## Ďalšie kroky (v tomto poradí)
-1. Spoločný test + zlúčenie #16–#28.
+1. Spoločný test + zlúčenie #16–#29.
 2. Balík C: **19** lokálne (nahlásiť / zablokovať hviezdu), **25** preklady správ (prekladač v telefóne).
 3. **Detailné vylepšenie každej časti** (Marošovo želanie: „nabité všetkým, na čo si používateľ spomenie“):
    WishNet → galaxie priateľov → profil → ZenNet → … každú časť do hĺbky.
