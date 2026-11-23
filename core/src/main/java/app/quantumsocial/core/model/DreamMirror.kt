@@ -4,10 +4,6 @@ import app.quantumsocial.core.i18n.tr
 import java.text.Normalizer
 import kotlin.random.Random
 
-/**
- * DreamMirror (bod 12): zapíšeš sen a nájde sa „snový most“ – podobný sen inej hviezdy.
- * Sny sú citlivé: ostávajú len v pamäti telefónu, nikam sa neukladajú ani neposielajú.
- */
 /** Symboly snov – vyberajú sa ťuknutím, takže fungujú v každom jazyku. Význam je len pre radosť. */
 enum class DreamSymbol(
     val emoji: String,
@@ -28,6 +24,10 @@ enum class DreamSymbol(
     Light("✨", "Svetlo", "Nádej a jasná myšlienka."),
 }
 
+/**
+ * DreamMirror (bod 12): zapíšeš sen a nájde sa „snový most“ – podobný sen inej hviezdy.
+ * Sny sú citlivé: ostávajú len v pamäti telefónu, nikam sa neukladajú ani neposielajú.
+ */
 object DreamMirror {
     const val MAX_TEXT = 300
 
