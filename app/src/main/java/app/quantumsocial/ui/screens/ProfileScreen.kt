@@ -95,6 +95,10 @@ fun ProfileScreen(onRebirth: () -> Unit) {
             }
         }
 
+        // profil+: dnešná aura a odznaky
+        DailyAuraCard()
+        BadgesCard(OnboardingPrefs.myStarId(context))
+
         // bod 21: môj svetelný podpis – jedinečný pre každú hviezdu
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             LightSignatureView(starId = OnboardingPrefs.myStarId(context))

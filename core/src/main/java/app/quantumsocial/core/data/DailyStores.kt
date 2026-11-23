@@ -1,8 +1,10 @@
 package app.quantumsocial.core.data
 
+import app.quantumsocial.core.model.DailyAura
 import app.quantumsocial.core.model.DustAction
 import app.quantumsocial.core.model.Echo
 import app.quantumsocial.core.model.EchoDay
+import app.quantumsocial.core.model.Emotion
 import app.quantumsocial.core.model.GratitudeJournal
 import app.quantumsocial.core.model.Moderation
 import app.quantumsocial.core.model.ReportReason
@@ -190,5 +192,27 @@ object WishBoardStore {
 
     fun fulfill(wishId: String) {
         _board.value = _board.value.fulfill(wishId)
+    }
+}
+
+/** Moja dnešná aura (profil). Ukladanie rieši app. */
+object AuraStore {
+    private val _aura = MutableStateFlow<DailyAura?>(null)
+    val aura: StateFlow<DailyAura?> = _aura.asStateFlow()
+
+    fun set(
+        emotion: Emotion,
+        text: String,
+        now: Long = System.currentTimeMillis(),
+    ) {
+        _aura.value = DailyAura.of(emotion, text, StarDustState.epochDay(now))
+    }
+
+    fun clear() {
+        _aura.value = null
+    }
+
+    fun restore(aura: DailyAura?) {
+        _aura.value = aura
     }
 }
