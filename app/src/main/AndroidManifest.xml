@@ -22,6 +22,11 @@
             </intent-filter>
         </activity>
 
+        <!-- bod 15: jemná večerná pripomienka -->
+        <receiver
+            android:name=".notify.GentleReminderReceiver"
+            android:exported="false" />
+
         <!-- bod 33: živá tapeta – moja galaxia na ploche telefónu -->
         <service
             android:name=".wallpaper.GalaxyWallpaperService"
