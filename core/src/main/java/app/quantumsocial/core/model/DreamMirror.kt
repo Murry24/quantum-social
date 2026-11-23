@@ -50,13 +50,20 @@ object DreamMirror {
 
     // symboly k ukážkovým snom (v rovnakom poradí ako otherDreams)
     private val dreamSymbols: List<Set<DreamSymbol>> =
-        with(DreamSymbol) {
-            listOf(
-                setOf(Flying, House, Light), setOf(Water, Animal), setOf(Chase, House), setOf(Person, Light),
-                setOf(Falling), setOf(Teeth, Person), setOf(Flying, Light), setOf(Journey),
-                setOf(Key, House), setOf(Water, Light), setOf(Flying, Animal), setOf(Exam),
-            )
-        }
+        listOf(
+            setOf(DreamSymbol.Flying, DreamSymbol.House, DreamSymbol.Light),
+            setOf(DreamSymbol.Water, DreamSymbol.Animal),
+            setOf(DreamSymbol.Chase, DreamSymbol.House),
+            setOf(DreamSymbol.Person, DreamSymbol.Light),
+            setOf(DreamSymbol.Falling),
+            setOf(DreamSymbol.Teeth, DreamSymbol.Person),
+            setOf(DreamSymbol.Flying, DreamSymbol.Light),
+            setOf(DreamSymbol.Journey),
+            setOf(DreamSymbol.Key, DreamSymbol.House),
+            setOf(DreamSymbol.Water, DreamSymbol.Light),
+            setOf(DreamSymbol.Flying, DreamSymbol.Animal),
+            setOf(DreamSymbol.Exam),
+        )
 
     /** Slová bez diakritiky, malými písmenami, aspoň 4 znaky. */
     fun words(text: String): Set<String> =
