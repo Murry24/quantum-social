@@ -82,6 +82,7 @@ fun FriendGalaxyScreen(
     val me = remember { OnboardingPrefs.myStarId(context) }
     val store = GalaxyStore.shared
     val all by store.galaxies.collectAsState()
+    val favorites by store.favorites.collectAsState()
     val galaxy = all.firstOrNull { it.id == galaxyId }
     val perf = LocalPerformanceMode.current
     val scope = rememberCoroutineScope()
@@ -173,6 +174,7 @@ fun FriendGalaxyScreen(
             ) {
                 Text(galaxy.name, style = MaterialTheme.typography.titleLarge)
                 Text("${galaxy.members.size} hviezd" + if (isCore) " · si jadro" else "")
+                GalaxyHeaderExtras(galaxy, me, isFavorite = galaxy.id in favorites)
                 if (isCore) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
