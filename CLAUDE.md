@@ -69,10 +69,10 @@ core/src/main/java/app/quantumsocial/core/
 - **Emulátor spúšťa Maroš v Android Studiu** (panel Running Devices), nie Claude cez `emulator.exe`.
   Ak už beží (`adb devices`), nový nespúšťaj. Aplikácia sa spúšťa ▶ Run v Android Studiu.
 
-## Aktuálny stav (21. 11. 2026 večer)
+## Aktuálny stav (23. 11. 2026 večer)
 - **Najprv si prečítaj `docs/STAV.md`** – odovzdávka: čo čaká na test, poradie zlúčenia, ďalšie kroky.
-- V `main`: body 1–8, 18, 31 a lokálne 3, 5, 6, 7, 9, 20 (zlúčené PR #4–#15).
-- Na spoločný test čakajú PR #16–#41 (vetva `feat/snove-kruhy` obsahuje všetko).
+- V `main`: všetko hotové – PR #4–#41 zlúčené (body 1–33 okrem servera, preklad 17 jazykov, vylepšenia).
+- Ďalšie poradie: sprievodca → moje dáta → menu ✦ → bod 34 (pozri `docs/STAV.md`).
 - Server až úplne na záver; dovtedy ukážkové hviezdy (`DemoStars`).
 
 ## Dohodnuté smerovanie

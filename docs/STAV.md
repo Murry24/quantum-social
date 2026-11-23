@@ -1,4 +1,4 @@
-# Stav práce – Quantum Social (21. 11. 2026 večer)
+# Stav práce – Quantum Social (23. 11. 2026 večer)
 
 Tento súbor je „odovzdávka“ medzi sedeniami. Prečítaj ho ako prvý.
 
@@ -11,38 +11,20 @@ Tento súbor je „odovzdávka“ medzi sedeniami. Prečítaj ho ako prvý.
 - Prácu robí hlavne **Claude v cloude** (CI na GitHube overí ktlint, testy, build); notebook sa prehrieva.
 - Tabuľka s úlohami a PR: artefakt „Quantum Social – stav pull requestov“ (hárky Úlohy, Test, Pull requesty).
 
-## Čaká na spoločný test (stack PR, každý nad predchádzajúcim)
-| PR | Body | Vetva |
-|---|---|---|
-| #16 | 32 farby galaxie | feat/32-farby-galaxie |
-| #17 | 33 živá tapeta | feat/33-ziva-tapeta |
-| #18 | 13, 14, 16, 21, 26 | feat/balik-13-14-16-21-26 |
-| #19 | 12, 17 | feat/balik-12-17 |
-| #20 | 28 (+ vlastný zvuk), 29, 30 | feat/balik-28-29-30 |
-| #21 | 11, 15 | feat/balik-11-15 |
-| #22 | 24, 27, 56 jazykov sveta | feat/balik-24-27-jazyky |
-| #23 | 10, 22, 23 | feat/balik-10-22-23 |
-| #24 | 19 (lokálne), 25 | feat/balik-19-25 |
-| #25 | WishNet+ (témy, palce, splnené) | feat/wishnet-plus |
-| #26 | Galaxie+ (motto, úprava, obľúbené, táborák) | feat/galaxie-plus |
-| #27 | Profil+ (aura, odznaky, séria vďačnosti) | feat/profil-plus |
-| #28 | Preklad 1: systém slovníkov + angličtina | feat/i18n-1 |
-| #29 | Preklad 2: DE, ES, FR, CS, PL | feat/i18n-2 |
-| #30 | Preklad 3: IT, PT, UK, RU, TR, ZH, JA, KO, HI, AR | feat/i18n-3 |
-| #31 | Preklad 4: texty z core | feat/i18n-4 |
-| #32 | Pamäť: galaxie priateľov po reštarte | feat/pamat-galaxii |
-| #33 | Pamäť: priania z WishNetu po reštarte | feat/pamat-prani |
-| #34 | Pamäť: priania s obrázkom | feat/pamat-obrazkov |
-| #35 | ZenNet+ (dĺžka, dych, séria) | feat/zen-plus |
-| #36 | Opravy po teste (ZenNet, séria) | fix/po-teste-2 |
-| #37 | Semienka+ (smädné, do WishNetu, vykopať) | feat/semienka-plus |
-| #38 | Vďačnosť+ (týždeň iskier, pomôcky) | feat/vdacnost-plus |
-| #39 | Semienka ako ciele (kroky, pomoc galaxie, záhrada kvetov) | feat/semienka-ciele |
-| #40 | DreamMirror+ (symboly snov) | feat/sny-plus |
-| #41 | Snové kruhy (anonymné galaxie rovnakého sna) | feat/snove-kruhy |
+## Zlúčené v `main` (23. 11. 2026)
+PR #16 – #41 sú zlúčené (Maroš dal OK). `main` = všetko hotové; CI na `main` zelené.
+Obsah: body 32, 33, 10–17, 19 (lokálne), 21–30, WishNet+, Galaxie+, Profil+, preklad 17 jazykov,
+pamäť po reštarte, ZenNet+, Vďačnosť+, Semienka ako ciele, DreamMirror+ a Snové kruhy.
 
-**Na test stačí vetva `feat/snove-kruhy`** (obsahuje všetko). Po OK zlúčiť v poradí #16 → #41
-(každý PR pred zlúčením prepnúť na base `main`, merge commit, vetvy nemazať).
+**Na test: vetva `main`.** Nové práce = nová vetva z `main` → PR do `main`.
+
+## Plán ďalej (dohodnuté poradie 23. 11.)
+1. ✅ Poriadok – zlúčenie #16–#41.
+2. Prvé kroky – sprievodca po zrodení hviezdy.
+3. Moje dáta – zmazať všetko / stiahnuť moje dáta + zásady súkromia.
+4. Prehľadnejšie menu ✦ (skupiny Ja / Spojenia / Pokoj).
+5. Bod 34 – luxusný vzhľad (2–3 návrhy pre Maroša).
+Potom: widget, preklad v snových kruhoch, EchoNet+ a Súhvezdia+, ročný prehľad, príprava na server a Google Play.
 Pri teste v Android Studiu: po prepnutí vetvy **Sync**, pri čudných chybách **Build → Clean Project**.
 Netestované zatiaľ: KVANT7 (vstup do galaxie priateľov), melódia/zvuk, tapeta, notifikácie.
 
