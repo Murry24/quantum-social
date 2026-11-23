@@ -35,14 +35,16 @@ Tento súbor je „odovzdávka“ medzi sedeniami. Prečítaj ho ako prvý.
 | #34 | Pamäť: priania s obrázkom | feat/pamat-obrazkov |
 | #35 | ZenNet+ (dĺžka, dych, séria) | feat/zen-plus |
 | #36 | Opravy po teste (ZenNet, séria) | fix/po-teste-2 |
+| #37 | Semienka+ (smädné, do WishNetu, vykopať) | feat/semienka-plus |
+| #38 | Vďačnosť+ (týždeň iskier, pomôcky) | feat/vdacnost-plus |
 
-**Na test stačí vetva `fix/po-teste-2`** (obsahuje všetko). Po OK zlúčiť v poradí #16 → #36
+**Na test stačí vetva `feat/vdacnost-plus`** (obsahuje všetko). Po OK zlúčiť v poradí #16 → #38
 (každý PR pred zlúčením prepnúť na base `main`, merge commit, vetvy nemazať).
 Pri teste v Android Studiu: po prepnutí vetvy **Sync**, pri čudných chybách **Build → Clean Project**.
 Netestované zatiaľ: KVANT7 (vstup do galaxie priateľov), melódia/zvuk, tapeta, notifikácie.
 
 ## Ďalšie kroky (v tomto poradí)
-1. Spoločný test + zlúčenie #16–#36.
+1. Spoločný test + zlúčenie #16–#38.
 2. Balík C: **19** lokálne (nahlásiť / zablokovať hviezdu), **25** preklady správ (prekladač v telefóne).
 3. **Detailné vylepšenie každej časti** (Marošovo želanie: „nabité všetkým, na čo si používateľ spomenie“):
    WishNet → galaxie priateľov → profil → ZenNet → … každú časť do hĺbky.

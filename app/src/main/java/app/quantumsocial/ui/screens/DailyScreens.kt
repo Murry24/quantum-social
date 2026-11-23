@@ -7,6 +7,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
@@ -83,8 +86,22 @@ fun GratitudeScreen(onBack: () -> Unit) {
     var text by remember { mutableStateOf("") }
 
     SkyFrame(tr("🌟 Vďačnosť"), onBack) {
+        // týždeň vďaky: 7 bodiek, svieti deň so zlatou iskrou
+        Text(
+            tr("Tvoj týždeň: %s", journal.week(today).joinToString(" ") { if (it) "✨" else "·" }),
+            color = onSky,
+        )
         if (journal.canWrite(today)) {
             Text(tr("Za čo si dnes vďačný?"), color = onSky)
+            Row(modifier = Modifier.horizontalScroll(rememberScrollState())) {
+                GratitudeJournal.prompts.forEach { p ->
+                    AssistChip(
+                        onClick = { text = tr(p) + " " },
+                        label = { Text(tr(p)) },
+                        modifier = Modifier.padding(end = 6.dp),
+                    )
+                }
+            }
             OutlinedTextField(
                 value = text,
                 onValueChange = { text = it.take(GratitudeJournal.MAX_TEXT) },
