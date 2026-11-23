@@ -11,6 +11,7 @@ import app.quantumsocial.core.data.InMemorySignalRepository
 import app.quantumsocial.core.data.ModerationStore
 import app.quantumsocial.core.data.SeedStore
 import app.quantumsocial.core.data.WishBoardStore
+import app.quantumsocial.core.data.ZenStore
 import app.quantumsocial.core.model.DailyAura
 import app.quantumsocial.core.model.EchoDay
 import app.quantumsocial.core.model.GratitudeJournal
@@ -21,6 +22,7 @@ import app.quantumsocial.core.model.SoulLinks
 import app.quantumsocial.core.model.StarDustState
 import app.quantumsocial.core.model.WishBoard
 import app.quantumsocial.core.model.WishNetVault
+import app.quantumsocial.core.model.ZenDays
 import app.quantumsocial.ui.signals.WishImages
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.combine
@@ -40,6 +42,7 @@ object DailyPrefs {
     private const val KEY_AURA = "daily_aura"
     private const val KEY_GALAXIES = "friend_galaxies"
     private const val KEY_WISHES = "wishnet_wishes"
+    private const val KEY_ZEN = "zen_days"
     private const val KEY_WISH_BOARD = "wishnet_board"
 
     suspend fun keepSaved(context: Context) {
@@ -63,6 +66,7 @@ object DailyPrefs {
         WishImages.cleanup(context, wishes.filterIsInstance<ImageSignal>().map { it.imageUri }.toSet())
         val board = WishBoard.decode(prefs.getString(KEY_WISH_BOARD, null))
         WishBoardStore.restore(board.keepOnly(wishes.map { it.id }.toSet()))
+        ZenStore.restore(ZenDays.decode(prefs.getString(KEY_ZEN, null)))
         val galaxies = GalaxyStore.shared
         galaxies.restore(prefs.getString(KEY_GALAXIES, null))
         AuraStore.restore(DailyAura.decode(prefs.getString(KEY_AURA, null)))
@@ -82,6 +86,7 @@ object DailyPrefs {
                     prefs.edit().putString(KEY_WISHES, WishNetVault.encode(it)).apply()
                 }
             }
+            launch { ZenStore.days.collect { prefs.edit().putString(KEY_ZEN, it.encode()).apply() } }
             launch { WishBoardStore.board.collect { prefs.edit().putString(KEY_WISH_BOARD, it.encode()).apply() } }
             launch {
                 AuraStore.aura.collect { a ->
